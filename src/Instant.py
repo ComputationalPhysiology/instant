@@ -12,20 +12,15 @@ A simple example: (see test1.py)
 >>> import Instant,os  
 >>> ext = Instant.Instant()
 >>> c_code = \"\"\"
-int hello(){
-  printf("Hello World!\\n");
-  return 2222;
+double sum(double a, double b){
+  return a+b;
 }
 \"\"\"
 >>> ext.create_extension(code=c_code,
                      module='test1_ext')
->>> from test1_ext import hello
->>> return_val = hello()
-Hello World!
->>> print return_val 
-2222
-
-
+>>> from test1_ext import sum  
+>>> print sum(3.7, 4.8)
+8.5
 
    
 
@@ -104,6 +99,7 @@ void f()
 {
   printf("No code supplied!\\n");
 }"""
+    gen_setup  = 1 
     module  = 'instant_swig_module'
     swigopts     = '-I.'
     init_code    = '  //Code for initialisation here'
@@ -202,16 +198,24 @@ void f()
             return
 #        self.debug()
         self.generate_Interfacefile()
-        self.generate_Makefile()
-        if os.path.isfile(self.makefile_name):
-            os.system("make -f "+self.makefile_name+" clean")
-        os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
-        if VERBOSE == 9:
-            os.remove(self.logfile_name)
+	if ( not self.gen_setup ):   
+            self.generate_Makefile()
+            if os.path.isfile(self.makefile_name):
+                os.system("make -f "+self.makefile_name+" clean")
+            os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
+            if VERBOSE == 9:
+                os.remove(self.logfile_name)
+	else: 
+            self.generate_setup()
+	    os.system("python setup.py build_ext")
+	    os.system("python setup.py install --install-platlib=.")
         print "Module name is \'"+self.module+"\'"
 
 
     def debug(self):
+        """
+	print out all instance variable
+	"""
         print 'DEBUG CODE:'
         print 'code',self.code
         print 'module',self.module
@@ -227,15 +231,16 @@ void f()
 
     def clean(self):
         """ Clean up files the current session. """
-        for file in [self.module+".log",
-                     self.module+".log",
-                     self.module+".i",
-                     self.module+".mak",
-                     self.module+".py",
-                     self.module+".pyc",
-                     "_"+self.module+".so"]:
-            if os.path.isfile(file):
-                os.remove(file)
+	if ( not gen_setup ) :  
+            for file in [self.module+".log",
+                         self.module+".log",
+                         self.module+".i",
+                         self.module+".mak",
+                         self.module+".py",
+                         self.module+".pyc",
+                         "_"+self.module+".so"]:
+                if os.path.isfile(file):
+                    os.remove(file)
 
     def generate_Interfacefile(self):
         """
@@ -280,6 +285,27 @@ void f()
         if VERBOSE > 0:
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
+
+    def generate_setup(self): 
+        """
+	Generates a setup.py file
+	"""
+        self.cppsrcs.append( "%s_wrap.cxx" %self.module )
+	f = open('setup.py', 'w')
+	f.write(""" 
+import os
+from distutils.core import setup, Extension
+name = '%s' 
+swig_cmd ='swig -python -c++ %s %s'
+os.system(swig_cmd)
+sources = ['%s'] 
+setup(name = '%s', 
+      ext_modules = [Extension('_' + '%s', sources, 
+                     include_dirs=%s)])  
+	""" % (self.module, self.swigopts, self.ifile_name, 
+	       list2str(self.cppsrcs), 
+	       self.module, self.module, self.include_dirs ))   
+	f.close()
 
 
     def generate_Makefile(self):

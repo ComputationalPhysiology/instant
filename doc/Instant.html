@@ -20,7 +20,7 @@ pre {color: #080808;
 
 <tr><td bgcolor="#000000"><font color="#ffffff"><b>Local</b></font></td></tr>
 <tr><td><a href="code/index.html">Documentation</a></td></tr>
-<tr><td><a href="http://www.simula.no/~kent-and">Download</a></td></tr>
+<tr><td><a href="Instant.tar.gz">Download</a></td></tr>
 <tr><td></td></tr>
 <tr><td></td></tr>
 
@@ -56,11 +56,11 @@ loadable in Python.
 <pre>
 &gt;&gt;&gt; import Instant, os  
 &gt;&gt;&gt; ext = Instant.Instant()
-&gt;&gt;&gt; c_code = &quot;int foo(){ return 2222; }&quot;
+&gt;&gt;&gt; c_code = &quot;double sum(double a, double b){ return a+b; }&quot;
 &gt;&gt;&gt; ext.create_extension(code=c_code, module='test1_ext')
-&gt;&gt;&gt; from test1_ext import foo 
-&gt;&gt;&gt; print foo() 
-2222
+&gt;&gt;&gt; from test1_ext import sum  
+&gt;&gt;&gt; print sum(3.7, 4.8) 
+8.5
 </pre>
 
 

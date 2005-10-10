@@ -5,11 +5,11 @@ exec python $0 ${1+"$@"}
 
 
 import Instant 
-import Numeric
+import Numeric,sys
 
-a = Numeric.arange(1000000)
+a = Numeric.arange(10000000)
 a = Numeric.sin(a)
-b = Numeric.arange(1000000)
+b = Numeric.arange(10000000)
 b = Numeric.cos(b)
 
 
@@ -46,7 +46,8 @@ return PyArray_Return(ret);
 ext = Instant.Instant() 
 
 ext.create_extension(code=s, headers=["arrayobject.h"],
-              include_dirs=["-I/usr/include/python2.4/Numeric"],
+#              include_dirs=["-I/usr/include/python2.4/Numeric"],
+              include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
               init_code='import_array();', module="test2_ext"
               )
 
