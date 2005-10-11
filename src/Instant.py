@@ -198,18 +198,21 @@ void f()
             return
 #        self.debug()
         self.generate_Interfacefile()
-	if ( not self.gen_setup ):   
-            self.generate_Makefile()
-            if os.path.isfile(self.makefile_name):
-                os.system("make -f "+self.makefile_name+" clean")
-            os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
-            if VERBOSE == 9:
-                os.remove(self.logfile_name)
+	if (os.system("swig -version 2> /dev/null ") == 0 ):   
+   	    if ( not self.gen_setup ):   
+                self.generate_Makefile()
+                if os.path.isfile(self.makefile_name):
+                    os.system("make -f "+self.makefile_name+" clean")
+                os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
+                if VERBOSE == 9:
+                    os.remove(self.logfile_name)
+	    else: 
+                self.generate_setup()
+	        os.system("python " + self.module + "_setup.py build_ext")
+	        os.system("python " + self.module + "_setup.py install --install-platlib=.")
+            print "Module name is \'"+self.module+"\'"
 	else: 
-            self.generate_setup()
-	    os.system("python setup.py build_ext")
-	    os.system("python setup.py install --install-platlib=.")
-        print "Module name is \'"+self.module+"\'"
+	    raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
 
 
     def debug(self):
@@ -291,7 +294,7 @@ void f()
 	Generates a setup.py file
 	"""
         self.cppsrcs.append( "%s_wrap.cxx" %self.module )
-	f = open('setup.py', 'w')
+	f = open(self.module+'_setup.py', 'w')
 	f.write(""" 
 import os
 from distutils.core import setup, Extension

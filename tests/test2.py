@@ -46,7 +46,6 @@ return PyArray_Return(ret);
 ext = Instant.Instant() 
 
 ext.create_extension(code=s, headers=["arrayobject.h"],
-#              include_dirs=["-I/usr/include/python2.4/Numeric"],
               include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
               init_code='import_array();', module="test2_ext"
               )
@@ -65,12 +64,12 @@ t1 = time.time()
 c = a+b
 t2 = time.time()
 
-print 'Med numpy: ',t2-t1,'seconds'
+print 'Med numpy:   ',t2-t1,'seconds'
 
-difference = c - d 
+difference = abs(c - d) 
 
 sum = reduce( lambda a,b: a+b, difference)  
-print sum 
+print "The difference between the arrays computed by numpy and instant is " + str(sum) 
 
 
 
