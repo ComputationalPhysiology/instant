@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Instant</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+</head>
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th bgcolor="#70b0f0" class="navselect">&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          <a class="navbar" target="_top" href="http://pypde.simula.no/Instant">Instant</a>
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <font size="-1"><b class="breadcrumbs">
+        Module&nbsp;Instant
+      </b></font></br>
+    </td>
+    <td><table cellpadding="0" cellspacing="0">
+      <tr><td align="right"><font size="-2">[show&nbsp;private&nbsp;|&nbsp;<a href="../public/Instant-module.html">hide&nbsp;private</a>]</font></td></tr>
+      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="Instant-module.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
+    </table></td>
+</tr></table>
+
+<!-- =========== START OF MODULE DESCRIPTION =========== -->
+<h2 class="module">Module Instant</h2>
+
+<pre class="literalblock">
+By using class I{Instant} from the I{instant} module, a
+Python extension module can
+be created at runtime. For the user, it behaves somewhat like
+an inline module, except you have to import the module manually.
+
+The code can be either C or C++, but like when programming C or C++,
+it has to be inside a function or a similar C/C++ construct.
+
+A simple example: (see test1.py)
+
+&gt;&gt;&gt; import Instant,os  
+&gt;&gt;&gt; ext = Instant.Instant()
+&gt;&gt;&gt; c_code = &quot;&quot;&quot;
+double sum(double a, double b){
+  return a+b;
+}
+&quot;&quot;&quot;
+&gt;&gt;&gt; ext.create_extension(code=c_code,
+                     module='test1_ext')
+&gt;&gt;&gt; from test1_ext import sum  
+&gt;&gt;&gt; print sum(3.7, 4.8)
+8.5
+
+   
+
+Another example (see test2.py) :
+
+&gt;&gt;&gt; import Instant 
+&gt;&gt;&gt; import Numeric
+&gt;&gt;&gt; a = Numeric.arange(1000000)
+&gt;&gt;&gt; a = Numeric.sin(a)
+&gt;&gt;&gt; b = Numeric.arange(1000000)
+&gt;&gt;&gt; b = Numeric.cos(b)
+&gt;&gt;&gt; s = 
+&quot;&quot;&quot;
+PyObject* add(PyObject* a_, PyObject* b_){
+  /*
+  various checks
+  */ 
+  PyArrayObject* a=(PyArrayObject*) a_;
+  PyArrayObject* b=(PyArrayObject*) b_;
+
+  int n = a-&gt;dimensions[0];
+
+  int dims[1];
+  dims[0] = n; 
+  PyArrayObject* ret;
+  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
+
+  int i;
+  double aj;
+  double bj;
+  double *retj; 
+  for (i=0; i &lt; n; i++) {
+    retj = (double*)(ret-&gt;data+ret-&gt;strides[0]*i); 
+    aj = *(double *)(a-&gt;data+ a-&gt;strides[0]*i);
+    bj = *(double *)(b-&gt;data+ b-&gt;strides[0]*i);
+    *retj = aj + bj; 
+  }
+return PyArray_Return(ret);
+}
+&quot;&quot;&quot;
+&gt;&gt;&gt; ext = Instant.Instant() 
+&gt;&gt;&gt; ext.create_extension(code=s, headers=[&quot;arrayobject.h&quot;],
+              include_dirs=[&quot;-I/usr/include/python2.4/Numeric&quot;],
+              init_code='import_array();', module=&quot;test2_ext&quot;
+              )
+&gt;&gt;&gt; import time
+&gt;&gt;&gt; import test2_ext 
+&gt;&gt;&gt; t1 = time.time() 
+&gt;&gt;&gt; d = test2_ext.add(a,b)
+&gt;&gt;&gt; t2 = time.time()
+&gt;&gt;&gt; print 'With Instant:',t2-t1,'seconds'
+With Instant: 0.0758290290833 seconds
+&gt;&gt;&gt; t1 = time.time() 
+&gt;&gt;&gt; c = a+b
+&gt;&gt;&gt; t2 = time.time()
+&gt;&gt;&gt; print 'Med numpy: ',t2-t1,'seconds'
+Med numpy:  0.0843679904938 seconds
+&gt;&gt;&gt; difference = c - d 
+&gt;&gt;&gt; sum = reduce( lambda a,b: a+b, difference)  
+&gt;&gt;&gt; print sum 
+0.0
+</pre>
+<hr/>
+
+<!-- =========== START OF CLASSES =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Classes</th></tr>
+<tr><td width="15%">
+  <b><a href="Instant.Instant-class.html"><code>Instant</code></a></b></td>
+  <td>&nbsp;</td></tr>
+</table><br />
+
+
+<!-- =========== START OF FUNCTION SUMMARY =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Function Summary</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><a name="list2str"></a><span class="summary-sig"><span class="summary-sig-name">list2str</span>(<span class=summary-sig-arg>list</span>)</span></code>
+</td></tr>
+</table><br />
+
+
+<!-- =========== START OF VARIABLE SUMMARY =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Variable Summary</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>int</code></font></td>
+<td><b><a href="Instant-module.html#VERBOSE"><code>VERBOSE</code></a></b> = <span title="0">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+</table><br />
+
+
+<!-- =========== START OF VARIABLE DETAILS =========== -->
+<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="details">
+  <th colspan="2">Variable Details</th></tr>
+</table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="VERBOSE"></a>
+<h3>VERBOSE</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>int</code>
+
+      </dd>
+<span title="0">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<br />
+
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th bgcolor="#70b0f0" class="navselect">&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          <a class="navbar" target="_top" href="http://pypde.simula.no/Instant">Instant</a>
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Tue Oct 11 10:48:50 2005</font></td>
+    <td align="right"><a href="http://epydoc.sourceforge.net"
+                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+  </tr>
+</table>
+</body>
+</html>
