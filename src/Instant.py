@@ -1,6 +1,5 @@
 """
-By using class I{Instant} from the I{instant} module, a
-Python extension module can
+By using the class Instant a Python extension module can
 be created at runtime. For the user, it behaves somewhat like
 an inline module, except you have to import the module manually.
 
