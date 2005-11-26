@@ -21,9 +21,37 @@ double sum(double a, double b){
 >>> print sum(3.7, 4.8)
 8.5
 
+Another example (see test3.py): 
+>>> import Instant  
+>>> import Numeric
+>>> import sys
+>>> import time
+>>>
+>>> ext = Instant.Instant()
+>>>
+>>> c_code = \"\"\"
+>>>void sum(int n1, double* array1, int n2, double* array2, int n3, double* array3){
+>>>  for (int i=0; i<n1; i++) {  
+>>>    array3[i] = array1[i] + array2[i]; 
+>>>  }
+>>>}
+>>>\"\"\"
+>>>
+>>> ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
+>>>          include_dirs=[sys.prefix + "/include/python" 
+>>>                       + sys.version[:3] + "/Numeric"],
+>>>          init_code='import_array();', module='test3_ext', 
+>>>          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
+>>>
+>>> from test3_ext import sum 
+>>> a = Numeric.arange(10000); a = Numeric.sin(a)
+>>> b = Numeric.arange(10000); b = Numeric.cos(b)
+>>> c = Numeric.arange(10000); c = Numeric.cos(c)
+>>>
+>>>sum(a,b,c)
    
 
-Another example (see test2.py) :
+Yet another example (see test2.py) :
 
 >>> import Instant 
 >>> import Numeric
@@ -139,10 +167,8 @@ void f()
                 self.cppargs = dict[key]
             elif key == 'object_files':
                 self.object_files = dict[key]
-	    elif key == 'input_arrays':
-                self.input_arrays = dict[key]
-	    elif key == 'output_arrays':
-                self.output_arrays = dict[key]
+	    elif key == 'arrays':
+                self.arrays = dict[key]
 
         self.makefile_name = self.module+".mak"
         self.logfile_name  = self.module+".log"
@@ -194,6 +220,9 @@ void f()
               - A list of directories to search for libraries (C{-l}).
            - B{object_files}:
               - If you want to compile the files yourself. NOT YET SUPPORTED.
+           - B{arrays}:
+              - A list of the C arrays to be made from NumPy arrays.
+
            
         """
         if self.parse_args(args):
@@ -266,12 +295,13 @@ void f()
         func_name = self.code[:self.code.index(')')+1]
 	
         typemaps = "" 
-	if (len(self.input_arrays) > 0): 
-          for a in self.input_arrays:  
-    	    n = a[0]
-	    array = a[1]
+	if (len(self.arrays) > 0): 
+          for a in self.arrays:  
+            if (len(a) == 2):  
+      	      n = a[0]
+	      array = a[1]
 
-  	    typemap = """
+  	      typemap = """
 %stypemap(in) (int %s,double* %s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
@@ -283,40 +313,28 @@ void f()
   $2 = (double*)pyarray->data;
 }
 """ % ('%',n,array)
-            typemaps += typemap
+              typemaps += typemap
+            elif (len(a) == 3):  
+      	      n = a[0]
+	      ptv = a[1]
+	      array = a[2]
 
-	if (len(self.output_arrays) > 0): 
-          for a in self.output_arrays:  
-    	    n = a[0]
-	    array = a[1]
-
-  	    typemap1 = """
-%stypemap(in) (int %s,double* %s){
+  	      typemap = """
+%stypemap(in) (int %s,int* %s,double* %s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
     return NULL; ;
   }
   PyArrayObject* pyarray;
   pyarray = (PyArrayObject*)$input; 
-  $1 = pyarray->dimensions[0];
-  $2 = (double*)pyarray->data;
+  $1 = pyarray->nd;
+  $2 = pyarray->dimensions;
+  $3 = (double*)pyarray->data;
 }
-""" % ('%',n,array)
-            typemaps += typemap1
+""" % ('%',n,ptv,array)
+              typemaps += typemap
 
-  	    typemap2 = """
-%stypemap(argout) (int %s,double* %s){
-  PyArrayObject* pyarray; 
-  pyarray =   (PyArrayObject*)PyArray_FromDims(1, &$1, PyArray_DOUBLE);
-  int n = $1;  
-  double* d = $2; 
-  for (int i=0; i<n; i++) {
-    *(double*)(pyarray->data + pyarray->strides[0]*(i)) = d[i];
-  }
-  $result = (PyObject*)pyarray; 
-}
-""" % ('%',n,array)
-            typemaps += typemap2
+
 
     
         f = open(self.ifile_name, 'w')

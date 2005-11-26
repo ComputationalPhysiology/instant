@@ -46,6 +46,10 @@ pre {color:  #000000;
 <td>
 <p>
 </p><h1>Instant inlining of C/C++ code in Python</h1>
+
+<h2>News</h2>
+0.3: Instant supports NumPy arrays
+
  
 <h2>Appetizer </h2>
 Instant is a Python module that allows for instant inlining of C and
@@ -70,7 +74,38 @@ double sum(double a, double b){
 8.5
 </pre>
 
-
+Example with NumPy arrays converted to C double arrays:
+<pre>
+&gt;&gt;&gt; import Instant  
+&gt;&gt;&gt; import Numeric
+&gt;&gt;&gt; import sys
+&gt;&gt;&gt; import time
+&gt;&gt;&gt;
+&gt;&gt;&gt; ext = Instant.Instant()
+&gt;&gt;&gt;
+&gt;&gt;&gt; c_code = &quot;&quot;&quot;
+&gt;&gt;&gt;void sum(int n1, double* array1, int n2, double* array2, int n3, double* array3){
+&gt;&gt;&gt;  for (int i=0; i&lt;n1; i++) {  
+&gt;&gt;&gt;    array3[i] = array1[i] + array2[i]; 
+&gt;&gt;&gt;  }
+&gt;&gt;&gt;}
+&gt;&gt;&gt;&quot;&quot;&quot;
+&gt;&gt;&gt;
+&gt;&gt;&gt; ext.create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], cppargs='-g',
+&gt;&gt;&gt;          include_dirs=[sys.prefix + &quot;/include/python&quot; 
+&gt;&gt;&gt;                       + sys.version[:3] + &quot;/Numeric&quot;],
+&gt;&gt;&gt;          init_code='import_array();', module='test3_ext', 
+&gt;&gt;&gt;          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
+&gt;&gt;&gt;
+&gt;&gt;&gt; from test3_ext import sum 
+&gt;&gt;&gt;
+&gt;&gt;&gt; a = Numeric.arange(10000); a = Numeric.sin(a)
+&gt;&gt;&gt; b = Numeric.arange(10000); b = Numeric.cos(b)
+&gt;&gt;&gt; c = Numeric.arange(10000); c = Numeric.cos(c)
+&gt;&gt;&gt;
+&gt;&gt;&gt; sum(a,b,c)
+ 
+</pre>
 
 
 

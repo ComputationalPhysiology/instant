@@ -2,5 +2,6 @@
 
 rm   *ext* 
 rm -rf build 
+rm *pyc 
 
 
