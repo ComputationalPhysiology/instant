@@ -139,6 +139,10 @@ void f()
                 self.cppargs = dict[key]
             elif key == 'object_files':
                 self.object_files = dict[key]
+	    elif key == 'input_arrays':
+                self.input_arrays = dict[key]
+	    elif key == 'output_arrays':
+                self.output_arrays = dict[key]
 
         self.makefile_name = self.module+".mak"
         self.logfile_name  = self.module+".log"
@@ -260,6 +264,60 @@ void f()
             print "\nGenerating interface file \'"+ self.ifile_name +"\':"
     
         func_name = self.code[:self.code.index(')')+1]
+	
+        typemaps = "" 
+	if (len(self.input_arrays) > 0): 
+          for a in self.input_arrays:  
+    	    n = a[0]
+	    array = a[1]
+
+  	    typemap = """
+%stypemap(in) (int %s,double* %s){
+  if (!PyArray_Check($input)) { 
+    PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
+    return NULL; ;
+  }
+  PyArrayObject* pyarray;
+  pyarray = (PyArrayObject*)$input; 
+  $1 = pyarray->dimensions[0];
+  $2 = (double*)pyarray->data;
+}
+""" % ('%',n,array)
+            typemaps += typemap
+
+	if (len(self.output_arrays) > 0): 
+          for a in self.output_arrays:  
+    	    n = a[0]
+	    array = a[1]
+
+  	    typemap1 = """
+%stypemap(in) (int %s,double* %s){
+  if (!PyArray_Check($input)) { 
+    PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
+    return NULL; ;
+  }
+  PyArrayObject* pyarray;
+  pyarray = (PyArrayObject*)$input; 
+  $1 = pyarray->dimensions[0];
+  $2 = (double*)pyarray->data;
+}
+""" % ('%',n,array)
+            typemaps += typemap1
+
+  	    typemap2 = """
+%stypemap(argout) (int %s,double* %s){
+  PyArrayObject* pyarray; 
+  pyarray =   (PyArrayObject*)PyArray_FromDims(1, &$1, PyArray_DOUBLE);
+  int n = $1;  
+  double* d = $2; 
+  for (int i=0; i<n; i++) {
+    *(double*)(pyarray->data + pyarray->strides[0]*(i)) = d[i];
+  }
+  $result = (PyObject*)pyarray; 
+}
+""" % ('%',n,array)
+            typemaps += typemap2
+
     
         f = open(self.ifile_name, 'w')
         f.write("""
@@ -268,10 +326,9 @@ void f()
 %%{
 """ % self.module)
         for header in self.headers:
-            f.write("   #include <%s>\n" % header)
+            f.write("#include <%s>\n" % header)
         f.write("""
 #include <iostream>
-
 %s
 
 %%}
@@ -280,9 +337,9 @@ void f()
 %s
 %%}
 
-
+%s
 %s;
-    """ % (self.code, self.init_code, func_name))
+    """ % (self.code, self.init_code, typemaps, func_name))
         f.close()
         if VERBOSE > 0:
             print '... Done'
