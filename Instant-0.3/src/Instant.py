@@ -15,100 +15,10 @@ double sum(double a, double b){
   return a+b;
 }
 \"\"\"
->>> ext.create_extension(code=c_code,
-                     module='test1_ext')
+>>> ext.create_extension(code=c_code, module='test1_ext')
 >>> from test1_ext import sum  
 >>> print sum(3.7, 4.8)
 8.5
-
-Another example (see test3.py): 
->>> import Instant  
->>> import Numeric
->>> import sys
->>> import time
->>>
->>> ext = Instant.Instant()
->>>
->>> c_code = \"\"\"
->>>void sum(int n1, double* array1, int n2, double* array2, int n3, double* array3){
->>>  for (int i=0; i<n1; i++) {  
->>>    array3[i] = array1[i] + array2[i]; 
->>>  }
->>>}
->>>\"\"\"
->>>
->>> ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
->>>          include_dirs=[sys.prefix + "/include/python" 
->>>                       + sys.version[:3] + "/Numeric"],
->>>          init_code='import_array();', module='test3_ext', 
->>>          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
->>>
->>> from test3_ext import sum 
->>> a = Numeric.arange(10000); a = Numeric.sin(a)
->>> b = Numeric.arange(10000); b = Numeric.cos(b)
->>> c = Numeric.arange(10000); c = Numeric.cos(c)
->>>
->>>sum(a,b,c)
-   
-
-Yet another example (see test2.py) :
-
->>> import Instant 
->>> import Numeric
->>> a = Numeric.arange(1000000)
->>> a = Numeric.sin(a)
->>> b = Numeric.arange(1000000)
->>> b = Numeric.cos(b)
->>> s = 
-\"\"\"
-PyObject* add(PyObject* a_, PyObject* b_){
-  /*
-  various checks
-  */ 
-  PyArrayObject* a=(PyArrayObject*) a_;
-  PyArrayObject* b=(PyArrayObject*) b_;
-
-  int n = a->dimensions[0];
-
-  int dims[1];
-  dims[0] = n; 
-  PyArrayObject* ret;
-  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
-
-  int i;
-  double aj;
-  double bj;
-  double *retj; 
-  for (i=0; i < n; i++) {
-    retj = (double*)(ret->data+ret->strides[0]*i); 
-    aj = *(double *)(a->data+ a->strides[0]*i);
-    bj = *(double *)(b->data+ b->strides[0]*i);
-    *retj = aj + bj; 
-  }
-return PyArray_Return(ret);
-}
-\"\"\"
->>> ext = Instant.Instant() 
->>> ext.create_extension(code=s, headers=["arrayobject.h"],
-              include_dirs=["-I/usr/include/python2.4/Numeric"],
-              init_code='import_array();', module="test2_ext"
-              )
->>> import time
->>> import test2_ext 
->>> t1 = time.time() 
->>> d = test2_ext.add(a,b)
->>> t2 = time.time()
->>> print 'With Instant:',t2-t1,'seconds'
-With Instant: 0.0758290290833 seconds
->>> t1 = time.time() 
->>> c = a+b
->>> t2 = time.time()
->>> print 'Med numpy: ',t2-t1,'seconds'
-Med numpy:  0.0843679904938 seconds
->>> difference = c - d 
->>> sum = reduce( lambda a,b: a+b, difference)  
->>> print sum 
-0.0
 """
 
 
@@ -137,6 +47,7 @@ void f()
     library_dirs = []
     cppargs      = ''
     object_files = []
+    arrays       = []
 
     def __init__(self):
         """ For now, empty! """

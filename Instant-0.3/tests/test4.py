@@ -9,7 +9,8 @@ ext = Instant.Instant()
 
 
 c_code = """
-void sum(int n1, int* p1, double* array1, 
+/* add function for matrices with all safety checks removed ..*/ 
+void add(int n1, int* p1, double* array1, 
          int n2, int* p2, double* array2, 
          int n3, int* p3, double* array3){
 
@@ -32,23 +33,23 @@ ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
                     ['n2', 'p2', 'array2'],
                     ['n3', 'p3', 'array3']])
 
-from test4_ext import sum 
+from test4_ext import add 
 a = N.arange(1000000); a = N.sin(a); a.shape=(1000,1000)
 b = N.arange(1000000); b = N.cos(b); b.shape=(1000,1000)
 c = N.arange(1000000); c = N.cos(c); c.shape=(1000,1000)
 
 t1 = time.time() 
-sum(a,b,c)
+add(a,b,c)
 t2 = time.time()
-print 'With Instant:',t2-t1,'seconds'
 
-t1 = time.time() 
+t3 = time.time() 
 d = a+b
-t2 = time.time()
-print 'Med numpy:   ',t2-t1,'seconds'
+t4 = time.time()
 
 difference = abs(d - c) 
 sum = reduce( lambda a,b: a+b, difference)  
 print "The difference between the arrays computed by numpy and instant is " + str(sum) 
 
+print 'With Instant:',t2-t1,'seconds'
+print 'Med numpy:   ',t4-t3,'seconds'
 

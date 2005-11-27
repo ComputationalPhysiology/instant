@@ -41,124 +41,25 @@
 <!-- =========== START OF MODULE DESCRIPTION =========== -->
 <h2 class="module">Module Instant</h2>
 
-<pre class="literalblock">
-By using the class Instant a Python extension module can
-be created at runtime. For the user, it behaves somewhat like
-an inline module, except you have to import the module manually.
-
-The code can be either C or C++, but like when programming C or C++,
-it has to be inside a function or a similar C/C++ construct.
-
+<p>By using the class Instant a Python extension module can be created at 
+runtime. For the user, it behaves somewhat like an inline module, except 
+you have to import the module manually.</p>
+<p>The code can be either C or C++, but like when programming C or C++, 
+it has to be inside a function or a similar C/C++ construct.</p>
 A simple example: (see test1.py)
-
-&gt;&gt;&gt; import Instant,os  
-&gt;&gt;&gt; ext = Instant.Instant()
-&gt;&gt;&gt; c_code = &quot;&quot;&quot;
-double sum(double a, double b){
+<pre class="doctestblock">
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> Instant,os  
+<span class="py-prompt">&gt;&gt;&gt; </span>ext = Instant.Instant()
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;</span>
+<span class="py-output">double sum(double a, double b){
   return a+b;
 }
-&quot;&quot;&quot;
-&gt;&gt;&gt; ext.create_extension(code=c_code,
-                     module='test1_ext')
-&gt;&gt;&gt; from test1_ext import sum  
-&gt;&gt;&gt; print sum(3.7, 4.8)
-8.5
+&quot;&quot;&quot;</span>
 
-Another example (see test3.py): 
-&gt;&gt;&gt;import Instant  
-&gt;&gt;&gt;import Numeric
-&gt;&gt;&gt;import sys
-&gt;&gt;&gt;import time
-&gt;&gt;&gt;
-&gt;&gt;&gt;ext = Instant.Instant()
-&gt;&gt;&gt;
-&gt;&gt;&gt;c_code = &quot;&quot;&quot;
-&gt;&gt;&gt;void sum(int n1, double* array1, int n2, double* array2, int n3, double* array3){
-&gt;&gt;&gt;  int i; 
-&gt;&gt;&gt;  double ret; 
-&gt;&gt;&gt;  for (int i=0; i&lt;n1; i++) {  
-&gt;&gt;&gt;    array3[i] = array1[i] + array2[i]; 
-&gt;&gt;&gt;  }
-&gt;&gt;&gt;}
-&gt;&gt;&gt;&quot;&quot;&quot;
-&gt;&gt;&gt;
-&gt;&gt;&gt;ext.create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], cppargs='-g',
-&gt;&gt;&gt;          include_dirs=[sys.prefix + &quot;/include/python&quot; 
-&gt;&gt;&gt;                       + sys.version[:3] + &quot;/Numeric&quot;],
-&gt;&gt;&gt;          init_code='import_array();', module='test3_ext', 
-&gt;&gt;&gt;          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
-&gt;&gt;&gt;
-&gt;&gt;&gt;from test3_ext import sum 
-&gt;&gt;&gt;n = 10; 
-&gt;&gt;&gt;a = Numeric.arange(10000)
-&gt;&gt;&gt;a = Numeric.sin(a)
-&gt;&gt;&gt;b = Numeric.arange(10000)
-&gt;&gt;&gt;b = Numeric.cos(b)
-&gt;&gt;&gt;c = Numeric.arange(10000)
-&gt;&gt;&gt;c = Numeric.cos(c)
-&gt;&gt;&gt;
-&gt;&gt;&gt;sum(a,b,c)
-   
-
-Yet another example (see test2.py) :
-
-&gt;&gt;&gt; import Instant 
-&gt;&gt;&gt; import Numeric
-&gt;&gt;&gt; a = Numeric.arange(1000000)
-&gt;&gt;&gt; a = Numeric.sin(a)
-&gt;&gt;&gt; b = Numeric.arange(1000000)
-&gt;&gt;&gt; b = Numeric.cos(b)
-&gt;&gt;&gt; s = 
-&quot;&quot;&quot;
-PyObject* add(PyObject* a_, PyObject* b_){
-  /*
-  various checks
-  */ 
-  PyArrayObject* a=(PyArrayObject*) a_;
-  PyArrayObject* b=(PyArrayObject*) b_;
-
-  int n = a-&gt;dimensions[0];
-
-  int dims[1];
-  dims[0] = n; 
-  PyArrayObject* ret;
-  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
-
-  int i;
-  double aj;
-  double bj;
-  double *retj; 
-  for (i=0; i &lt; n; i++) {
-    retj = (double*)(ret-&gt;data+ret-&gt;strides[0]*i); 
-    aj = *(double *)(a-&gt;data+ a-&gt;strides[0]*i);
-    bj = *(double *)(b-&gt;data+ b-&gt;strides[0]*i);
-    *retj = aj + bj; 
-  }
-return PyArray_Return(ret);
-}
-&quot;&quot;&quot;
-&gt;&gt;&gt; ext = Instant.Instant() 
-&gt;&gt;&gt; ext.create_extension(code=s, headers=[&quot;arrayobject.h&quot;],
-              include_dirs=[&quot;-I/usr/include/python2.4/Numeric&quot;],
-              init_code='import_array();', module=&quot;test2_ext&quot;
-              )
-&gt;&gt;&gt; import time
-&gt;&gt;&gt; import test2_ext 
-&gt;&gt;&gt; t1 = time.time() 
-&gt;&gt;&gt; d = test2_ext.add(a,b)
-&gt;&gt;&gt; t2 = time.time()
-&gt;&gt;&gt; print 'With Instant:',t2-t1,'seconds'
-With Instant: 0.0758290290833 seconds
-&gt;&gt;&gt; t1 = time.time() 
-&gt;&gt;&gt; c = a+b
-&gt;&gt;&gt; t2 = time.time()
-&gt;&gt;&gt; print 'Med numpy: ',t2-t1,'seconds'
-Med numpy:  0.0843679904938 seconds
-&gt;&gt;&gt; difference = c - d 
-&gt;&gt;&gt; sum = reduce( lambda a,b: a+b, difference)  
-&gt;&gt;&gt; print sum 
-0.0
-</pre>
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span>ext.create_extension(code=c_code, module=<span class="py-string">'test1_ext'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> test1_ext <span class="py-keyword">import</span> sum  
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> sum(3.7, 4.8)</span>
+<span class="py-output">8.5</span></pre>
 <hr/>
 
 <!-- =========== START OF CLASSES =========== -->
@@ -237,7 +138,7 @@ Med numpy:  0.0843679904938 seconds
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sat Nov 26 22:43:27 2005</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sun Nov 27 15:33:44 2005</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>

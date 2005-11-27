@@ -67,9 +67,9 @@ double sum(double a, double b){
 &gt;&gt;&gt; 
 &gt;&gt;&gt; # create the wrapper code, compile and link it to a shared library 
 &gt;&gt;&gt; ext.create_extension(code=c_code, module='test1_ext')
-&gt;&gt;&gt; from test1_ext import sum  
 &gt;&gt;&gt; 
 &gt;&gt;&gt; # use the C code  
+&gt;&gt;&gt; from test1_ext import sum  
 &gt;&gt;&gt; print sum(3.7, 4.8) 
 8.5
 </pre>
@@ -84,28 +84,31 @@ Example with NumPy arrays converted to C double arrays:
 &gt;&gt;&gt; ext = Instant.Instant()
 &gt;&gt;&gt;
 &gt;&gt;&gt; c_code = &quot;&quot;&quot;
-&gt;&gt;&gt;void sum(int n1, double* array1, int n2, double* array2, int n3, double* array3){
-&gt;&gt;&gt;  for (int i=0; i&lt;n1; i++) {  
-&gt;&gt;&gt;    array3[i] = array1[i] + array2[i]; 
-&gt;&gt;&gt;  }
-&gt;&gt;&gt;}
+/* add function for vectors with all safety checks removed ..*/ 
+void add(int n1, double* array1, int n2, double* array2, int n3, double* array3){
+  for (int i=0; i&lt;n1; i++) {  
+     array3[i] = array1[i] + array2[i]; 
+  }
+}
 &gt;&gt;&gt;&quot;&quot;&quot;
 &gt;&gt;&gt;
-&gt;&gt;&gt; ext.create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], cppargs='-g',
-&gt;&gt;&gt;          include_dirs=[sys.prefix + &quot;/include/python&quot; 
-&gt;&gt;&gt;                       + sys.version[:3] + &quot;/Numeric&quot;],
+&gt;&gt;&gt; ext.create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], 
+&gt;&gt;&gt;          include_dirs=[sys.prefix + &quot;/include/python&quot;  + sys.version[:3] + &quot;/Numeric&quot;],
 &gt;&gt;&gt;          init_code='import_array();', module='test3_ext', 
 &gt;&gt;&gt;          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
 &gt;&gt;&gt;
-&gt;&gt;&gt; from test3_ext import sum 
-&gt;&gt;&gt;
+&gt;&gt;&gt; from test3_ext import add 
 &gt;&gt;&gt; a = Numeric.arange(10000); a = Numeric.sin(a)
 &gt;&gt;&gt; b = Numeric.arange(10000); b = Numeric.cos(b)
 &gt;&gt;&gt; c = Numeric.arange(10000); c = Numeric.cos(c)
 &gt;&gt;&gt;
-&gt;&gt;&gt; sum(a,b,c)
- 
+&gt;&gt;&gt;add(a,b,c)
 </pre>
+On my machine, the above example is almost twice as fast as 
+using the add operator implemented in NumPy. This comparison
+is of course not fair, since there are no safety checks in the 
+above example. The comparison is implemented in the file test3.py 
+that comes with the Instant package. 
 
 
 
