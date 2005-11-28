@@ -1,4 +1,7 @@
 
+0.3 
+Added support for NumPy arrays
+
 0.2
 Minor bug fix in setup.py.
 
