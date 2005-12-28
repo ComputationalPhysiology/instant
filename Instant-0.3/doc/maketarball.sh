@@ -1,5 +1,6 @@
 #!/bin/sh
 
+rm Instant-0.3.tar.gz
 files=`find  ../../Instant-0.3 -type f| grep -v svn` 
 #echo $files 
 tar -cf Instant-0.3.tar $files  

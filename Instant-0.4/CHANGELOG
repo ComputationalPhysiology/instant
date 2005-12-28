@@ -1,0 +1,14 @@
+0.4
+Added md5sum to avoid unnecessary compilation 
+
+0.3
+Support for NumPy arrays 
+
+0.2
+Fixed bug in setup script
+
+0.1
+Initial release of Instant
+
+
+Kent-Andre Mardal
