@@ -276,6 +276,10 @@ void f()
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
     
     def check_md5sum(self): 
+        """ 
+        Check if the md5sum of the generated interface file has changed since the last
+        time the module was compiled. If it has changed then recompilation is necessary.  
+        """ 
         if (os.path.isfile(self.module+".md5")):
             pipe = os.popen("md5sum " + self.ifile_name)  
             current_md5sum = pipe.readline() 
