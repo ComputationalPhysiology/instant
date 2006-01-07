@@ -37,13 +37,14 @@ from test4_ext import add
 a = N.arange(4000000); a = N.sin(a); a.shape=(2000,2000)
 b = N.arange(4000000); b = N.cos(b); b.shape=(2000,2000)
 c = N.arange(4000000); c = N.cos(c); c.shape=(2000,2000)
+d = N.arange(4000000); d = N.cos(d); d.shape=(2000,2000)
 
 t1 = time.time() 
 add(a,b,c)
 t2 = time.time()
 
 t3 = time.time() 
-d = a+b
+N.add(a,b,d)
 t4 = time.time()
 
 difference = abs(d - c) 

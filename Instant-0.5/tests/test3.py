@@ -26,6 +26,7 @@ from test3_ext import add
 a = Numeric.arange(10000000); a = Numeric.sin(a)
 b = Numeric.arange(10000000); b = Numeric.cos(b)
 c = Numeric.arange(10000000); c = Numeric.cos(c)
+d = Numeric.arange(10000000); d = Numeric.cos(d)
 
 
 
@@ -35,7 +36,7 @@ t2 = time.time()
 print 'With Instant:',t2-t1,'seconds'
 
 t1 = time.time() 
-d=a+b
+Numeric.add(a,b,d)
 t2 = time.time()
 print 'Med numpy:   ',t2-t1,'seconds'
 
