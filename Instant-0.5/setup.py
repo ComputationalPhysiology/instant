@@ -6,7 +6,7 @@ setup(name="Instant", version='0.5',
       description="Instant Inlining of C/C++ in Python", 
       author="Magne Westlie and Kent-Andre Mardal", 
       author_email ="magnew@simula.no, kent-and@simula.no", 
-      url="http://sourceforge.net/projects/pyinstant", 
+      url="http://pyinstant.sf.net", 
       package_dir={'': 'src' }, 
       py_modules=['Instant'])
 
