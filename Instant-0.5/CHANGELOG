@@ -1,3 +1,6 @@
+0.5 
+Added SWIG directors for cross language inheritance
+
 0.4
 Added md5sum to avoid unnecessary compilation 
 
