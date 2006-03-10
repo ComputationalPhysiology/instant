@@ -22,7 +22,7 @@ double sum(double a, double b){
 """
 
 
-import os, sys
+import os, sys,re
 
 
 VERBOSE = 0
@@ -204,8 +204,10 @@ void f()
         if VERBOSE > 0:
             print "\nGenerating interface file \'"+ self.ifile_name +"\':"
     
+
         func_name = self.code[:self.code.index(')')+1]
-	
+
+
         typemaps = "" 
 	if (len(self.arrays) > 0): 
           for a in self.arrays:  
@@ -251,7 +253,9 @@ void f()
     
         f = open(self.ifile_name, 'w')
         f.write("""
-%%module %s
+%%module (directors="1") %s
+
+%%feature("director");
 
 %%{
 """ % self.module)
@@ -263,13 +267,15 @@ void f()
 
 %%}
 
+%%feature("autodoc", "1");
+
 %%init%%{
 %s
 %%}
 
 %s
 %s;
-    """ % (self.code, self.init_code, typemaps, func_name))
+    """ % (self.code, self.init_code, typemaps, self.code))
         f.close()
         if VERBOSE > 0:
             print '... Done'
@@ -309,13 +315,14 @@ from distutils.core import setup, Extension
 name = '%s' 
 swig_cmd ='swig -python -c++ %s %s'
 os.system(swig_cmd)
-sources = ['%s'] 
+sources = %s 
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
-                     include_dirs=%s)])  
+                     include_dirs=%s, 
+                     library_dirs=%s, libraries=%s)])  
 	""" % (self.module, self.swigopts, self.ifile_name, 
-	       list2str(self.cppsrcs), 
-	       self.module, self.module, self.include_dirs ))   
+	       self.cppsrcs, 
+	       self.module, self.module, self.include_dirs, self.library_dirs, self.libraries ))   
 	f.close()
 
 
