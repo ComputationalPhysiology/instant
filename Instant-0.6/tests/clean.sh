@@ -1,6 +1,6 @@
 #!/bin/sh  -x 
 
-rm   *ext* 
+rm  -rf  *ext* 
 rm -rf build 
 rm *pyc 
 

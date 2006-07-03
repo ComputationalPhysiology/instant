@@ -64,11 +64,10 @@ double sum(double a, double b){
    return a+b; 
 }
 &quot;&quot;&quot;
-&gt;&gt;&gt; import Instant  
-&gt;&gt;&gt; ext = Instant.Instant()
+&gt;&gt;&gt; from Instant import create_extension  
 &gt;&gt;&gt; 
 &gt;&gt;&gt; # create the wrapper code, compile and link it to a shared library 
-&gt;&gt;&gt; ext.create_extension(code=c_code, module='test1_ext')
+&gt;&gt;&gt; create_extension(code=c_code, module='test1_ext')
 &gt;&gt;&gt; 
 &gt;&gt;&gt; # use the C code  
 &gt;&gt;&gt; from test1_ext import sum  
@@ -78,12 +77,11 @@ double sum(double a, double b){
 
 Example with NumPy arrays converted to C double arrays:
 <pre>
-&gt;&gt;&gt; import Instant  
+&gt;&gt;&gt; from Instant import create_extension  
 &gt;&gt;&gt; import Numeric
 &gt;&gt;&gt; import sys
 &gt;&gt;&gt; import time
 &gt;&gt;&gt;
-&gt;&gt;&gt; ext = Instant.Instant()
 &gt;&gt;&gt;
 &gt;&gt;&gt; c_code = &quot;&quot;&quot;
 /* add function */ 
@@ -94,7 +92,7 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 }
 &gt;&gt;&gt;&quot;&quot;&quot;
 &gt;&gt;&gt;
-&gt;&gt;&gt; ext.create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], 
+&gt;&gt;&gt; create_extension(code=c_code, headers=[&quot;arrayobject.h&quot;], 
 &gt;&gt;&gt;          include_dirs=[sys.prefix + &quot;/include/python&quot;  + sys.version[:3] + &quot;/Numeric&quot;],
 &gt;&gt;&gt;          init_code='import_array();', module='test3_ext', 
 &gt;&gt;&gt;          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
@@ -123,7 +121,9 @@ Python 2.3 and 2.4 and SWIG 1.3.24. It only runs on Unix systems.
 
 <h2>Related Projects</h2>
 The <a href="http://www.scipy.org/documentation/weave">weave</a> module
-in <a href="http://www.scipy.org">SciPy</a>
+in <a href="http://www.scipy.org">SciPy</a> <br>
+The <a href="http://pyinline.sourceforge.net/">PyInline</a> module <br>
+The <a href="http://nz.cosc.canterbury.ac.nz/~greg/python/Pyrex/version/Doc/About.html">PyRex</a> module 
 
 
 </p><hr>
