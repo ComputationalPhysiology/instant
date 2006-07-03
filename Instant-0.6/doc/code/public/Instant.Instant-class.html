@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Instant.Instant</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+</head>
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="Instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          <a class="navbar" target="_top" href="http://pypde.simula.no/Instant">Instant</a>
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <font size="-1"><b class="breadcrumbs">
+        <a href="Instant-module.html">Module&nbsp;Instant</a> ::
+        Class&nbsp;Instant
+      </b></font></br>
+    </td>
+    <td><table cellpadding="0" cellspacing="0">
+      <tr><td align="right"><font size="-2">[<a href="../private/Instant.Instant-class.html">show&nbsp;private</a>&nbsp;|&nbsp;hide&nbsp;private]</font></td></tr>
+      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="Instant.Instant-class.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
+    </table></td>
+</tr></table>
+
+<!-- =========== START OF CLASS DESCRIPTION =========== -->
+<h2 class="class">Class Instant</h2>
+
+<hr/>
+
+
+<!-- =========== START OF METHOD SUMMARY =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Method Summary</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#__init__" class="summary-sig-name"><code>__init__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+For now, empty!</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#check_md5sum" class="summary-sig-name"><code>check_md5sum</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Check if the md5sum of the generated interface file has changed since 
+the last time the module was compiled.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#clean" class="summary-sig-name"><code>clean</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Clean up files the current session.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#create_extension" class="summary-sig-name"><code>create_extension</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class="summary-sig-kwarg">**args</span>)</span></code>
+<br />
+Call this function to instantly create an extension module.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#debug" class="summary-sig-name"><code>debug</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+print out all instance variable</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#generate_Interfacefile" class="summary-sig-name"><code>generate_Interfacefile</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Use this function to generate a SWIG interface file.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#generate_Makefile" class="summary-sig-name"><code>generate_Makefile</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Generates a project dependent Makefile, which includes and uses SWIG's 
+own Makefile to create an extension module of the supplied C/C++ 
+code.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#generate_setup" class="summary-sig-name"><code>generate_setup</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Generates a setup.py file</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant.Instant-class.html#parse_args" class="summary-sig-name"><code>parse_args</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>dict</span>)</span></code>
+<br />
+A method for parsing arguments.</td></tr>
+</table><br />
+
+
+<!-- =========== START OF CLASS VARIABLE SUMMARY =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Class Variable Summary</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#arrays"><code>arrays</code></a></b> = <span title="[]"><code>[]                                              </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>str</code></font></td>
+<td><b><a href="Instant.Instant-class.html#code"><code>code</code></a></b> = <span title="'\nvoid f()\n{\n  printf(&quot;No code supplied!\\n&quot;);\n}'"><code><span class="variable-quote">'</span>\nvoid&nbsp;f()\n{\n&nbsp;&nbsp;printf(&quot;No&nbsp;code&nbsp;supplied!\\n&quot;);<span class="variable-ellipsis">...</span></code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>str</code></font></td>
+<td><b><a href="Instant.Instant-class.html#cppargs"><code>cppargs</code></a></b> = <span title="''"><code><span class="variable-quote">'</span><span class="variable-quote">'</span>                                             </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>int</code></font></td>
+<td><b><a href="Instant.Instant-class.html#gen_setup"><code>gen_setup</code></a></b> = <span title="1">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#headers"><code>headers</code></a></b> = <span title="[]"><code>[]                                             </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#include_dirs"><code>include_dirs</code></a></b> = <span title="['-I.']"><code>['-I.']                                   </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>str</code></font></td>
+<td><b><a href="Instant.Instant-class.html#init_code"><code>init_code</code></a></b> = <span title="'  //Code for initialisation here'"><code><span class="variable-quote">'</span>&nbsp;&nbsp;//Code&nbsp;for&nbsp;initialisation&nbsp;here<span class="variable-quote">'</span>           </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#libraries"><code>libraries</code></a></b> = <span title="[]"><code>[]                                           </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#library_dirs"><code>library_dirs</code></a></b> = <span title="[]"><code>[]                                        </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>str</code></font></td>
+<td><b><a href="Instant.Instant-class.html#module"><code>module</code></a></b> = <span title="'instant_swig_module'"><code><span class="variable-quote">'</span>instant_swig_module<span class="variable-quote">'</span>                           </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#object_files"><code>object_files</code></a></b> = <span title="[]"><code>[]                                        </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>list</code></font></td>
+<td><b><a href="Instant.Instant-class.html#sources"><code>sources</code></a></b> = <span title="[]"><code>[]                                             </code>
+</span></td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1"><code>str</code></font></td>
+<td><b><a href="Instant.Instant-class.html#swigopts"><code>swigopts</code></a></b> = <span title="'-I.'"><code><span class="variable-quote">'</span>-I.<span class="variable-quote">'</span>                                         </code>
+</span></td></tr>
+</table><br />
+
+
+<!-- =========== START OF METHOD DETAILS =========== -->
+<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="details">
+  <th colspan="2">Method Details</th></tr>
+</table>
+
+<a name="__init__"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">__init__</span>(<span class=sig-arg>self</span>)</span>
+    <br /><i>(Constructor)</i>
+  </h3>
+  For now, empty!
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="check_md5sum"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">check_md5sum</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Check if the md5sum of the generated interface file has changed 
+  since the last time the module was compiled. If it has changed then 
+  recompilation is necessary.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="clean"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">clean</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Clean up files the current session.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="create_extension"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">create_extension</span>(<span class=sig-arg>self</span>,
+          <span class="sig-kwarg">**args</span>)</span>
+  </h3>
+  Call this function to instantly create an extension module. SWIG is 
+  used to generate code that can be compiled and used as an ordinary 
+  Python module.
+  <h1 class="heading">Arguments:</h1>
+    <ul>
+      <li>
+        <b>code</b>:
+        <ul>
+          <li>
+            A Python string containing C or C++ function, class, 
+            ....
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>module</b>:
+        <ul>
+          <li>
+            The name you want for the module (Default is 
+            'instant_swig_module'.). String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>swigopts</b>:
+        <ul>
+          <li>
+            Options to swig, for instance <code>-lpointers.i</code> to 
+            include the SWIG pointers.i library. String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>init_code</b>:
+        <ul>
+          <li>
+            Code that should be executed when the Instant extension is 
+            imported. String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>headers</b>:
+        <ul>
+          <li>
+            A list of header files required by the Instant code.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>include_dirs</b>:
+        <ul>
+          <li>
+            A list of directories to search for header files.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>sources</b>:
+        <ul>
+          <li>
+            A list of source files to compile and link with the 
+            extension.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>cppargs</b>:
+        <ul>
+          <li>
+            Flags like <code>-D</code>, <code>-U</code>, etc. 
+            String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>libraries</b>:
+        <ul>
+          <li>
+            A list of libraries needed by the Instant extension.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>library_dirs</b>:
+        <ul>
+          <li>
+            A list of directories to search for libraries 
+            (<code>-l</code>).
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>object_files</b>:
+        <ul>
+          <li>
+            If you want to compile the files yourself. NOT YET 
+            SUPPORTED.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>arrays</b>:
+        <ul>
+          <li>
+            A list of the C arrays to be made from NumPy arrays.
+          </li>
+        </ul>
+      </li>
+    </ul>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="debug"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">debug</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  print out all instance variable
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="generate_Interfacefile"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">generate_Interfacefile</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>Use this function to generate a SWIG interface file.</p>
+  To generate an interface file it uses the following 
+  class-variables:
+  <ul>
+    <li>
+      code
+    </li>
+    <li>
+      ifile_name (The SWIG input file)
+    </li>
+    <li>
+      init_code (Code to put in the init section of the interface 
+      file)
+    </li>
+    <li>
+      headers (A list of headers with declarations needed)
+    </li>
+  </ul>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="generate_Makefile"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">generate_Makefile</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Generates a project dependent Makefile, which includes and uses 
+  SWIG's own Makefile to create an extension module of the supplied C/C++ 
+  code.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="generate_setup"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">generate_setup</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Generates a setup.py file
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="parse_args"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">parse_args</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>dict</span>)</span>
+  </h3>
+  A method for parsing arguments.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+<br />
+
+
+<!-- =========== START OF CLASS VARIABLE DETAILS =========== -->
+<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="details">
+  <th colspan="2">Class Variable Details</th></tr>
+</table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="arrays"></a>
+<h3>arrays</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="code"></a>
+<h3>code</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>str</code>
+
+      </dd>
+<span title="'\nvoid f()\n{\n  printf(&quot;No code supplied!\\n&quot;);\n}'">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+<span class="variable-quote">'''</span>
+void f()
+{
+  printf(&quot;No code supplied!\
+&quot;);
+}<span class="variable-quote">'''</span>                                                                   </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="cppargs"></a>
+<h3>cppargs</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>str</code>
+
+      </dd>
+<span title="''">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+<span class="variable-quote">'</span><span class="variable-quote">'</span>                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="gen_setup"></a>
+<h3>gen_setup</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>int</code>
+
+      </dd>
+<span title="1">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="headers"></a>
+<h3>headers</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="include_dirs"></a>
+<h3>include_dirs</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="['-I.']">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+['-I.']                                                                </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="init_code"></a>
+<h3>init_code</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>str</code>
+
+      </dd>
+<span title="'  //Code for initialisation here'">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+<span class="variable-quote">'</span>  //Code for initialisation here<span class="variable-quote">'</span>                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="libraries"></a>
+<h3>libraries</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="library_dirs"></a>
+<h3>library_dirs</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="module"></a>
+<h3>module</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>str</code>
+
+      </dd>
+<span title="'instant_swig_module'">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+<span class="variable-quote">'</span>instant_swig_module<span class="variable-quote">'</span>                                                  </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="object_files"></a>
+<h3>object_files</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="sources"></a>
+<h3>sources</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>list</code>
+
+      </dd>
+<span title="[]">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+[]                                                                     </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<table width="100%" class="var-details" bgcolor="#e0e0e0"><tr><td>
+<a name="swigopts"></a>
+<h3>swigopts</h3>
+<dl>
+  <dt></dt>
+  <dd>
+    <dl>
+      <dt><b>Type:</b></dt>
+      <dd>
+          <code>str</code>
+
+      </dd>
+<span title="'-I.'">      <dt><b>Value:</b></dt>
+      <dd><table><tr><td>
+<pre class="variable">
+<span class="variable-quote">'</span>-I.<span class="variable-quote">'</span>                                                                  </pre>
+        </td></tr></table></dd>
+</span>    </dl>
+  </dd>
+</dl></td></tr></table>
+<br />
+
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="Instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          <a class="navbar" target="_top" href="http://pypde.simula.no/Instant">Instant</a>
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Fri Mar 10 19:14:17 2006</font></td>
+    <td align="right"><a href="http://epydoc.sourceforge.net"
+                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+  </tr>
+</table>
+</body>
+</html>
