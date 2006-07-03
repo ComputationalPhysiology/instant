@@ -4,7 +4,7 @@ exec python $0 ${1+"$@"}
 """#"
 
 
-import Instant 
+from Instant import create_extension 
 import Numeric,sys
 
 a = Numeric.arange(10000000)
@@ -43,9 +43,8 @@ return PyArray_Return(ret);
 }
 """
 
-ext = Instant.Instant() 
 
-ext.create_extension(code=s, headers=["arrayobject.h"],
+create_extension(code=s, headers=["arrayobject.h"],
               include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
               init_code='import_array();', module="test2_ext"
               )

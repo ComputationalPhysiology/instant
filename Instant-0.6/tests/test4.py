@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import Instant  
+from Instant import create_extension  
 import Numeric as N
 import sys
 import time
 
-ext = Instant.Instant()
 
 
 c_code = """
@@ -25,7 +24,7 @@ void add(int n1, int* p1, double* array1,
 }
 """
 
-ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
+create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
           include_dirs=[sys.prefix + "/include/python" 
                        + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test4_ext', 

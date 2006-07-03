@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-import Instant  
+from Instant import create_extension  
 
-ext = Instant.Instant()
 
 c_code = """
 double sum(double a, double b){
@@ -10,7 +9,7 @@ double sum(double a, double b){
 }
 """
 
-ext.create_extension(code=c_code,
+create_extension(code=c_code,
                      module='test1_ext')
 
 from test1_ext import sum 

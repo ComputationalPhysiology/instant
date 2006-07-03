@@ -2,10 +2,9 @@
 
 import Numeric as N 
 import time
-import Instant
+from Instant import create_extension
 import sys
 
-ext = Instant.Instant() 
 
 c_code = """
 void func(int n1, double* array1, int n2, double* array2){
@@ -17,7 +16,7 @@ void func(int n1, double* array1, int n2, double* array2){
 }
 """
 
-ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
+create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
           include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test5_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2']])

@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import Instant  
+from Instant import create_extension  
 import Numeric
 import sys
 import time
 
-ext = Instant.Instant()
 
 c_code = """
 /* add function for vectors with all safety checks removed ..*/ 
@@ -17,7 +16,7 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 """
 
 
-ext.create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-O3',
+create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-O3',
           include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test3_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])

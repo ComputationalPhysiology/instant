@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-import Instant  
+from Instant import create_extension  
 
-ext = Instant.Instant()
 
 c_code = """
 class Sum { 
@@ -19,8 +18,7 @@ double use_Sum(Sum& sum, double a, double b) {
 
 """
 
-ext.create_extension(code=c_code,
-                     module='test6_ext')
+create_extension(code=c_code, module='test6_ext')
 
 from test6_ext import * 
 sum = Sum()

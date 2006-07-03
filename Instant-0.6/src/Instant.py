@@ -140,6 +140,12 @@ void f()
             print 'Nothing done!'
             return
 #        self.debug()
+        if not os.path.isdir(self.module): 
+            os.mkdir(self.module)
+        os.chdir(self.module)
+        f = open("__init__.py", 'w')
+        f.write("from %s import *"% self.module)
+        
         self.generate_Interfacefile()
 	if self.check_md5sum(): return 1 
 	if (os.system("swig -version 2> /dev/null ") == 0 ):   
@@ -383,3 +389,11 @@ def list2str(list):
     for c in ['[', ']', ',', '\'']:
         s = s.replace(c, '')
     return s
+
+
+
+def create_extension(**args):
+    ext = Instant()
+    ext.create_extension(**args)
+
+
