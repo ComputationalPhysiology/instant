@@ -160,7 +160,7 @@ void f()
                 self.generate_setup()
 	        os.system("python " + self.module + "_setup.py build_ext")
 	        os.system("python " + self.module + "_setup.py install --install-platlib=.")
-            print "Module name is \'"+self.module+"\'"
+#            print "Module name is \'"+self.module+"\'"
 	else: 
 	    raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
 
@@ -395,5 +395,30 @@ def list2str(list):
 def create_extension(**args):
     ext = Instant()
     ext.create_extension(**args)
+
+
+def inline(c_code):
+    ext = Instant()
+    func = c_code[:c_code.index('(')]
+    ret, func_name = func.split()
+    ext.create_extension(code=c_code, module="inline_ext")
+    exec("from inline_ext import %s as func_name"% func_name) 
+    return func_name
+
+
+def inline_with_numeric(c_code, **args_dict):
+    ext = Instant()
+    func = c_code[:c_code.index('(')]
+    ret, func_name = func.split()
+    ext.create_extension(code=c_code, module="inline_ext", 
+                         headers=["arrayobject.h"], cppargs='-O3',
+                         include_dirs= [sys.prefix + "/include/python" 
+                                     + sys.version[:3] + "/Numeric"],
+                         init_code='import_array();', arrays = args_dict["arrays"])
+    exec("from inline_ext import %s as func_name"% func_name) 
+    return func_name
+
+
+
 
 
