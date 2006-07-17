@@ -393,11 +393,63 @@ def list2str(list):
 
 
 def create_extension(**args):
+    """
+        This is a small wrapper around the create_extension function
+        in Instant.
+
+        Call this function to instantly create an extension module.
+        SWIG is used to generate code that can be compiled and used as
+        an ordinary Python module.
+
+        Arguments:
+        ==========
+           - B{code}:
+              - A Python string containing C or C++ function, class, ....
+           - B{module}:
+              - The name you want for the module (Default is 'instant_swig_module'.). String.
+           - B{swigopts}:
+              - Options to swig, for instance C{-lpointers.i} to include the
+                SWIG pointers.i library. String.
+           - B{init_code}:
+              - Code that should be executed when the Instant extension is imported. String.
+           - B{headers}:
+              - A list of header files required by the Instant code. 
+           - B{include_dirs}:
+              - A list of directories to search for header files.
+           - B{sources}:
+              - A list of source files to compile and link with the extension.
+           - B{cppargs}:
+              - Flags like C{-D}, C{-U}, etc. String.
+           - B{libraries}:
+              - A list of libraries needed by the Instant extension.
+           - B{library_dirs}:
+              - A list of directories to search for libraries (C{-l}).
+           - B{object_files}:
+              - If you want to compile the files yourself. NOT YET SUPPORTED.
+           - B{arrays}:
+              - A list of the C arrays to be made from NumPy arrays.
+    """ 
     ext = Instant()
     ext.create_extension(**args)
 
 
 def inline(c_code):
+    """
+       This is a short wrapper around the create_extention function 
+       in Instant. 
+       
+       It creates an extension module given that
+       the input is a valid C function. It is only possible
+       to inline one C function each time. 
+
+       Usage: 
+
+       >>> from Instant import inline
+       >>> add_func = inline("double add(double a, double b){ return a+b; }")
+       >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
+
+
+    """
     ext = Instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
@@ -407,6 +459,36 @@ def inline(c_code):
 
 
 def inline_with_numeric(c_code, **args_dict):
+    """
+       This is a short wrapper around the create_extention function 
+       in Instant. 
+       
+       It creates an extension module given that
+       the input is a valid C function. It is only possible
+       to inline one C function each time. The difference between
+       this function and the inline function is that C-arrays can be used. 
+       The following example illustrates that. 
+
+       Usage: 
+
+       >>> import Numeric
+       >>> import time
+       >>> from Instant import inline_with_numeric
+       >>> c_code = \"\"\"
+           double sum (int n1, double* array1){
+               double tmp = 0.0; 
+               for (int i=0; i<n1; i++) {  
+                   tmp += array1[i]; 
+               }
+               return tmp; 
+           }
+
+           \"\"\"
+       >>> sum_func = inline_with_numeric(c_code,  arrays = [['n1', 'array1']])
+       >>> a = Numeric.arange(10000000); a = Numeric.sin(a)
+       >>> sum_func(a)
+    """
+
     ext = Instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()

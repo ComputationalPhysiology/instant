@@ -48,6 +48,7 @@ pre {color:  #000000;
 </p><h1>Instant inlining of C/C++ code in Python</h1>
 
 <h2>News</h2>
+<b>Release 0.6 (10/03/06):</b> Cleanup of the user interface. <br>  
 <b>Release 0.5 (10/03/06):</b> Instant uses SWIG directors for cross language inheritance. <br>  
 <b>Release 0.4 (03/01/05):</b> Added md5sums to avoid unnecessary compilation. <br>  
 <b>Release 0.3 (27/11/05):</b> Instant supports NumPy arrays. <br>
@@ -71,32 +72,28 @@ Example with NumPy arrays converted to C double arrays:
 <pre>
 from Instant import inline_with_numeric
 
-# create some NumPy arrays 
-a = Numeric.arange(10000000); a = Numeric.sin(a)
-b = Numeric.arange(10000000); b = Numeric.cos(b)
-c = Numeric.arange(10000000); c = Numeric.cos(c)
-
-
-# c code for adding them 
-c_code =  &quot;&quot;&quot; 
-void add(int n1, double* array1, int n2, double* array2, int n3, double* array3){
+c_code = """
+double sum (int n1, double* array1){
+  double tmp = 0.0; 
   for (int i=0; i&lt;n1; i++) {  
-    array3[i] = array1[i] + array2[i]; 
+      tmp += array1[i]; 
   }
+  return tmp; 
 }
-&quot;&quot;&quot; 
+"""
 
-# inline the C function 
-add_func = inline_with_numeric(c_code, arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
 
-# use the C function
-add_func(a,b,c)
+sum_func = inline_with_numeric(c_code, arrays = [['n1', 'array1']])
+
+a = Numeric.arange(10000000); a = Numeric.sin(a)
+
+sum1 = sum_func(a)
 
 </pre>
-On my machine, the above example is about 4/3 faster than using the 
-add operator implemented in NumPy. This comparison
+On my machine, the above example is about twice as fast as using the 
+sum function implemented in NumPy. This comparison
 is of course not fair, since there are no safety checks in the 
-above example. The comparison is implemented in the file test3.py 
+above example. The comparison is implemented in the file test2.py 
 that comes with the Instant package. 
 
 
