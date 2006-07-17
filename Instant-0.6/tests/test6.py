@@ -27,12 +27,12 @@ void add(int n1, int* p1, double* array1,
 create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
           include_dirs=[sys.prefix + "/include/python" 
                        + sys.version[:3] + "/Numeric"],
-          init_code='import_array();', module='test4_ext', 
+          init_code='import_array();', module='test6_ext', 
           arrays = [['n1', 'p1', 'array1'],
                     ['n2', 'p2', 'array2'],
                     ['n3', 'p3', 'array3']])
 
-from test4_ext import add 
+from test6_ext import add 
 a = N.arange(4000000); a = N.sin(a); a.shape=(2000,2000)
 b = N.arange(4000000); b = N.cos(b); b.shape=(2000,2000)
 c = N.arange(4000000); c = N.cos(c); c.shape=(2000,2000)

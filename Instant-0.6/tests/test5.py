@@ -18,10 +18,10 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 
 create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-O3',
           include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
-          init_code='import_array();', module='test3_ext', 
+          init_code='import_array();', module='test5_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
 
-from test3_ext import add 
+from test5_ext import add 
 a = Numeric.arange(10000000); a = Numeric.sin(a)
 b = Numeric.arange(10000000); b = Numeric.cos(b)
 c = Numeric.arange(10000000); c = Numeric.cos(c)
