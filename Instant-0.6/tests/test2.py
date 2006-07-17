@@ -1,77 +1,38 @@
-#!/bin/sh
-""":"
-exec python $0 ${1+"$@"}
-"""#"
 
+import Numeric 
+import time
+from Instant import inline_with_numeric
 
-from Instant import create_extension 
-import Numeric,sys
-
-a = Numeric.arange(10000000)
-a = Numeric.sin(a)
-b = Numeric.arange(10000000)
-b = Numeric.cos(b)
-
-
-
-s = """
-PyObject* add(PyObject* a_, PyObject* b_){
-  /*
-  various checks
-  */ 
-  PyArrayObject* a=(PyArrayObject*) a_;
-  PyArrayObject* b=(PyArrayObject*) b_;
-
-  int n = a->dimensions[0];
-
-  int dims[1];
-  dims[0] = n; 
-  PyArrayObject* ret;
-  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
-
-  int i;
-  double aj;
-  double bj;
-  double *retj; 
-  for (i=0; i < n; i++) {
-    retj = (double*)(ret->data+ret->strides[0]*i); 
-    aj = *(double *)(a->data+ a->strides[0]*i);
-    bj = *(double *)(b->data+ b->strides[0]*i);
-    *retj = aj + bj; 
+c_code = """
+void add(int n1, double* array1, int n2, double* array2, int n3, double* array3){
+  for (int i=0; i<n1; i++) {  
+    array3[i] = array1[i] + array2[i]; 
   }
-return PyArray_Return(ret);
 }
 """
 
 
-create_extension(code=s, headers=["arrayobject.h"],
-              include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
-              init_code='import_array();', module="test2_ext"
-              )
+add_func = inline_with_numeric(c_code, arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
 
+a = Numeric.arange(10000000); a = Numeric.sin(a)
+b = Numeric.arange(10000000); b = Numeric.cos(b)
+c = Numeric.arange(10000000); c = Numeric.cos(c)
+d = Numeric.arange(10000000); d = Numeric.cos(d)
 
-import time
-import test2_ext 
 
 t1 = time.time() 
-d = test2_ext.add(a,b)
+add_func(a,b,c)
 t2 = time.time()
-
 print 'With Instant:',t2-t1,'seconds'
 
 t1 = time.time() 
-c = a+b
+Numeric.add(a,b,d)
 t2 = time.time()
-
 print 'Med numpy:   ',t2-t1,'seconds'
 
-difference = abs(c - d) 
-
+difference = abs(d - c) 
 sum = reduce( lambda a,b: a+b, difference)  
 print "The difference between the arrays computed by numpy and instant is " + str(sum) 
-
-
-
 
 
 
