@@ -1,55 +1,77 @@
-#!/usr/bin/python
-
-from Instant import create_extension  
-import Numeric as N
-import sys
-import time
+#!/bin/sh
+""":"
+exec python $0 ${1+"$@"}
+"""#"
 
 
+from Instant import create_extension 
+import Numeric,sys
 
-c_code = """
-/* add function for matrices with all safety checks removed ..*/ 
-void add(int n1, int* p1, double* array1, 
-         int n2, int* p2, double* array2, 
-         int n3, int* p3, double* array3){
+a = Numeric.arange(10000000)
+a = Numeric.sin(a)
+b = Numeric.arange(10000000)
+b = Numeric.cos(b)
 
-  for (int i=0; i<p1[0]; i++) {
-    for (int j=0; j<p1[1]; j++) {
-      *array3 = *array1 + *array2; 
-      array3++; 
-      array2++; 
-      array1++; 
-    }
+
+
+s = """
+PyObject* add(PyObject* a_, PyObject* b_){
+  /*
+  various checks
+  */ 
+  PyArrayObject* a=(PyArrayObject*) a_;
+  PyArrayObject* b=(PyArrayObject*) b_;
+
+  int n = a->dimensions[0];
+
+  int dims[1];
+  dims[0] = n; 
+  PyArrayObject* ret;
+  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
+
+  int i;
+  double aj;
+  double bj;
+  double *retj; 
+  for (i=0; i < n; i++) {
+    retj = (double*)(ret->data+ret->strides[0]*i); 
+    aj = *(double *)(a->data+ a->strides[0]*i);
+    bj = *(double *)(b->data+ b->strides[0]*i);
+    *retj = aj + bj; 
   }
+return PyArray_Return(ret);
 }
 """
 
-create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
-          include_dirs=[sys.prefix + "/include/python" 
-                       + sys.version[:3] + "/Numeric"],
-          init_code='import_array();', module='test4_ext', 
-          arrays = [['n1', 'p1', 'array1'],
-                    ['n2', 'p2', 'array2'],
-                    ['n3', 'p3', 'array3']])
 
-from test4_ext import add 
-a = N.arange(4000000); a = N.sin(a); a.shape=(2000,2000)
-b = N.arange(4000000); b = N.cos(b); b.shape=(2000,2000)
-c = N.arange(4000000); c = N.cos(c); c.shape=(2000,2000)
-d = N.arange(4000000); d = N.cos(d); d.shape=(2000,2000)
+create_extension(code=s, headers=["arrayobject.h"],
+              include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
+              init_code='import_array();', module="test2_ext"
+              )
+
+
+import time
+import test2_ext 
 
 t1 = time.time() 
-add(a,b,c)
+d = test2_ext.add(a,b)
 t2 = time.time()
 
-t3 = time.time() 
-N.add(a,b,d)
-t4 = time.time()
+print 'With Instant:',t2-t1,'seconds'
 
-difference = abs(d - c) 
+t1 = time.time() 
+c = a+b
+t2 = time.time()
+
+print 'Med numpy:   ',t2-t1,'seconds'
+
+difference = abs(c - d) 
+
 sum = reduce( lambda a,b: a+b, difference)  
 print "The difference between the arrays computed by numpy and instant is " + str(sum) 
 
-print 'With Instant:',t2-t1,'seconds'
-print 'Med numpy:   ',t4-t3,'seconds'
+
+
+
+
 
