@@ -7,8 +7,9 @@ The code can be either C or C++, but like when programming C or C++,
 it has to be inside a function or a similar C/C++ construct.
 
 A simple example: (see test1.py)
+
 >>> from Instant import inline
->>> add_func = inline("double add(double a, double b){ return a+b; }")
+>>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
 >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
 """
@@ -474,7 +475,6 @@ def inline_with_numeric(c_code, **args_dict):
                }
                return tmp; 
            }
-
            \"\"\"
        >>> sum_func = inline_with_numeric(c_code,  arrays = [['n1', 'array1']])
        >>> a = Numeric.arange(10000000); a = Numeric.sin(a)
