@@ -16,6 +16,10 @@ A simple example: (see test1.py)
 
 
 import os, sys,re
+import commands 
+import string
+
+
 
 
 VERBOSE = 0
@@ -496,6 +500,32 @@ def inline_with_numeric(c_code, **args_dict):
                          init_code='import_array();', arrays = args_dict["arrays"])
     exec("from inline_ext import %s as func_name"% func_name) 
     return func_name
+
+
+def header_and_libs_from_pkgconfig(*packages):
+    includes = []
+    flags = []
+    libs = []
+    libdirs = []
+    for pack in packages:
+#        print commands.getstatusoutput("pkg-config --exists %s " % pack)
+        if  commands.getstatusoutput("pkg-config --exists %s " % pack)[0] == 0: 
+            tmp = string.split(commands.getoutput("pkg-config --cflags-only-I %s " % pack ))  
+            for i in tmp: includes.append(i) 
+            tmp = string.split(commands.getoutput("pkg-config --cflags-only-other %s " % pack ))  
+            for i in tmp: flags.append(i) 
+            tmp = string.split(commands.getoutput("pkg-config --libs-only-l  %s " % pack ))  
+            for i in tmp: libs.append(i[2:]) 
+            tmp = string.split(commands.getoutput("pkg-config --libs-only-L  %s " % pack ))  
+            for i in tmp: libdirs.append(i[2:]) 
+        else: 
+            # Should I throw an exception ? 
+            print "The pkg-config file %s does not exist" % pack  
+
+
+    return (includes,flags,libs, libdirs) 
+        
+
 
 
 
