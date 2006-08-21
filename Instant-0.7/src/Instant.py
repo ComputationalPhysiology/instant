@@ -503,6 +503,12 @@ def inline_with_numeric(c_code, **args_dict):
 
 
 def header_and_libs_from_pkgconfig(*packages):
+    """
+    This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file. 
+    The usage is: 
+    (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(list_of_packages)
+
+    """
     includes = []
     flags = []
     libs = []
