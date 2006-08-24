@@ -525,8 +525,7 @@ def header_and_libs_from_pkgconfig(*packages):
             tmp = string.split(commands.getoutput("pkg-config --libs-only-L  %s " % pack ))  
             for i in tmp: libdirs.append(i[2:]) 
         else: 
-            # Should I throw an exception ? 
-            print "The pkg-config file %s does not exist" % pack  
+            raise OSError, "The pkg-config file %s does not exist" % pack  
 
 
     return (includes,flags,libs, libdirs) 
