@@ -28,6 +28,9 @@ pre {color:  #000000;
 
 <tr><td bgcolor="#000000"><font color="#ffffff"><b>Global</b></font></td></tr>
 <tr><td><a href="http://www.python.org/">Python</a></td></tr>
+<tr><td><a href="http://www.numpy.org">NumPy</a></td></tr> 
+<tr><td><a href="http://www.stsci.edu/resources/software_hardware/numarray">Numarray</a></td></tr>   
+
 <tr><td><a href="http://www.swig.org/">SWIG</a></td></tr>
 <tr><td><a href="http://www.simula.no/">Simula Research Laboratory</a></td></tr>
 <tr><td></td></tr>
@@ -48,11 +51,13 @@ pre {color:  #000000;
 </p><h1>Instant inlining of C/C++ code in Python</h1>
 
 <h2>News</h2>
-<b>Release 0.7 (10/03/06):</b> Added functionality for the use of pkg-config files. <br>  
-<b>Release 0.6 (10/03/06):</b> Cleanup of the user interface. <br>  
+<b>Release 0.8 (5/10/06):</b> Added support for <a href="http://www.numpy.org">NumPy</a> 
+and <a href="http://www.stsci.edu/resources/software_hardware/numarray">Numarray</a>.   
+<b>Release 0.7 (12/09/06):</b> Added functionality for the use of pkg-config files. <br>  
+<b>Release 0.6 (17/07/06):</b> Cleanup of the user interface. <br>  
 <b>Release 0.5 (10/03/06):</b> Instant uses SWIG directors for cross language inheritance. <br>  
 <b>Release 0.4 (03/01/05):</b> Added md5sums to avoid unnecessary compilation. <br>  
-<b>Release 0.3 (27/11/05):</b> Instant supports NumPy arrays. <br>
+<b>Release 0.3 (27/11/05):</b> Instant supports Numeric arrays. <br>
 
  
 <h2>Appetizer </h2>
@@ -71,7 +76,7 @@ print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
 Example with NumPy arrays converted to C double arrays:
 <pre>
-from Instant import inline_with_numeric
+from Instant import inline_with_numpy
 
 c_code = """
 double sum (int n1, double* array1){
@@ -84,9 +89,9 @@ double sum (int n1, double* array1){
 """
 
 
-sum_func = inline_with_numeric(c_code, arrays = [['n1', 'array1']])
+sum_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']])
 
-a = Numeric.arange(10000000); a = Numeric.sin(a)
+a = numpy.arange(10000000); a = numpy.sin(a)
 
 sum1 = sum_func(a)
 
@@ -94,8 +99,10 @@ sum1 = sum_func(a)
 On my machine, the above example is about twice as fast as using the 
 sum function implemented in NumPy. This comparison
 is of course not fair, since there are no safety checks in the 
-above example. The comparison is implemented in the file test2.py 
-that comes with the Instant package. 
+above example. The comparison is implemented in the file <a href="../tests/test9.py">test9.py</a> 
+that comes with the Instant package. The old package Numeric is about
+as slow as NumPy (<a href="../tests/test2.py">test2.py</a>), while the same example with Numarray is
+about as fast as with Instant (<a href="../tests/test10.py">test10.py</a>).   
 
 
 
