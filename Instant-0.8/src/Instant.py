@@ -460,6 +460,48 @@ def inline(c_code):
     return func_name
 
 
+def inline_with_numpy(c_code, **args_dict):
+    """
+       This is a short wrapper around the create_extention function 
+       in Instant. 
+       
+       It creates an extension module given that
+       the input is a valid C function. It is only possible
+       to inline one C function each time. The difference between
+       this function and the inline function is that C-arrays can be used. 
+       The following example illustrates that. 
+
+       Usage: 
+
+       >>> import numpy
+       >>> import time
+       >>> from Instant import inline_with_numeric
+       >>> c_code = \"\"\"
+           double sum (int n1, double* array1){
+               double tmp = 0.0; 
+               for (int i=0; i<n1; i++) {  
+                   tmp += array1[i]; 
+               }
+               return tmp; 
+           }
+           \"\"\"
+       >>> sum_func = inline_with_numpy(c_code,  arrays = [['n1', 'array1']])
+       >>> a = numpy.arange(10000000); a = numpy.sin(a)
+       >>> sum_func(a)
+    """
+
+    ext = Instant()
+    func = c_code[:c_code.index('(')]
+    ret, func_name = func.split()
+    import numpy	
+    ext.create_extension(code=c_code, module="inline_ext_numpy", 
+                         headers=["arrayobject.h"], cppargs='-O3',
+                         include_dirs= ["%s/numpy"% numpy.get_include()],
+                         init_code='import_array();', arrays = args_dict["arrays"])
+    exec("from inline_ext_numpy import %s as func_name"% func_name) 
+    return func_name
+
+
 def inline_with_numeric(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
@@ -473,7 +515,7 @@ def inline_with_numeric(c_code, **args_dict):
 
        Usage: 
 
-       >>> import Numeric
+       >>> import numpy 
        >>> import time
        >>> from Instant import inline_with_numeric
        >>> c_code = \"\"\"
@@ -486,20 +528,66 @@ def inline_with_numeric(c_code, **args_dict):
            }
            \"\"\"
        >>> sum_func = inline_with_numeric(c_code,  arrays = [['n1', 'array1']])
-       >>> a = Numeric.arange(10000000); a = Numeric.sin(a)
+       >>> a = numpy.arange(10000000); a = numpy.sin(a)
        >>> sum_func(a)
     """
 
     ext = Instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
-    ext.create_extension(code=c_code, module="inline_ext", 
+    ext.create_extension(code=c_code, module="inline_ext_numeric", 
                          headers=["arrayobject.h"], cppargs='-O3',
                          include_dirs= [sys.prefix + "/include/python" 
                                      + sys.version[:3] + "/Numeric"],
                          init_code='import_array();', arrays = args_dict["arrays"])
-    exec("from inline_ext import %s as func_name"% func_name) 
+    exec("from inline_ext_numeric import %s as func_name"% func_name) 
     return func_name
+
+
+def inline_with_numarray(c_code, **args_dict):
+    """
+       This is a short wrapper around the create_extention function 
+       in Instant. 
+       
+       It creates an extension module given that
+       the input is a valid C function. It is only possible
+       to inline one C function each time. The difference between
+       this function and the inline function is that C-arrays can be used. 
+       The following example illustrates that. 
+
+       Usage: 
+
+       >>> import numarray 
+       >>> import time
+       >>> from Instant import inline_with_numarray
+       >>> c_code = \"\"\"
+           double sum (int n1, double* array1){
+               double tmp = 0.0; 
+               for (int i=0; i<n1; i++) {  
+                   tmp += array1[i]; 
+               }
+               return tmp; 
+           }
+           \"\"\"
+       >>> sum_func = inline_with_numarray(c_code,  arrays = [['n1', 'array1']])
+       >>> a = numarray.arange(10000000); a = numarray.sin(a)
+       >>> sum_func(a)
+    """
+
+    ext = Instant()
+    func = c_code[:c_code.index('(')]
+    ret, func_name = func.split()
+    ext.create_extension(code=c_code, module="inline_ext_numarray", 
+                         headers=["arrayobject.h"], cppargs='-O3',
+                         include_dirs= [sys.prefix + "/include/python" 
+                                     + sys.version[:3] + "/numarray"],
+                         init_code='import_array();', arrays = args_dict["arrays"])
+    exec("from inline_ext_numarray import %s as func_name"% func_name) 
+    return func_name
+
+
+
+
 
 
 def header_and_libs_from_pkgconfig(*packages):
