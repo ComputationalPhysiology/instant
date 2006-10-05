@@ -73,7 +73,18 @@ A simple example: (see test1.py)
 This is a small wrapper around the create_extension function in 
 Instant.</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant-module.html#header_and_libs_from_pkgconfig" class="summary-sig-name"><code>header_and_libs_from_pkgconfig</code></a>(<span class="summary-sig-vararg">*packages</span>)</span></code>
+<br />
+This function returns list of include files, flags, libraries and 
+library directories obtain from a pkgconfig file.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="Instant-module.html#inline" class="summary-sig-name"><code>inline</code></a>(<span class=summary-sig-arg>c_code</span>)</span></code>
+<br />
+This is a short wrapper around the create_extention function in 
+Instant.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant-module.html#inline_with_numarray" class="summary-sig-name"><code>inline_with_numarray</code></a>(<span class=summary-sig-arg>c_code</span>,
+          <span class="summary-sig-kwarg">**args_dict</span>)</span></code>
 <br />
 This is a short wrapper around the create_extention function in 
 Instant.</td></tr>
@@ -81,8 +92,14 @@ Instant.</td></tr>
   <td><code><span class="summary-sig"><a href="Instant-module.html#inline_with_numeric" class="summary-sig-name"><code>inline_with_numeric</code></a>(<span class=summary-sig-arg>c_code</span>,
           <span class="summary-sig-kwarg">**args_dict</span>)</span></code>
 <br />
-This is a short wrapper around the create_extention function 
-in Instant.</td></tr>
+This is a short wrapper around the create_extention function in 
+Instant.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="Instant-module.html#inline_with_numpy" class="summary-sig-name"><code>inline_with_numpy</code></a>(<span class=summary-sig-arg>c_code</span>,
+          <span class="summary-sig-kwarg">**args_dict</span>)</span></code>
+<br />
+This is a short wrapper around the create_extention function in 
+Instant.</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><a name="list2str"></a><span class="summary-sig"><span class="summary-sig-name">list2str</span>(<span class=summary-sig-arg>list</span>)</span></code>
 </td></tr>
@@ -224,6 +241,18 @@ in Instant.</td></tr>
   </dd></dl>
 </td></tr></table>
 
+<a name="header_and_libs_from_pkgconfig"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">header_and_libs_from_pkgconfig</span>(<span class="sig-vararg">*packages</span>)</span>
+  </h3>
+  This function returns list of include files, flags, libraries and 
+  library directories obtain from a pkgconfig file. The usage is: 
+  (includes, flags, libraries, libdirs) = 
+  header_and_libs_from_pkgconfig(list_of_packages)
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
 <a name="inline"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
   <h3><span class="sig"><span class="sig-name">inline</span>(<span class=sig-arg>c_code</span>)</span>
@@ -241,40 +270,101 @@ in Instant.</td></tr>
   </dd></dl>
 </td></tr></table>
 
-<a name="inline_with_numeric"></a>
+<a name="inline_with_numarray"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">inline_with_numeric</span>(<span class=sig-arg>c_code</span>,
+  <h3><span class="sig"><span class="sig-name">inline_with_numarray</span>(<span class=sig-arg>c_code</span>,
           <span class="sig-kwarg">**args_dict</span>)</span>
   </h3>
-<pre class="literalblock">
-This is a short wrapper around the create_extention function 
-in Instant. 
-
-It creates an extension module given that
-the input is a valid C function. It is only possible
-to inline one C function each time. The difference between
-this function and the inline function is that C-arrays can be used. 
-The following example illustrates that. 
-
-Usage: 
-
-&gt;&gt;&gt; import Numeric
-&gt;&gt;&gt; import time
-&gt;&gt;&gt; from Instant import inline_with_numeric
-&gt;&gt;&gt; c_code = &quot;&quot;&quot;
-    double sum (int n1, double* array1){
+  <p>This is a short wrapper around the create_extention function in 
+  Instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that 
+  C-arrays can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="doctestblock">
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numarray 
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> Instant <span class="py-keyword">import</span> inline_with_numarray
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;</span>
+<span class="py-output">double sum (int n1, double* array1){
         double tmp = 0.0; 
         for (int i=0; i&lt;n1; i++) {  
             tmp += array1[i]; 
         }
         return tmp; 
     }
+    &quot;&quot;&quot;</span>
 
-    &quot;&quot;&quot;
-&gt;&gt;&gt; sum_func = inline_with_numeric(c_code,  arrays = [['n1', 'array1']])
-&gt;&gt;&gt; a = Numeric.arange(10000000); a = Numeric.sin(a)
-&gt;&gt;&gt; sum_func(a)
-</pre>
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numarray(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numarray.arange(10000000); a = numarray.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</span></pre>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="inline_with_numeric"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">inline_with_numeric</span>(<span class=sig-arg>c_code</span>,
+          <span class="sig-kwarg">**args_dict</span>)</span>
+  </h3>
+  <p>This is a short wrapper around the create_extention function in 
+  Instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that 
+  C-arrays can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="doctestblock">
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numpy 
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> Instant <span class="py-keyword">import</span> inline_with_numeric
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;</span>
+<span class="py-output">double sum (int n1, double* array1){
+        double tmp = 0.0; 
+        for (int i=0; i&lt;n1; i++) {  
+            tmp += array1[i]; 
+        }
+        return tmp; 
+    }
+    &quot;&quot;&quot;</span>
+
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numeric(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numpy.arange(10000000); a = numpy.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</span></pre>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="inline_with_numpy"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">inline_with_numpy</span>(<span class=sig-arg>c_code</span>,
+          <span class="sig-kwarg">**args_dict</span>)</span>
+  </h3>
+  <p>This is a short wrapper around the create_extention function in 
+  Instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that 
+  C-arrays can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="doctestblock">
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numpy
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> Instant <span class="py-keyword">import</span> inline_with_numeric
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;</span>
+<span class="py-output">double sum (int n1, double* array1){
+        double tmp = 0.0; 
+        for (int i=0; i&lt;n1; i++) {  
+            tmp += array1[i]; 
+        }
+        return tmp; 
+    }
+    &quot;&quot;&quot;</span>
+
+<span class="py-src"><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numpy(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numpy.arange(10000000); a = numpy.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</span></pre>
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -328,7 +418,7 @@ Usage:
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Mon Jul 17 15:37:43 2006</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Thu Oct  5 13:24:26 2006</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>
