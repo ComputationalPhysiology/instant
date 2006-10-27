@@ -605,7 +605,7 @@ def header_and_libs_from_pkgconfig(*packages):
 #        print commands.getstatusoutput("pkg-config --exists %s " % pack)
         if  commands.getstatusoutput("pkg-config --exists %s " % pack)[0] == 0: 
             tmp = string.split(commands.getoutput("pkg-config --cflags-only-I %s " % pack ))  
-            for i in tmp: includes.append(i) 
+            for i in tmp: includes.append(i[2:]) 
             tmp = string.split(commands.getoutput("pkg-config --cflags-only-other %s " % pack ))  
             for i in tmp: flags.append(i) 
             tmp = string.split(commands.getoutput("pkg-config --libs-only-l  %s " % pack ))  
