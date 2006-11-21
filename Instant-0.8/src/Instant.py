@@ -35,16 +35,18 @@ void f()
 }"""
     gen_setup  = 1 
     module  = 'instant_swig_module'
-    swigopts     = '-I.'
-    init_code    = '  //Code for initialisation here'
-    headers      = []
-    sources      = []
-    include_dirs = ['-I.']
-    libraries    = []
-    library_dirs = []
-    cppargs      = ''
-    object_files = []
-    arrays       = []
+    swigopts      = '-I.'
+    init_code     = '  //Code for initialisation here'
+    headers       = []
+    local_headers = []
+    wrap_headers  = []
+    sources       = []
+    include_dirs  = ['-I.']
+    libraries     = []
+    library_dirs  = []
+    cppargs       = ''
+    object_files  = []
+    arrays        = []
     additional_definitions = ""
 
     def __init__(self):
@@ -66,6 +68,10 @@ void f()
                 self.sources = dict[key]
             elif key == 'headers':
                 self.headers = dict[key]
+            elif key == 'local_headers':
+                self.local_headers = dict[key]
+            elif key == 'wrap_headers':
+                self.wrap_headers = dict[key]
             elif key == 'include_dirs':
                 self.include_dirs = dict[key]
             elif key == 'libraries':
@@ -120,6 +126,10 @@ void f()
               - Code that should be executed when the Instant extension is imported. String.
            - B{headers}:
               - A list of header files required by the Instant code. 
+           - B{local_headers}:
+              - A list of local header files required by the Instant code. 
+           - B{wrap_headers}:
+              - A list of local header files that should be wrapped by SWIG.
            - B{include_dirs}:
               - A list of directories to search for header files.
            - B{sources}:
@@ -176,6 +186,8 @@ void f()
         print 'swigopts',self.swigopts
         print 'init_code',self.init_code
         print 'headers',self.headers
+        print 'local_headers',self.local_headers
+        print 'wrap_headers',self.wrap_headers
         print 'include_dirs',self.include_dirs
         print 'sources',self.sources
         print 'srcs',self.srcs
@@ -206,6 +218,8 @@ void f()
          - ifile_name (The SWIG input file)
          - init_code (Code to put in the init section of the interface file)
          - headers (A list of headers with declarations needed)
+         - local_headers (A list of local headers with declarations needed)
+         - wrap_headers (A list of local headers that will be wrapped by SWIG)
 
         """
         if VERBOSE > 0:
@@ -268,6 +282,9 @@ void f()
 """ % self.module)
         for header in self.headers:
             f.write("#include <%s>\n" % header)
+        for header in self.local_headers:
+            f.write('#include "%s"\n' % header)
+        wrap_headers_code = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
         f.write("""
 #include <iostream>
 %s
@@ -282,8 +299,9 @@ void f()
 
 %s
 %s
+%s
 %s;
-    """ % (self.code, self.init_code, self.additional_definitions, typemaps, self.code))
+    """ % (self.code, self.init_code, wrap_headers_code, self.additional_definitions, typemaps, self.code))
         f.close()
         if VERBOSE > 0:
             print '... Done'
@@ -416,6 +434,10 @@ def create_extension(**args):
               - Code that should be executed when the Instant extension is imported. String.
            - B{headers}:
               - A list of header files required by the Instant code. 
+           - B{local_headers}:
+              - A list of local header files required by the Instant code. 
+           - B{wrap_headers}:
+              - A list of local header files that will be wrapped by SWIG.
            - B{include_dirs}:
               - A list of directories to search for header files.
            - B{sources}:
