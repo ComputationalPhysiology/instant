@@ -1,3 +1,15 @@
+
+
+Release 0.9 
+Port to Windows with mingw by laserjungle, some updates
+by Martin Alnæs, and some cleanup. 
+
+Release 0.8 
+Added support for NumPy and Numarray. 
+
+Release 0.7
+Added functionality for the use of pkg-config files. 
+
 0.6
 Created a more user-friendly interface
 
