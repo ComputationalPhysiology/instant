@@ -11,12 +11,14 @@ A simple example: (see test1.py)
 >>> from Instant import inline
 >>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
 >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
+
 """
 
 
 import os, sys,re
 import commands 
 import string
+import md5
 
 
 
@@ -27,28 +29,31 @@ VERBOSE = 0
 
 class Instant:
     # Default values:
-    code         = """
+
+    def __init__(self):
+        """ Instant constructor """
+        self.code         = """
 void f()
 {
   printf("No code supplied!\\n");
 }"""
-    gen_setup  = 1 
-    module  = 'instant_swig_module'
-    swigopts     = '-I.'
-    init_code    = '  //Code for initialisation here'
-    headers      = []
-    sources      = []
-    include_dirs = ['-I.']
-    libraries    = []
-    library_dirs = []
-    cppargs      = ''
-    object_files = []
-    arrays       = []
-    additional_definitions = ""
+        self.gen_setup  = 1 
+        self.module  = 'instant_swig_module'
+        self.swigopts     = '-I.'
+        self.init_code    = '  //Code for initialisation here'
+        self.headers      = []
+        self.local_headers = []
+        self.wrap_headers  = []
+        self.sources      = []
+        self.include_dirs = ['-I.']
+        self.libraries    = []
+        self.library_dirs = []
+        self.cppargs      = ''
+        self.object_files = []
+        self.arrays       = []
+        self.additional_definitions = ""
+        self.additional_declarations = ""
 
-    def __init__(self):
-        """ For now, empty! """
-        pass
 
     def parse_args(self, dict):
         """ A method for parsing arguments. """
@@ -65,6 +70,10 @@ void f()
                 self.sources = dict[key]
             elif key == 'headers':
                 self.headers = dict[key]
+            elif key == 'local_headers':
+                self.local_headers = dict[key]
+            elif key == 'wrap_headers':
+                self.wrap_headers = dict[key]
             elif key == 'include_dirs':
                 self.include_dirs = dict[key]
             elif key == 'libraries':
@@ -79,6 +88,8 @@ void f()
                 self.arrays = dict[key]
 	    elif key == 'additional_definitions':
                 self.additional_definitions = dict[key]
+	    elif key == 'additional_declarations':
+                self.additional_declarations = dict[key]
 
 
         self.makefile_name = self.module+".mak"
@@ -119,6 +130,10 @@ void f()
               - Code that should be executed when the Instant extension is imported. String.
            - B{headers}:
               - A list of header files required by the Instant code. 
+           - B{local_headers}:
+              - A list of local header files required by the Instant code. 
+           - B{wrap_headers}:
+              - A list of local header files that should be wrapped by SWIG.
            - B{include_dirs}:
               - A list of directories to search for header files.
            - B{sources}:
@@ -148,7 +163,11 @@ void f()
         
         self.generate_Interfacefile()
 	if self.check_md5sum(): return 1 
-	if (os.system("swig -version 2> /dev/null ") == 0 ):   
+	if sys.platform=='win32':
+		null='nul'
+	else:
+		null='/dev/null'
+	if (os.system("swig -version 2 > %s" % null ) == 0 ):   
    	    if ( not self.gen_setup ):   
                 self.generate_Makefile()
                 if os.path.isfile(self.makefile_name):
@@ -175,6 +194,8 @@ void f()
         print 'swigopts',self.swigopts
         print 'init_code',self.init_code
         print 'headers',self.headers
+        print 'local_headers',self.local_headers
+        print 'wrap_headers',self.wrap_headers
         print 'include_dirs',self.include_dirs
         print 'sources',self.sources
         print 'srcs',self.srcs
@@ -205,6 +226,8 @@ void f()
          - ifile_name (The SWIG input file)
          - init_code (Code to put in the init section of the interface file)
          - headers (A list of headers with declarations needed)
+         - local_headers (A list of local headers with declarations needed)
+         - wrap_headers (A list of local headers that will be wrapped by SWIG)
 
         """
         if VERBOSE > 0:
@@ -214,15 +237,14 @@ void f()
         func_name = self.code[:self.code.index(')')+1]
 
 
+        # create typemaps 
         typemaps = "" 
 	if (len(self.arrays) > 0): 
           for a in self.arrays:  
+            # 1 dimentional arrays, ie. vectors
             if (len(a) == 2):  
-      	      n = a[0]
-	      array = a[1]
-
   	      typemap = """
-%stypemap(in) (int %s,double* %s){
+%%typemap(in) (int %(n)s,double* %(array)s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
     return NULL; ;
@@ -232,15 +254,12 @@ void f()
   $1 = pyarray->dimensions[0];
   $2 = (double*)pyarray->data;
 }
-""" % ('%',n,array)
+""" % { 'n' : a[0] , 'array' : a[1] }
               typemaps += typemap
+            # n dimentional arrays, ie. matrices and tensors  
             elif (len(a) == 3):  
-      	      n = a[0]
-	      ptv = a[1]
-	      array = a[2]
-
   	      typemap = """
-%stypemap(in) (int %s,int* %s,double* %s){
+%%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
     return NULL; ;
@@ -251,64 +270,125 @@ void f()
   $2 = pyarray->dimensions;
   $3 = (double*)pyarray->data;
 }
-""" % ('%',n,ptv,array)
+""" % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
               typemaps += typemap
 
+        self.headers_code = "\n".join(['#include "%s"' % header for header in self.headers])
+        self.wrap_headers_code = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
 
+        self.typemaps = typemaps 
 
-    
-        f = open(self.ifile_name, 'w')
-        f.write("""
-%%module (directors="1") %s
+        interface_string = """
+%%module (directors="1") %(module)s
 
 %%feature("director");
 
 %%{
-""" % self.module)
-        for header in self.headers:
-            f.write("#include <%s>\n" % header)
-        f.write("""
 #include <iostream>
-%s
-
+%(additional_definitions)s 
+%(headers_code)s 
+%(wrap_headers_code)s 
+%(code)s
 %%}
 
 %%feature("autodoc", "1");
-
 %%init%%{
-%s
+%(init_code)s
 %%}
 
-%s
-%s
-%s;
-    """ % (self.code, self.init_code, self.additional_definitions, typemaps, self.code))
+%(additional_definitions)s
+%(wrap_headers_code)s
+%(typemaps)s
+%(code)s;
+
+""" % vars(self)
+     
+
+        f = open(self.ifile_name, 'w')
+        f.write(interface_string)
         f.close()
         if VERBOSE > 0:
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
-    
+
+    def getmd5sumfile(self, filename):
+        '''
+        get the md5 value of filename
+        modified based on Python24\Tools\Scripts\md5sum.py
+        '''
+
+        try:
+            fp = open(filename, 'rb')
+        except IOError, msg:
+            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+            return None
+
+        m = md5.new()
+        try:
+            while 1:
+                data = fp.read()
+                if not data:
+                    break
+                m.update(data)
+        except IOError, msg:
+            sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
+            return None
+        fp.close() 
+        return '%s %s\n' % (m.hexdigest().upper(), filename)
+
+    def writemd5sumfile(self, filename, md5out=sys.stdout):
+        result=self.getmd5sumfile(filename)
+        try:
+            fp = open(md5out, 'w')
+        except IOError, msg:
+            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+        fp.write(result)
+        fp.close()
+
     def check_md5sum(self): 
         """ 
         Check if the md5sum of the generated interface file has changed since the last
         time the module was compiled. If it has changed then recompilation is necessary.  
         """ 
         if (os.path.isfile(self.module+".md5")):
-            pipe = os.popen("md5sum " + self.ifile_name)  
-            current_md5sum = pipe.readline() 
+            current_md5sum = self.getmd5sumfile(self.ifile_name)
             file = open(self.module + ".md5") 
             last_md5sum = file.readline()
             if ( current_md5sum == last_md5sum) : return 1  
             else: 
-                os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
+                self.writemd5sumfile(self.ifile_name, self.module + ".md5")
                 return 0 
                 
             
         else:
-            os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
+            self.writemd5sumfile(self.ifile_name, self.module + ".md5")
             return 0
         
         return 0; 
+
+
+    
+#    def check_md5sum(self): 
+#        """ 
+#        Check if the md5sum of the generated interface file has changed since the last
+#        time the module was compiled. If it has changed then recompilation is necessary.  
+#        """ 
+#        if (os.path.isfile(self.module+".md5")):
+#            pipe = os.popen("md5sum " + self.ifile_name)  
+#            current_md5sum = pipe.readline() 
+#            file = open(self.module + ".md5") 
+#            last_md5sum = file.readline()
+#            if ( current_md5sum == last_md5sum) : return 1  
+#            else: 
+#                os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
+#                return 0 
+#                
+#            
+#        else:
+#            os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
+#            return 0
+#        
+#        return 0; 
 
     def generate_setup(self): 
         """
@@ -415,6 +495,10 @@ def create_extension(**args):
               - Code that should be executed when the Instant extension is imported. String.
            - B{headers}:
               - A list of header files required by the Instant code. 
+           - B{local_headers}:
+              - A list of local header files required by the Instant code. 
+           - B{wrap_headers}:
+              - A list of local header files that will be wrapped by SWIG.
            - B{include_dirs}:
               - A list of directories to search for header files.
            - B{sources}:
@@ -474,7 +558,7 @@ def inline_with_numpy(c_code, **args_dict):
 
        >>> import numpy
        >>> import time
-       >>> from Instant import inline_with_numeric
+       >>> from Instant import inline_with_numpy
        >>> c_code = \"\"\"
            double sum (int n1, double* array1){
                double tmp = 0.0; 
@@ -536,8 +620,8 @@ def inline_with_numeric(c_code, **args_dict):
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numeric", 
                          headers=["arrayobject.h"], cppargs='-O3',
-                         include_dirs= [sys.prefix + "/include/python" 
-                                     + sys.version[:3] + "/Numeric"],
+                         include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
+                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']],
                          init_code='import_array();', arrays = args_dict["arrays"])
     exec("from inline_ext_numeric import %s as func_name"% func_name) 
     return func_name
@@ -578,8 +662,8 @@ def inline_with_numarray(c_code, **args_dict):
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numarray", 
                          headers=["arrayobject.h"], cppargs='-O3',
-                         include_dirs= [sys.prefix + "/include/python" 
-                                     + sys.version[:3] + "/numarray"],
+                         include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray",
+                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']],
                          init_code='import_array();', arrays = args_dict["arrays"])
     exec("from inline_ext_numarray import %s as func_name"% func_name) 
     return func_name
