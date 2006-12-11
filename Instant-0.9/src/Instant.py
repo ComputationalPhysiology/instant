@@ -314,33 +314,38 @@ void f()
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
 
-    def getmd5sumfile(self, filename):
+    def getmd5sumfiles(self, filenames):
         '''
         get the md5 value of filename
         modified based on Python24\Tools\Scripts\md5sum.py
         '''
 
-        try:
-            fp = open(filename, 'rb')
-        except IOError, msg:
-            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
-            return None
+        print filenames
+        for filename in filenames: 
+         
+            print "Adding file ", filename, "to md5 sum "
 
-        m = md5.new()
-        try:
-            while 1:
-                data = fp.read()
-                if not data:
-                    break
-                m.update(data)
-        except IOError, msg:
-            sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
-            return None
-        fp.close() 
+            try:
+                fp = open(filename, 'rb')
+            except IOError, msg:
+                sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+                return None
+
+            m = md5.new()
+            try:
+                while 1:
+                    data = fp.read()
+                    if not data:
+                        break
+                    m.update(data)
+            except IOError, msg:
+                sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
+                return None
+            fp.close() 
         return '%s %s\n' % (m.hexdigest().upper(), filename)
 
-    def writemd5sumfile(self, filename, md5out=sys.stdout):
-        result=self.getmd5sumfile(filename)
+    def writemd5sumfile(self, filenames, md5out=sys.stdout):
+        result=self.getmd5sumfiles(filenames)
         try:
             fp = open(md5out, 'w')
         except IOError, msg:
@@ -353,18 +358,26 @@ void f()
         Check if the md5sum of the generated interface file has changed since the last
         time the module was compiled. If it has changed then recompilation is necessary.  
         """ 
+        md5sum_files = []
+        md5sum_files.append(self.ifile_name)
+        for i in self.sources : md5sum_files.append(i)
+        for i in self.wrap_headers : md5sum_files.append(i)
+        for i in self.local_headers: md5sum_files.append(i)
+        print md5sum_files 
+
+
         if (os.path.isfile(self.module+".md5")):
-            current_md5sum = self.getmd5sumfile(self.ifile_name)
+            current_md5sum = self.getmd5sumfiles(md5sum_files )
             file = open(self.module + ".md5") 
             last_md5sum = file.readline()
             if ( current_md5sum == last_md5sum) : return 1  
             else: 
-                self.writemd5sumfile(self.ifile_name, self.module + ".md5")
+                self.writemd5sumfile(md5sum_files, self.module + ".md5")
                 return 0 
                 
             
         else:
-            self.writemd5sumfile(self.ifile_name, self.module + ".md5")
+            self.writemd5sumfile(md5sum_files, self.module + ".md5")
             return 0
         
         return 0; 
