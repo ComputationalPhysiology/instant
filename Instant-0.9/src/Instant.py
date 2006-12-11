@@ -275,7 +275,8 @@ void f()
 
         self.headers_code = "\n".join(['#include <%s>' % header for header in self.headers])
         self.local_headers_code = "\n".join(['#include "%s"' % header for header in self.local_headers])
-        self.wrap_headers_code = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
+        self.wrap_headers_code1 = "\n".join(['#include "%s"' % header for header in self.wrap_headers])
+        self.wrap_headers_code2 = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
 
         self.typemaps = typemaps 
 
@@ -289,7 +290,7 @@ void f()
 %(additional_definitions)s 
 %(headers_code)s 
 %(local_headers_code)s 
-%(wrap_headers_code)s 
+%(wrap_headers_code1)s 
 %(code)s
 %%}
 
@@ -299,7 +300,7 @@ void f()
 %%}
 
 %(additional_definitions)s
-%(wrap_headers_code)s
+%(wrap_headers_code2)s
 %(typemaps)s
 %(code)s;
 
