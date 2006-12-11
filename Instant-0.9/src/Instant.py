@@ -273,7 +273,8 @@ void f()
 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
               typemaps += typemap
 
-        self.headers_code = "\n".join(['#include "%s"' % header for header in self.headers])
+        self.headers_code = "\n".join(['#include <%s>' % header for header in self.headers])
+        self.local_headers_code = "\n".join(['#include "%s"' % header for header in self.local_headers])
         self.wrap_headers_code = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
 
         self.typemaps = typemaps 
@@ -287,6 +288,7 @@ void f()
 #include <iostream>
 %(additional_definitions)s 
 %(headers_code)s 
+%(local_headers_code)s 
 %(wrap_headers_code)s 
 %(code)s
 %%}
