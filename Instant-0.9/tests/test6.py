@@ -24,7 +24,7 @@ void add(int n1, int* p1, double* array1,
 }
 """
 
-create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
+create_extension(code=c_code, system_headers=["arrayobject.h"], cppargs='-g',
           include_dirs=[sys.prefix + "/include/python" 
                        + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test6_ext', 

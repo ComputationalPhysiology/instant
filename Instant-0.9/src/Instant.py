@@ -41,16 +41,16 @@ void f()
         self.module  = 'instant_swig_module'
         self.swigopts     = '-I.'
         self.init_code    = '  //Code for initialisation here'
-        self.headers      = []
-        self.local_headers = []
-        self.wrap_headers  = []
-        self.sources      = []
-        self.include_dirs = ['-I.']
-        self.libraries    = []
-        self.library_dirs = []
-        self.cppargs      = ''
-        self.object_files = []
-        self.arrays       = []
+        self.system_headers = []
+        self.local_headers  = []
+        self.wrap_headers   = []
+        self.sources        = []
+        self.include_dirs   = ['-I.']
+        self.libraries      = []
+        self.library_dirs   = []
+        self.cppargs        = ''
+        self.object_files   = []
+        self.arrays         = []
         self.additional_definitions = ""
         self.additional_declarations = ""
 
@@ -68,8 +68,8 @@ void f()
                 self.init_code = dict[key]
             elif key == 'sources':
                 self.sources = dict[key]
-            elif key == 'headers':
-                self.headers = dict[key]
+            elif key == 'system_headers':
+                self.system_headers = dict[key]
             elif key == 'local_headers':
                 self.local_headers = dict[key]
             elif key == 'wrap_headers':
@@ -128,8 +128,8 @@ void f()
                 SWIG pointers.i library. String.
            - B{init_code}:
               - Code that should be executed when the Instant extension is imported. String.
-           - B{headers}:
-              - A list of header files required by the Instant code. 
+           - B{system_headers}:
+              - A list of system header files required by the Instant code. 
            - B{local_headers}:
               - A list of local header files required by the Instant code. 
            - B{wrap_headers}:
@@ -193,7 +193,7 @@ void f()
         print 'module',self.module
         print 'swigopts',self.swigopts
         print 'init_code',self.init_code
-        print 'headers',self.headers
+        print 'system_headers',self.system_headers
         print 'local_headers',self.local_headers
         print 'wrap_headers',self.wrap_headers
         print 'include_dirs',self.include_dirs
@@ -225,7 +225,7 @@ void f()
          - code
          - ifile_name (The SWIG input file)
          - init_code (Code to put in the init section of the interface file)
-         - headers (A list of headers with declarations needed)
+         - system_headers (A list of system headers with declarations needed)
          - local_headers (A list of local headers with declarations needed)
          - wrap_headers (A list of local headers that will be wrapped by SWIG)
 
@@ -273,7 +273,7 @@ void f()
 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
               typemaps += typemap
 
-        self.headers_code = "\n".join(['#include <%s>' % header for header in self.headers])
+        self.system_headers_code = "\n".join(['#include <%s>' % header for header in self.system_headers])
         self.local_headers_code = "\n".join(['#include "%s"' % header for header in self.local_headers])
         self.wrap_headers_code1 = "\n".join(['#include "%s"' % header for header in self.wrap_headers])
         self.wrap_headers_code2 = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
@@ -288,7 +288,7 @@ void f()
 %%{
 #include <iostream>
 %(additional_definitions)s 
-%(headers_code)s 
+%(system_headers_code)s 
 %(local_headers_code)s 
 %(wrap_headers_code1)s 
 %(code)s
@@ -300,6 +300,7 @@ void f()
 %%}
 
 %(additional_definitions)s
+%(additional_declarations)s
 %(wrap_headers_code2)s
 %(typemaps)s
 %(code)s;
@@ -323,7 +324,7 @@ void f()
         print filenames
         for filename in filenames: 
          
-            print "Adding file ", filename, "to md5 sum "
+#            print "Adding file ", filename, "to md5 sum "
 
             try:
                 fp = open(filename, 'rb')
@@ -509,8 +510,8 @@ def create_extension(**args):
                 SWIG pointers.i library. String.
            - B{init_code}:
               - Code that should be executed when the Instant extension is imported. String.
-           - B{headers}:
-              - A list of header files required by the Instant code. 
+           - B{system_headers}:
+              - A list of system header files required by the Instant code. 
            - B{local_headers}:
               - A list of local header files required by the Instant code. 
            - B{wrap_headers}:
@@ -594,7 +595,7 @@ def inline_with_numpy(c_code, **args_dict):
     ret, func_name = func.split()
     import numpy	
     ext.create_extension(code=c_code, module="inline_ext_numpy", 
-                         headers=["arrayobject.h"], cppargs='-O3',
+                         system_headers=["arrayobject.h"], cppargs='-O3',
                          include_dirs= ["%s/numpy"% numpy.get_include()],
                          init_code='import_array();', arrays = args_dict["arrays"])
     exec("from inline_ext_numpy import %s as func_name"% func_name) 
@@ -635,7 +636,7 @@ def inline_with_numeric(c_code, **args_dict):
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numeric", 
-                         headers=["arrayobject.h"], cppargs='-O3',
+                         system_headers=["arrayobject.h"], cppargs='-O3',
                          include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
                          	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']],
                          init_code='import_array();', arrays = args_dict["arrays"])
@@ -677,7 +678,7 @@ def inline_with_numarray(c_code, **args_dict):
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numarray", 
-                         headers=["arrayobject.h"], cppargs='-O3',
+                         system_headers=["arrayobject.h"], cppargs='-O3',
                          include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray",
                          	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']],
                          init_code='import_array();', arrays = args_dict["arrays"])

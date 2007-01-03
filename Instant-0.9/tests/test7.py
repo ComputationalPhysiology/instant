@@ -20,7 +20,7 @@ void func(int n1, double* array1, int n2, double* array2){
 }
 """
 
-create_extension(code=c_code, headers=["arrayobject.h"], cppargs='-g',
+create_extension(code=c_code, system_headers=["arrayobject.h"], cppargs='-g',
           include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test7_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2']])

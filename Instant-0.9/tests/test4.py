@@ -44,7 +44,7 @@ return PyArray_Return(ret);
 """
 
 
-create_extension(code=s, headers=["arrayobject.h"],
+create_extension(code=s, system_headers=["arrayobject.h"],
               include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
               init_code='import_array();', module="test4_ext"
               )
