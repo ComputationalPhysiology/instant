@@ -2,7 +2,7 @@
 
 import Numeric as N 
 import time
-from Instant import create_extension
+from instant import create_extension
 import sys
 
 
@@ -43,7 +43,7 @@ c = N.arange(seed)
 t1 = time.time()
 func(a,c)
 t2 = time.time()
-print "With Instant: ", t2-t1, "seconds" 
+print "With instant: ", t2-t1, "seconds" 
 
 
 t1 = time.time()

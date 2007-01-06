@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Instant import create_extension  
+from instant import create_extension  
 
 
 c_code = """

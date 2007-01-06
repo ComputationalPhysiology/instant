@@ -2,13 +2,13 @@
 
 from distutils.core import setup
 
-setup(name="Instant", version='0.8', 
+setup(name="instant", version='0.8', 
       description="Instant Inlining of C/C++ in Python", 
       author="Magne Westlie and Kent-Andre Mardal", 
       author_email ="magnew@simula.no, kent-and@simula.no", 
-      url="http://pyinstant.sf.net", 
+      url="http://www.fenics.org/instant", 
       package_dir={'': 'src' }, 
-      py_modules=['Instant'])
+      py_modules=['instant'])
 
 
 

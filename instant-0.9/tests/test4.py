@@ -4,7 +4,7 @@ exec python $0 ${1+"$@"}
 """#"
 
 
-from Instant import create_extension 
+from instant import create_extension 
 import Numeric,sys
 
 a = Numeric.arange(10000000)
@@ -57,7 +57,7 @@ t1 = time.time()
 d = test4_ext.add(a,b)
 t2 = time.time()
 
-print 'With Instant:',t2-t1,'seconds'
+print 'With instant:',t2-t1,'seconds'
 
 t1 = time.time() 
 c = a+b

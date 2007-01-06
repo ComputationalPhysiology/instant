@@ -1,7 +1,7 @@
 
 import numarray 
 import time
-from Instant import inline_with_numarray
+from instant import inline_with_numarray
 
 c_code = """
 double sum (int n1, double* array1){
@@ -21,7 +21,7 @@ a = numarray.arange(10000000); a = numarray.sin(a)
 t1 = time.time()
 sum1 = sum_func(a)
 t2 = time.time()
-print 'With Instant:',t2-t1,'seconds'
+print 'With instant:',t2-t1,'seconds'
 
 t1 = time.time() 
 sum2 =  numarray.sum(a)

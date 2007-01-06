@@ -1,5 +1,5 @@
 """
-By using the class Instant a Python extension module can
+By using the class instant a Python extension module can
 be created at runtime. For the user, it behaves somewhat like
 an inline module, except you have to import the module manually.
 
@@ -8,7 +8,7 @@ it has to be inside a function or a similar C/C++ construct.
 
 A simple example: (see test1.py)
 
->>> from Instant import inline
+>>> from instant import inline
 >>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
 >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
@@ -27,11 +27,11 @@ VERBOSE = 0
 
 
 
-class Instant:
+class instant:
     # Default values:
 
     def __init__(self):
-        """ Instant constructor """
+        """ instant constructor """
         self.code         = """
 void f()
 {
@@ -127,11 +127,11 @@ void f()
               - Options to swig, for instance C{-lpointers.i} to include the
                 SWIG pointers.i library. String.
            - B{init_code}:
-              - Code that should be executed when the Instant extension is imported. String.
+              - Code that should be executed when the instant extension is imported. String.
            - B{system_headers}:
-              - A list of system header files required by the Instant code. 
+              - A list of system header files required by the instant code. 
            - B{local_headers}:
-              - A list of local header files required by the Instant code. 
+              - A list of local header files required by the instant code. 
            - B{wrap_headers}:
               - A list of local header files that should be wrapped by SWIG.
            - B{include_dirs}:
@@ -141,7 +141,7 @@ void f()
            - B{cppargs}:
               - Flags like C{-D}, C{-U}, etc. String.
            - B{libraries}:
-              - A list of libraries needed by the Instant extension.
+              - A list of libraries needed by the instant extension.
            - B{library_dirs}:
               - A list of directories to search for libraries (C{-l}).
            - B{object_files}:
@@ -493,7 +493,7 @@ def list2str(list):
 def create_extension(**args):
     """
         This is a small wrapper around the create_extension function
-        in Instant.
+        in instant.
 
         Call this function to instantly create an extension module.
         SWIG is used to generate code that can be compiled and used as
@@ -509,11 +509,11 @@ def create_extension(**args):
               - Options to swig, for instance C{-lpointers.i} to include the
                 SWIG pointers.i library. String.
            - B{init_code}:
-              - Code that should be executed when the Instant extension is imported. String.
+              - Code that should be executed when the instant extension is imported. String.
            - B{system_headers}:
-              - A list of system header files required by the Instant code. 
+              - A list of system header files required by the instant code. 
            - B{local_headers}:
-              - A list of local header files required by the Instant code. 
+              - A list of local header files required by the instant code. 
            - B{wrap_headers}:
               - A list of local header files that will be wrapped by SWIG.
            - B{include_dirs}:
@@ -523,7 +523,7 @@ def create_extension(**args):
            - B{cppargs}:
               - Flags like C{-D}, C{-U}, etc. String.
            - B{libraries}:
-              - A list of libraries needed by the Instant extension.
+              - A list of libraries needed by the instant extension.
            - B{library_dirs}:
               - A list of directories to search for libraries (C{-l}).
            - B{object_files}:
@@ -531,14 +531,14 @@ def create_extension(**args):
            - B{arrays}:
               - A list of the C arrays to be made from NumPy arrays.
     """ 
-    ext = Instant()
+    ext = instant()
     ext.create_extension(**args)
 
 
 def inline(c_code):
     """
        This is a short wrapper around the create_extention function 
-       in Instant. 
+       in instant. 
        
        It creates an extension module given that
        the input is a valid C function. It is only possible
@@ -546,13 +546,13 @@ def inline(c_code):
 
        Usage: 
 
-       >>> from Instant import inline
+       >>> from instant import inline
        >>> add_func = inline("double add(double a, double b){ return a+b; }")
        >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
 
     """
-    ext = Instant()
+    ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext")
@@ -563,7 +563,7 @@ def inline(c_code):
 def inline_with_numpy(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
-       in Instant. 
+       in instant. 
        
        It creates an extension module given that
        the input is a valid C function. It is only possible
@@ -575,7 +575,7 @@ def inline_with_numpy(c_code, **args_dict):
 
        >>> import numpy
        >>> import time
-       >>> from Instant import inline_with_numpy
+       >>> from instant import inline_with_numpy
        >>> c_code = \"\"\"
            double sum (int n1, double* array1){
                double tmp = 0.0; 
@@ -590,7 +590,7 @@ def inline_with_numpy(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = Instant()
+    ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     import numpy	
@@ -605,7 +605,7 @@ def inline_with_numpy(c_code, **args_dict):
 def inline_with_numeric(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
-       in Instant. 
+       in instant. 
        
        It creates an extension module given that
        the input is a valid C function. It is only possible
@@ -617,7 +617,7 @@ def inline_with_numeric(c_code, **args_dict):
 
        >>> import numpy 
        >>> import time
-       >>> from Instant import inline_with_numeric
+       >>> from instant import inline_with_numeric
        >>> c_code = \"\"\"
            double sum (int n1, double* array1){
                double tmp = 0.0; 
@@ -632,7 +632,7 @@ def inline_with_numeric(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = Instant()
+    ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numeric", 
@@ -647,7 +647,7 @@ def inline_with_numeric(c_code, **args_dict):
 def inline_with_numarray(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
-       in Instant. 
+       in instant. 
        
        It creates an extension module given that
        the input is a valid C function. It is only possible
@@ -659,7 +659,7 @@ def inline_with_numarray(c_code, **args_dict):
 
        >>> import numarray 
        >>> import time
-       >>> from Instant import inline_with_numarray
+       >>> from instant import inline_with_numarray
        >>> c_code = \"\"\"
            double sum (int n1, double* array1){
                double tmp = 0.0; 
@@ -674,7 +674,7 @@ def inline_with_numarray(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = Instant()
+    ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     ext.create_extension(code=c_code, module="inline_ext_numarray", 

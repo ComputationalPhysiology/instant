@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Instant import create_extension  
+from instant import create_extension  
 import Numeric as N
 import sys
 import time
@@ -50,6 +50,6 @@ difference = abs(d - c)
 sum = reduce( lambda a,b: a+b, difference)  
 print "The difference between the arrays computed by numpy and instant is " + str(sum) 
 
-print 'With Instant:',t2-t1,'seconds'
+print 'With instant:',t2-t1,'seconds'
 print 'Med numpy:   ',t4-t3,'seconds'
 

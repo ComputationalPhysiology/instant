@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Instant import create_extension  
+from instant import create_extension  
 import Numeric
 import sys
 import time
@@ -38,7 +38,7 @@ d = Numeric.arange(10000000); d = Numeric.cos(d)
 t1 = time.time() 
 add(a,b,c)
 t2 = time.time()
-print 'With Instant:',t2-t1,'seconds'
+print 'With instant:',t2-t1,'seconds'
 
 t1 = time.time() 
 Numeric.add(a,b,d)
