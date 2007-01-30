@@ -1,7 +1,7 @@
 #!/bin/sh -x
 
-epydoc -t Instant -n Instant -c blue -o html_reference \
--u http://pypde.simula.no/Instant \
---html Instant \
-../src/Instant.py \
+epydoc -t instant -n instant -c blue -o html_reference \
+-u http://www.fenics.org/instant \
+--html instant \
+../src/instant.py \
 
