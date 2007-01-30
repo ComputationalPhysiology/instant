@@ -4,10 +4,10 @@ cd ../tests
 rm -rf ../build
 sh clean.sh 
 cd ../doc 
-rm Instant-0.9.tar.gz
-files=`find  ../../Instant-0.9 -type f| grep -v svn` 
+rm instant-0.9.1.tar.gz
+files=`find  ../../instant -type f| grep -v hg` 
 echo $files 
-tar -cf Instant-0.9.tar $files  
-gzip Instant-0.9.tar
-ls -s Instant-0.9.tar.gz
+tar -cf instant-0.9.1.tar $files  
+gzip instant-0.9.1.tar
+ls -s instant-0.9.1.tar.gz
 
