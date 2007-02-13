@@ -72,10 +72,11 @@ void f()
                 self.system_headers = dict[key]
             elif key == 'local_headers':
                 self.local_headers = dict[key]
+                self.include_dirs.append("..")
             elif key == 'wrap_headers':
                 self.wrap_headers = dict[key]
             elif key == 'include_dirs':
-                self.include_dirs = dict[key]
+                self.include_dirs.extend(dict[key])
             elif key == 'libraries':
                 self.libraries = dict[key]
             elif key == 'library_dirs':
@@ -321,7 +322,9 @@ void f()
         modified based on Python24\Tools\Scripts\md5sum.py
         '''
 
-        print filenames
+        m = md5.new()
+
+
         for filename in filenames: 
          
 #            print "Adding file ", filename, "to md5 sum "
@@ -332,7 +335,6 @@ void f()
                 sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
                 return None
 
-            m = md5.new()
             try:
                 while 1:
                     data = fp.read()
@@ -340,6 +342,7 @@ void f()
                         break
                     m.update(data)
             except IOError, msg:
+                print "filename ", filename 
                 sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
                 return None
             fp.close() 
@@ -362,9 +365,8 @@ void f()
         md5sum_files = []
         md5sum_files.append(self.ifile_name)
         for i in self.sources : md5sum_files.append(i)
-        for i in self.wrap_headers : md5sum_files.append(i)
-        for i in self.local_headers: md5sum_files.append(i)
-        print md5sum_files 
+        for i in self.wrap_headers : md5sum_files.append("../" + i)
+        for i in self.local_headers: md5sum_files.append("../" + i)
 
 
         if (os.path.isfile(self.module+".md5")):
@@ -413,18 +415,21 @@ void f()
 	"""
         self.cppsrcs.append( "%s_wrap.cxx" %self.module )
 	f = open(self.module+'_setup.py', 'w')
+        inc_dir = ""
+        if len(self.local_headers) > 0: inc_dir = "-I.."  
+
 	f.write(""" 
 import os
 from distutils.core import setup, Extension
 name = '%s' 
-swig_cmd ='swig -python -c++ %s %s'
+swig_cmd ='swig -python -c++ %s %s %s'
 os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
                      include_dirs=%s, 
                      library_dirs=%s, libraries=%s)])  
-	""" % (self.module, self.swigopts, self.ifile_name, 
+	""" % (self.module, inc_dir, self.swigopts, self.ifile_name, 
 	       self.cppsrcs, 
 	       self.module, self.module, self.include_dirs, self.library_dirs, self.libraries ))   
 	f.close()
@@ -594,10 +599,26 @@ def inline_with_numpy(c_code, **args_dict):
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     import numpy	
-    ext.create_extension(code=c_code, module="inline_ext_numpy", 
-                         system_headers=["arrayobject.h"], cppargs='-O3',
-                         include_dirs= ["%s/numpy"% numpy.get_include()],
-                         init_code='import_array();', arrays = args_dict["arrays"])
+    args_dict["code"] = c_code 
+    args_dict["module"] = "inline_ext_numpy" 
+    if args_dict.has_key("system_headers"):  
+        args_dict["system_headers"].append ("arrayobject.h")
+    else: 
+        args_dict["system_headers"] = ["arrayobject.h"]
+
+    if args_dict.has_key("include_dirs"): 
+        args_dict["include_dirs"].append("%s/numpy"% numpy.get_include())
+    else: 
+        args_dict["include_dirs"] = ["%s/numpy"% numpy.get_include()]
+
+    if args_dict.has_key("init_code"):
+        args_dict["init_code"] += "\nimport_array();\n"
+    else: 
+        args_dict["init_code"] = "\nimport_array();\n"
+
+
+
+    ext.create_extension(**args_dict)
     exec("from inline_ext_numpy import %s as func_name"% func_name) 
     return func_name
 
