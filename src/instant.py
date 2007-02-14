@@ -656,11 +656,30 @@ def inline_with_numeric(c_code, **args_dict):
     ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
-    ext.create_extension(code=c_code, module="inline_ext_numeric", 
-                         system_headers=["arrayobject.h"], cppargs='-O3',
-                         include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']],
-                         init_code='import_array();', arrays = args_dict["arrays"])
+
+    args_dict["code"] = c_code 
+    args_dict["module"] = "inline_ext_numeric" 
+    if args_dict.has_key("system_headers"):  
+        args_dict["system_headers"].append ("arrayobject.h")
+    else: 
+        args_dict["system_headers"] = ["arrayobject.h"]
+
+    if args_dict.has_key("include_dirs"): 
+        args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
+                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']])
+    else: 
+        args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
+                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']]
+
+    if args_dict.has_key("init_code"):
+        args_dict["init_code"] += "\nimport_array();\n"
+    else: 
+        args_dict["init_code"] = "\nimport_array();\n"
+
+
+
+    ext.create_extension(**args_dict)
+
     exec("from inline_ext_numeric import %s as func_name"% func_name) 
     return func_name
 
@@ -698,11 +717,27 @@ def inline_with_numarray(c_code, **args_dict):
     ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
-    ext.create_extension(code=c_code, module="inline_ext_numarray", 
-                         system_headers=["arrayobject.h"], cppargs='-O3',
-                         include_dirs= [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray",
-                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']],
-                         init_code='import_array();', arrays = args_dict["arrays"])
+
+    args_dict["code"] = c_code 
+    args_dict["module"] = "inline_ext_numarray" 
+    if args_dict.has_key("system_headers"):  
+        args_dict["system_headers"].append ("arrayobject.h")
+    else: 
+        args_dict["system_headers"] = ["arrayobject.h"]
+
+    if args_dict.has_key("include_dirs"): 
+        args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
+                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']])
+    else: 
+        args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
+                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']]
+    if args_dict.has_key("init_code"):
+        args_dict["init_code"] += "\nimport_array();\n"
+    else: 
+        args_dict["init_code"] = "\nimport_array();\n"
+
+    ext.create_extension(**args_dict)
+
     exec("from inline_ext_numarray import %s as func_name"% func_name) 
     return func_name
 
