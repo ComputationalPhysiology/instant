@@ -365,8 +365,13 @@ void f()
         md5sum_files = []
         md5sum_files.append(self.ifile_name)
         for i in self.sources : md5sum_files.append(i)
-        for i in self.wrap_headers : md5sum_files.append("../" + i)
-        for i in self.local_headers: md5sum_files.append("../" + i)
+        for i in self.wrap_headers : md5sum_files.append(i)
+        for i in self.local_headers: md5sum_files.append(i)
+
+        print "sources ", self.sources
+        print "wrap_headers ", self.wrap_headers 
+        print "local_headers ", self.local_headers 
+        print "md5sum_files ", md5sum_files
 
 
         if (os.path.isfile(self.module+".md5")):
