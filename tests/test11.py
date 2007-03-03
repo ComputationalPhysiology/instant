@@ -1,4 +1,6 @@
 
+
+
 import numpy 
 import time
 from instant import inline_with_numpy
@@ -14,7 +16,7 @@ double sum_of_some_func(int n1, double* array1){
 """
 
 
-some_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']], local_headers = ["some_func.h"], libraries = ["m"])
+some_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']], local_headers = ["../some_func.h"], libraries = ["m"])
 
 a = numpy.arange(10000000); a = numpy.sin(a)
 
