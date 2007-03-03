@@ -28,7 +28,7 @@ print 'With instant:',t2-t1,'seconds'
 t1 = time.time()
 c = sum(numpy.sin(a) + numpy.cos(a))
 t2 = time.time()
-print 'With instant:',t2-t1,'seconds'
+print 'With  numpy :',t2-t1,'seconds'
 
 print 'Difference: ', c - b  
 
