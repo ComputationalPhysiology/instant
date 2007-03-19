@@ -9,8 +9,7 @@ double sum(double a, double b){
 }
 """
 
-create_extension(code=c_code,
-                     module='test3_ext')
+create_extension(code=c_code, module='test3_ext')
 
 from test3_ext import sum 
 a = 3.7
