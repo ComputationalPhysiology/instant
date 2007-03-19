@@ -53,6 +53,7 @@ void f()
         self.arrays         = []
         self.additional_definitions = ""
         self.additional_declarations = ""
+        self.generate_Interfacefile_file = True
 
 
     def parse_args(self, dict):
@@ -91,6 +92,8 @@ void f()
                 self.additional_definitions = dict[key]
 	    elif key == 'additional_declarations':
                 self.additional_declarations = dict[key]
+            elif key == 'generate_Interfacefile_file': 
+                self.generate_Interfacefile = dict[key]
 
 
         self.makefile_name = self.module+".mak"
@@ -162,8 +165,10 @@ void f()
         f = open("__init__.py", 'w')
         f.write("from %s import *"% self.module)
         
-        self.generate_Interfacefile()
-	if self.check_md5sum(): return 1 
+        if self.generate_Interfacefile: 
+            self.generate_Interfacefile()
+            if self.check_md5sum(): return 1 
+
 	if sys.platform=='win32':
 		null='nul'
 	else:
