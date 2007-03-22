@@ -1,4 +1,9 @@
 
+Release 0.9.1 
+Added test example which demonstrate use of external C code. 
+Added flag to turn of regeneration of the interface file 
+(useful during debugging)
+
 
 Release 0.9 
 Port to Windows with mingw by laserjungle, some updates
