@@ -186,8 +186,14 @@ void f()
                     os.remove(self.logfile_name)
 	    else: 
                 self.generate_setup()
-	        os.system("python " + self.module + "_setup.py build_ext")
-	        os.system("python " + self.module + "_setup.py install --install-platlib=.")
+	        ret = os.system("python " + self.module + "_setup.py build_ext >&  compile.log")
+                if not ret == 0:  
+                    print "The extension module did not compile, check %s/compile.log" % self.module 
+                else: 
+                    ret = os.system("python " + self.module + "_setup.py install --install-platlib=.  >& compile.log " )
+                    if not ret == 0:  
+                        print "Could not install the  extension module, check %s/compile.log" % self.module 
+
 #            print "Module name is \'"+self.module+"\'"
 	else: 
 	    raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
