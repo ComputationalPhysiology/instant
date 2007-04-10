@@ -86,11 +86,11 @@ void f()
                 self.cppargs = dict[key]
             elif key == 'object_files':
                 self.object_files = dict[key]
-	    elif key == 'arrays':
+            elif key == 'arrays':
                 self.arrays = dict[key]
-	    elif key == 'additional_definitions':
+            elif key == 'additional_definitions':
                 self.additional_definitions = dict[key]
-	    elif key == 'additional_declarations':
+            elif key == 'additional_declarations':
                 self.additional_declarations = dict[key]
             elif key == 'generate_Interface': 
                 self.generate_Interface= dict[key]
@@ -172,37 +172,43 @@ void f()
             if os.path.isfile(self.module + ".md5"): 
                 os.remove(self.module + ".md5")
 
-	if sys.platform=='win32':
-		null='nul'
-	else:
-		null='/dev/null'
-	if (os.system("swig -version 2 > %s" % null ) == 0 ):   
-   	    if ( not self.gen_setup ):   
+        if sys.platform=='win32':
+            null='nul'
+        else:
+            null='/dev/null'
+        if (os.system("swig -version 2 > %s" % null ) == 0 ):   
+            if ( not self.gen_setup ):   
                 self.generate_Makefile()
                 if os.path.isfile(self.makefile_name):
                     os.system("make -f "+self.makefile_name+" clean")
                 os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
                 if VERBOSE == 9:
                     os.remove(self.logfile_name)
-	    else: 
+            else: 
                 self.generate_setup()
-	        ret = os.system("python " + self.module + "_setup.py build_ext >&  compile.log")
+                cmd = "python " + self.module + "_setup.py build_ext >&  compile.log"
+                if VERBOSE == 9:
+                    print cmd
+                ret = os.system(cmd)
                 if not ret == 0:  
                     print "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
-                    ret = os.system("python " + self.module + "_setup.py install --install-platlib=.  >& compile.log " )
+                    cmd = "python " + self.module + "_setup.py install --install-platlib=.  >& compile.log "
+                    if VERBOSE == 9:
+                        print cmd
+                    ret = os.system(cmd)
                     if not ret == 0:  
                         print "Could not install the  extension module, check %s/compile.log" % self.module 
 
 #            print "Module name is \'"+self.module+"\'"
-	else: 
-	    raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
+        else: 
+            raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
 
 
     def debug(self):
         """
-	print out all instance variable
-	"""
+        print out all instance variable
+        """
         print 'DEBUG CODE:'
         print 'code',self.code
         print 'module',self.module
@@ -220,7 +226,7 @@ void f()
 
     def clean(self):
         """ Clean up files the current session. """
-	if ( not gen_setup ) :  
+        if ( not gen_setup ) :  
             for file in [self.module+".log",
                          self.module+".log",
                          self.module+".i",
@@ -254,11 +260,11 @@ void f()
 
         # create typemaps 
         typemaps = "" 
-	if (len(self.arrays) > 0): 
+        if (len(self.arrays) > 0): 
           for a in self.arrays:  
             # 1 dimentional arrays, ie. vectors
             if (len(a) == 2):  
-  	      typemap = """
+              typemap = """
 %%typemap(in) (int %(n)s,double* %(array)s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
@@ -273,7 +279,7 @@ void f()
               typemaps += typemap
             # n dimentional arrays, ie. matrices and tensors  
             elif (len(a) == 3):  
-  	      typemap = """
+              typemap = """
 %%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
   if (!PyArray_Check($input)) { 
     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
@@ -425,14 +431,14 @@ void f()
 
     def generate_setup(self): 
         """
-	Generates a setup.py file
-	"""
+        Generates a setup.py file
+        """
         self.cppsrcs.append( "%s_wrap.cxx" %self.module )
-	f = open(self.module+'_setup.py', 'w')
+        f = open(self.module+'_setup.py', 'w')
         inc_dir = ""
         if len(self.local_headers) > 0: inc_dir = "-I.."  
 
-	f.write(""" 
+        f.write(""" 
 import os
 from distutils.core import setup, Extension
 name = '%s' 
@@ -443,10 +449,10 @@ setup(name = '%s',
       ext_modules = [Extension('_' + '%s', sources, 
                      include_dirs=%s, 
                      library_dirs=%s, libraries=%s)])  
-	""" % (self.module, inc_dir, self.swigopts, self.ifile_name, 
-	       self.cppsrcs, 
-	       self.module, self.module, self.include_dirs, self.library_dirs, self.libraries ))   
-	f.close()
+        """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
+               self.cppsrcs, 
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries ))   
+        f.close()
 
 
     def generate_Makefile(self):
@@ -473,12 +479,12 @@ SWIGMAKEFILE = $(SWIGSRC)/Examples/Makefile
 python::
 	$(MAKE) -f '$(SWIGMAKEFILE)' INTERFACE='$(INTERFACE)' \\
 	SWIG='$(SWIG)' SWIGOPT='$(SWIGOPT)'  \\
-        SRCS='%s' \\
-        CPPSRCS='%s' \\
+	SRCS='%s' \\
+	CPPSRCS='%s' \\
 	INCLUDES='$(INCLUDES) %s' \\
-        LIBS='$(LIBS) %s' \\
-        CFLAGS='$(CFLAGS) $(FLAGS)' \\
-        TARGET='$(TARGET)' \\
+	LIBS='$(LIBS) %s' \\
+	CFLAGS='$(CFLAGS) $(FLAGS)' \\
+	TARGET='$(TARGET)' \\
 	python_cpp
 
 clean::
@@ -612,7 +618,7 @@ def inline_with_numpy(c_code, **args_dict):
     ext = instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
-    import numpy	
+    import numpy
     args_dict["code"] = c_code 
     args_dict["module"] = "inline_ext_numpy" 
     if args_dict.has_key("system_headers"):  
@@ -680,10 +686,10 @@ def inline_with_numeric(c_code, **args_dict):
 
     if args_dict.has_key("include_dirs"): 
         args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']])
+                                            sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']])
     else: 
         args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                         	sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']]
+                                      sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']]
 
     if args_dict.has_key("init_code"):
         args_dict["init_code"] += "\nimport_array();\n"
@@ -741,10 +747,10 @@ def inline_with_numarray(c_code, **args_dict):
 
     if args_dict.has_key("include_dirs"): 
         args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
-                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']])
+                                            sys.prefix + "/include" + "/numarray"][sys.platform=='win32']])
     else: 
         args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
-                         	sys.prefix + "/include" + "/numarray"][sys.platform=='win32']]
+                                      sys.prefix + "/include" + "/numarray"][sys.platform=='win32']]
     if args_dict.has_key("init_code"):
         args_dict["init_code"] += "\nimport_array();\n"
     else: 
