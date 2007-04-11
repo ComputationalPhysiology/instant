@@ -187,7 +187,7 @@ void f()
             else: 
                 self.generate_setup()
                 dump_output = ""
-                if VERBOSE == 9:
+                if VERBOSE == 0:
                     dump_output = " >&  compile.log"
                 cmd = "python " + self.module + "_setup.py build_ext " + dump_output
                 if VERBOSE == 9:
