@@ -46,9 +46,8 @@ t3 = time.time()
 N.add(a,b,d)
 t4 = time.time()
 
-difference = abs(d - c) 
-sum = reduce( lambda a,b: a+b, difference)  
-print "The difference between the arrays computed by numpy and instant is " + str(sum) 
+max_difference = max(max(abs(d - c))) 
+print "The difference between the arrays computed by numpy and instant is ", max_difference 
 
 print 'With instant:',t2-t1,'seconds'
 print 'Med numpy:   ',t4-t3,'seconds'

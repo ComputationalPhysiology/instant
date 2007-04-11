@@ -181,27 +181,24 @@ void f()
                 self.generate_Makefile()
                 if os.path.isfile(self.makefile_name):
                     os.system("make -f "+self.makefile_name+" clean")
-                os.system("make -f "+self.makefile_name+" &> "+self.logfile_name)
+                os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
                 if VERBOSE == 9:
                     os.remove(self.logfile_name)
             else: 
                 self.generate_setup()
-                dump_output = ""
-                if VERBOSE == 0:
-                    dump_output = " >&  compile.log"
-                cmd = "python " + self.module + "_setup.py build_ext " + dump_output
+                cmd = "python " + self.module + "_setup.py build_ext  >& compile.log 2>&1" 
                 if VERBOSE == 9:
                     print cmd
                 ret = os.system(cmd)
                 if not ret == 0:  
-                    print "The extension module did not compile, check %s/compile.log" % self.module 
+                    raise RuntimeError, "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
-                    cmd = "python " + self.module + "_setup.py install --install-platlib=. " + dump_output
+                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
                     if VERBOSE == 9:
                         print cmd
                     ret = os.system(cmd)
                     if not ret == 0:  
-                        print "Could not install the  extension module, check %s/compile.log" % self.module 
+                        raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module 
 
 #            print "Module name is \'"+self.module+"\'"
         else: 
@@ -445,7 +442,7 @@ void f()
 import os
 from distutils.core import setup, Extension
 name = '%s' 
-swig_cmd ='swig -python -c++ %s %s %s'
+swig_cmd ='swig -python -c++ %s %s %s >& compile.log'
 os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 
