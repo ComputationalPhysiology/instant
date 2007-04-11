@@ -186,14 +186,17 @@ void f()
                     os.remove(self.logfile_name)
             else: 
                 self.generate_setup()
-                cmd = "python " + self.module + "_setup.py build_ext >&  compile.log"
+                dump_output = ""
+                if VERBOSE == 9:
+                    dump_output = " >&  compile.log"
+                cmd = "python " + self.module + "_setup.py build_ext " + dump_output
                 if VERBOSE == 9:
                     print cmd
                 ret = os.system(cmd)
                 if not ret == 0:  
                     print "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
-                    cmd = "python " + self.module + "_setup.py install --install-platlib=.  >& compile.log "
+                    cmd = "python " + self.module + "_setup.py install --install-platlib=. " + dump_output
                     if VERBOSE == 9:
                         print cmd
                     ret = os.system(cmd)
