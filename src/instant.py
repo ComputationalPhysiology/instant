@@ -198,7 +198,7 @@ void f()
                         print cmd
                     ret = os.system(cmd)
                     if not ret == 0:  
-                        raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module 
+                        raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module
 
 #            print "Module name is \'"+self.module+"\'"
         else: 
