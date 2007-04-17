@@ -344,6 +344,8 @@ void f()
 
         m = md5.new()
 
+        filenames.sort()
+
 
         for filename in filenames: 
          
@@ -366,7 +368,8 @@ void f()
                 sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
                 return None
             fp.close() 
-        return '%s %s\n' % (m.hexdigest().upper(), filename)
+
+        return m.hexdigest().upper()
 
     def writemd5sumfile(self, filenames, md5out=sys.stdout):
         result=self.getmd5sumfiles(filenames)
