@@ -177,7 +177,9 @@ void f()
         else:
             null='/dev/null'
         output_file = open("compile.log",  'w')
-        if (os.system("swig -version 2 > %s" % null ) == 0 ):   
+        (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
+        #if (os.system("swig -version 2> %s" % null ) == 0 ):   
+        if (swig_stat == 0):   
             if ( not self.gen_setup ):   
                 self.generate_Makefile()
                 if os.path.isfile(self.makefile_name):
@@ -447,12 +449,12 @@ void f()
         f = open(self.module+'_setup.py', 'w')
         inc_dir = ""
         if len(self.local_headers) > 0: inc_dir = "-I.."  
-
+        # >& compile.log
         f.write(""" 
 import os
 from distutils.core import setup, Extension
 name = '%s' 
-swig_cmd ='swig -python -c++ %s %s %s >& compile.log'
+swig_cmd ='swig -python -c++ %s %s %s'
 os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 
