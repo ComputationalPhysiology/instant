@@ -176,6 +176,7 @@ void f()
             null='nul'
         else:
             null='/dev/null'
+        output_file = open("compile.log",  'w')
         if (os.system("swig -version 2 > %s" % null ) == 0 ):   
             if ( not self.gen_setup ):   
                 self.generate_Makefile()
@@ -186,18 +187,24 @@ void f()
                     os.remove(self.logfile_name)
             else: 
                 self.generate_setup()
-                cmd = "python " + self.module + "_setup.py build_ext  >& compile.log 2>&1" 
+                print "-- compiling the code --" 
+                cmd = "python " + self.module + "_setup.py build_ext" 
                 if VERBOSE == 9:
                     print cmd
-                ret = os.system(cmd)
+                ret, output = commands.getstatusoutput(cmd)
+                output_file.write(output)
                 if not ret == 0:  
+                    os.remove("%s.md5" % self.module)
                     raise RuntimeError, "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
-                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
+#                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
+                    cmd = "python " + self.module + "_setup.py install --install-platlib=." 
                     if VERBOSE == 9:
                         print cmd
-                    ret = os.system(cmd)
+                    ret, output = commands.getstatusoutput(cmd) 
+                    output_file.write(output)
                     if not ret == 0:  
+                        os.remove("%s.md5" % self.module)
                         raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module
 
 #            print "Module name is \'"+self.module+"\'"
