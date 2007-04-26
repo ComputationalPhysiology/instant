@@ -23,7 +23,7 @@ import md5
 
 
 
-VERBOSE = 0
+VERBOSE = 1
 
 
 
@@ -262,7 +262,7 @@ void f()
          - wrap_headers (A list of local headers that will be wrapped by SWIG)
 
         """
-        if VERBOSE > 0:
+        if VERBOSE > 1:
             print "\nGenerating interface file \'"+ self.ifile_name +"\':"
     
 
@@ -343,7 +343,7 @@ void f()
         f = open(self.ifile_name, 'w')
         f.write(interface_string)
         f.close()
-        if VERBOSE > 0:
+        if VERBOSE > 1:
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
 
@@ -514,7 +514,7 @@ clean::
            ))
         f.close()
         
-        if VERBOSE > 0:
+        if VERBOSE > 1:
             print 'Makefile', self.makefile_name, 'generated'
             
 
