@@ -167,7 +167,8 @@ void f()
         
         if self.generate_Interface: 
             self.generate_Interfacefile()
-            if self.check_md5sum(): return 1 
+            if self.check_md5sum():
+                return 1 
         else: 
             if os.path.isfile(self.module + ".md5"): 
                 os.remove(self.module + ".md5")
@@ -185,13 +186,14 @@ void f()
                 if os.path.isfile(self.makefile_name):
                     os.system("make -f "+self.makefile_name+" clean")
                 os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
-                if VERBOSE == 9:
+                if VERBOSE >= 9:
                     os.remove(self.logfile_name)
             else: 
                 self.generate_setup()
-                print "-- compiling the code --" 
+                if VERBOSE > 0:
+                    print "--- Instant: compiling ---" 
                 cmd = "python " + self.module + "_setup.py build_ext" 
-                if VERBOSE == 9:
+                if VERBOSE > 1:
                     print cmd
                 ret, output = commands.getstatusoutput(cmd)
                 output_file.write(output)
@@ -201,7 +203,7 @@ void f()
                 else: 
 #                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
                     cmd = "python " + self.module + "_setup.py install --install-platlib=." 
-                    if VERBOSE == 9:
+                    if VERBOSE > 1:
                         print cmd
                     ret, output = commands.getstatusoutput(cmd) 
                     output_file.write(output)
@@ -396,21 +398,19 @@ void f()
         """ 
         md5sum_files = []
         md5sum_files.append(self.ifile_name)
-        for i in self.sources : md5sum_files.append(i)
-        for i in self.wrap_headers : md5sum_files.append(i)
+        for i in self.sources:       md5sum_files.append(i)
+        for i in self.wrap_headers:  md5sum_files.append(i)
         for i in self.local_headers: md5sum_files.append(i)
-
 
         if (os.path.isfile(self.module+".md5")):
             current_md5sum = self.getmd5sumfiles(md5sum_files )
             file = open(self.module + ".md5") 
             last_md5sum = file.readline()
-            if ( current_md5sum == last_md5sum) : return 1  
+            if current_md5sum == last_md5sum:
+                return 1  
             else: 
                 self.writemd5sumfile(md5sum_files, self.module + ".md5")
                 return 0 
-                
-            
         else:
             self.writemd5sumfile(md5sum_files, self.module + ".md5")
             return 0
