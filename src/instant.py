@@ -152,7 +152,12 @@ void f()
               - If you want to compile the files yourself. NOT YET SUPPORTED.
            - B{arrays}:
               - A list of the C arrays to be made from NumPy arrays.
-
+           -B{additional_definitions}:
+              - A list of additional definitions (typically needed for 
+                inheritance) 
+           -B{additional_declarations}:
+              - A list of additional declarations (typically needed for 
+                inheritance) 
            
         """
         if self.parse_args(args):
@@ -168,6 +173,7 @@ void f()
         if self.generate_Interface: 
             self.generate_Interfacefile()
             if self.check_md5sum():
+                os.chdir("..")
                 return 1 
         else: 
             if os.path.isfile(self.module + ".md5"): 
@@ -199,6 +205,7 @@ void f()
                 output_file.write(output)
                 if not ret == 0:  
                     os.remove("%s.md5" % self.module)
+                    os.chdir("..")
                     raise RuntimeError, "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
 #                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
@@ -209,10 +216,13 @@ void f()
                     output_file.write(output)
                     if not ret == 0:  
                         os.remove("%s.md5" % self.module)
+                        os.chdir("..")
                         raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module
 
 #            print "Module name is \'"+self.module+"\'"
+            os.chdir("..")
         else: 
+            os.chdir("..")
             raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
 
 
