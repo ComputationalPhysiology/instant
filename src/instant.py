@@ -600,11 +600,17 @@ def inline(c_code):
 
     """
     ext = instant()
-    func = c_code[:c_code.index('(')]
-    ret, func_name = func.split()
-    ext.create_extension(code=c_code, module="inline_ext")
-    exec("from inline_ext import %s as func_name"% func_name) 
-    return func_name
+    try: 
+        func = c_code[:c_code.index('(')]
+        ret, func_name = func.split()
+        ext.create_extension(code=c_code, module="inline_ext")
+        exec("from inline_ext import %s as func_name"% func_name) 
+        return func_name
+    except: 
+        ext.create_extension(code=c_code, module="inline_ext")
+        exec("import inline_ext as I") 
+        return I 
+
 
 
 def inline_with_numpy(c_code, **args_dict):
@@ -695,10 +701,6 @@ def inline_with_numeric(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = instant()
-    func = c_code[:c_code.index('(')]
-    ret, func_name = func.split()
-
     args_dict["code"] = c_code 
     args_dict["module"] = "inline_ext_numeric" 
     if args_dict.has_key("system_headers"):  
@@ -719,11 +721,22 @@ def inline_with_numeric(c_code, **args_dict):
         args_dict["init_code"] = "\nimport_array();\n"
 
 
+    try: 
+        ext = instant()
+        func = c_code[:c_code.index('(')]
+        ret, func_name = func.split()
 
-    ext.create_extension(**args_dict)
+        ext.create_extension(**args_dict)
 
-    exec("from inline_ext_numeric import %s as func_name"% func_name) 
-    return func_name
+        exec("from inline_ext_numeric import %s as func_name"% func_name) 
+        return func_name
+    except: 
+        ext = instant()
+        ext.create_extension(**args_dict)
+
+        exec("import inline_ext_numeric as I") 
+        return I  
+
 
 
 def inline_with_numarray(c_code, **args_dict):
