@@ -1,4 +1,8 @@
 
+Release 0.9.2 
+Bug fix for the JIT in FFC
+
+
 Release 0.9.1 
 Added test example which demonstrate use of external C code. 
 Added flag to turn of regeneration of the interface file 
