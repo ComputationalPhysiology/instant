@@ -19,11 +19,35 @@ import os, sys,re
 import commands 
 import string
 import md5
+import shutil
 
 
 
 
 VERBOSE = 1
+COPY = 1 
+
+def path_walk_callback(arg, directory, files):
+    stack = []
+    for file in files:
+        if file[-3:] == "md5":
+            f = open(os.path.join(directory,file))
+            line = f.readline()
+            if arg[0] == line:
+                arg.append(directory)                                                                    
+
+
+def find_module(md5sum):  
+    list = [md5sum]
+    os.path.walk("/tmp/instant", path_walk_callback, list)
+    if len(list) == 2:                                                                     
+        dir = list[1]
+        sys.path.insert(0,os.path.join("/tmp/instant", md5sum,dir)) 
+        return 1 
+    return 0
+
+
+
 
 
 
@@ -170,6 +194,7 @@ void f()
         f = open("__init__.py", 'w')
         f.write("from %s import *"% self.module)
         
+        md5sum = 0 
         if self.generate_Interface: 
             self.generate_Interfacefile()
             if self.check_md5sum():
@@ -224,6 +249,14 @@ void f()
         else: 
             os.chdir("..")
             raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
+
+
+        file = open(os.path.join(self.module, self.module + ".md5"))  
+        md5sum = file.readline() 
+        if COPY and md5sum:   
+            if not os.path.isdir("/tmp/instant"):   
+                os.mkdir("/tmp/instant") 
+            shutil.copytree(self.module, os.path.join("/tmp/instant/", md5sum, self.module))
 
 
     def debug(self):
@@ -414,17 +447,23 @@ void f()
 
         if (os.path.isfile(self.module+".md5")):
             current_md5sum = self.getmd5sumfiles(md5sum_files )
-            file = open(self.module + ".md5") 
-            last_md5sum = file.readline()
-            if current_md5sum == last_md5sum:
-                return 1  
+            if find_module(current_md5sum):
+                return 1 
             else: 
-                self.writemd5sumfile(md5sum_files, self.module + ".md5")
-                return 0 
+                file = open(self.module + ".md5") 
+                last_md5sum = file.readline()
+                if current_md5sum == last_md5sum:
+                    return 1 
+                else: 
+                    self.writemd5sumfile(md5sum_files, self.module + ".md5")
+                    return 0 
         else:
             self.writemd5sumfile(md5sum_files, self.module + ".md5")
-            return 0
-        
+            current_md5sum = self.getmd5sumfiles(md5sum_files )
+            if find_module(current_md5sum):
+                return 1 
+            else: 
+                return 0
         return 0; 
 
 
