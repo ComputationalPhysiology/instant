@@ -25,7 +25,7 @@ import shutil
 
 
 VERBOSE = 1
-COPY = 1 
+COPY = 0 
 
 def path_walk_callback(arg, directory, files):
     stack = []
