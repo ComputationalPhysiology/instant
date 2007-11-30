@@ -25,7 +25,8 @@ import shutil
 
 
 VERBOSE = 1
-COPY = 0 
+COPY = 1 
+instant_dir = os.path.join((os.environ['HOME']), ".instant")
 
 def path_walk_callback(arg, directory, files):
     stack = []
@@ -39,10 +40,10 @@ def path_walk_callback(arg, directory, files):
 
 def find_module(md5sum):  
     list = [md5sum]
-    os.path.walk("/tmp/instant", path_walk_callback, list)
+    os.path.walk("", path_walk_callback, list)
     if len(list) == 2:                                                                     
         dir = list[1]
-        sys.path.insert(0,os.path.join("/tmp/instant", md5sum,dir)) 
+        sys.path.insert(0,os.path.join(instant_dir, md5sum,dir)) 
         return 1 
     return 0
 
@@ -254,9 +255,11 @@ void f()
         file = open(os.path.join(self.module, self.module + ".md5"))  
         md5sum = file.readline() 
         if COPY and md5sum:   
-            if not os.path.isdir("/tmp/instant"):   
-                os.mkdir("/tmp/instant") 
-            shutil.copytree(self.module, os.path.join("/tmp/instant/", md5sum, self.module))
+            # FIXME os.environ['HOME'] portable ?  
+            instant_dir = os.path.join((os.environ['HOME']), ".instant")
+            if not os.path.isdir(instant_dir):   
+                os.mkdir(instant_dir) 
+            shutil.copytree(self.module, os.path.join(instant_dir, md5sum, self.module))
 
 
     def debug(self):
