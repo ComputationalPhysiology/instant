@@ -25,7 +25,7 @@ import shutil
 
 
 VERBOSE = 1
-COPY = 1 
+COPY = 0 
 instant_dir = os.path.join((os.environ['HOME']), ".instant")
 
 def path_walk_callback(arg, directory, files):
