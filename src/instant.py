@@ -40,7 +40,7 @@ def path_walk_callback(arg, directory, files):
 
 def find_module(md5sum):  
     list = [md5sum]
-    os.path.walk("", path_walk_callback, list)
+    os.path.walk(instant_dir, path_walk_callback, list)
     if len(list) == 2:                                                                     
         dir = list[1]
         sys.path.insert(0,os.path.join(instant_dir, md5sum,dir)) 
