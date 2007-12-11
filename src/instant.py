@@ -26,6 +26,7 @@ import shutil
 
 VERBOSE = 1
 COPY = 0 
+SEARCH_CACHE=0 
 instant_dir = os.path.join((os.environ['HOME']), ".instant")
 
 def path_walk_callback(arg, directory, files):
@@ -450,7 +451,7 @@ void f()
 
         if (os.path.isfile(self.module+".md5")):
             current_md5sum = self.getmd5sumfiles(md5sum_files )
-            if find_module(current_md5sum):
+            if SEARCH_CACHE and find_module(current_md5sum):
                 return 1 
             else: 
                 file = open(self.module + ".md5") 
@@ -506,7 +507,7 @@ void f()
 import os
 from distutils.core import setup, Extension
 name = '%s' 
-swig_cmd ='swig -python -c++ %s %s %s'
+swig_cmd ='swig -python -c++ -O %s %s %s'
 os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 

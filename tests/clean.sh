@@ -1,6 +1,6 @@
 #!/bin/sh  -x 
 
-#rm -r /tmp/instant 
+rm -r $HOME/.instant 
 
 rm  -rf  *ext* 
 
