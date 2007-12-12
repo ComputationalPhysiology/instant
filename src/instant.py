@@ -25,29 +25,44 @@ import shutil
 
 
 VERBOSE = 1
-COPY = 0 
-SEARCH_CACHE=0 
-instant_dir = os.path.join((os.environ['HOME']), ".instant")
+USE_CACHE=1 
+
+def get_instant_dir():
+    instant_dir = '.'
+    if USE_CACHE: 
+        instant_dir = os.path.join((os.environ['HOME']), ".instant")
+    return instant_dir
+
+def get_tmp_dir(): 
+    tmp_dir = '.'
+    if USE_CACHE: 
+        tmp_dir = os.path.join("/tmp/instant") 
+        if not os.path.isdir(tmp_dir):
+            os.mkdir(tmp_dir)
+    return tmp_dir
+
 
 def path_walk_callback(arg, directory, files):
     stack = []
+    tmp_dir = get_tmp_dir() 
     for file in files:
-        if file[-3:] == "md5":
-            f = open(os.path.join(directory,file))
-            line = f.readline()
-            if arg[0] == line:
-                arg.append(directory)                                                                    
+        if not directory == tmp_dir: 
+            if file[-3:] == "md5":
+                f = open(os.path.join(directory,file))
+                line = f.readline()
+                if arg[0] == line:
+                    arg.append(directory)                                                                    
 
 
 def find_module(md5sum):  
     list = [md5sum]
+    instant_dir = get_instant_dir()
     os.path.walk(instant_dir, path_walk_callback, list)
     if len(list) == 2:                                                                     
         dir = list[1]
         sys.path.insert(0,os.path.join(instant_dir, md5sum,dir)) 
         return 1 
     return 0
-
 
 
 
@@ -190,9 +205,20 @@ void f()
             print 'Nothing done!'
             return
 #        self.debug()
-        if not os.path.isdir(self.module): 
-            os.mkdir(self.module)
-        os.chdir(self.module)
+        module_path = self.module
+        previous_path = os.getcwd()
+        instant_dir = get_instant_dir()
+
+        if USE_CACHE: 
+            if not os.path.isdir(instant_dir):
+                os.mkdir(instant_dir)
+            tmp_dir = get_tmp_dir () 
+            if not os.path.isdir(tmp_dir): 
+                os.mkdir(tmp_dir)
+            module_path = os.path.join(tmp_dir, self.module) 
+        if not os.path.isdir(module_path): 
+            os.mkdir(module_path)
+        os.chdir(module_path)
         f = open("__init__.py", 'w')
         f.write("from %s import *"% self.module)
         
@@ -200,7 +226,7 @@ void f()
         if self.generate_Interface: 
             self.generate_Interfacefile()
             if self.check_md5sum():
-                os.chdir("..")
+                os.chdir(previous_path)
                 return 1 
         else: 
             if os.path.isfile(self.module + ".md5"): 
@@ -213,6 +239,7 @@ void f()
         output_file = open("compile.log",  'w')
         (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
         #if (os.system("swig -version 2> %s" % null ) == 0 ):   
+
         if (swig_stat == 0):   
             if ( not self.gen_setup ):   
                 self.generate_Makefile()
@@ -232,7 +259,7 @@ void f()
                 output_file.write(output)
                 if not ret == 0:  
                     os.remove("%s.md5" % self.module)
-                    os.chdir("..")
+                    os.chdir(previous_path)
                     raise RuntimeError, "The extension module did not compile, check %s/compile.log" % self.module 
                 else: 
 #                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
@@ -243,24 +270,32 @@ void f()
                     output_file.write(output)
                     if not ret == 0:  
                         os.remove("%s.md5" % self.module)
-                        os.chdir("..")
+                        os.chdir(previous_path)
                         raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module
 
 #            print "Module name is \'"+self.module+"\'"
-            os.chdir("..")
+            os.chdir(previous_path)
         else: 
-            os.chdir("..")
+            os.chdir(previous_path)
             raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
 
-
-        file = open(os.path.join(self.module, self.module + ".md5"))  
+        file = open(os.path.join(get_tmp_dir(), self.module, self.module + ".md5"))  
         md5sum = file.readline() 
-        if COPY and md5sum:   
+        
+
+        if USE_CACHE and md5sum:   
             # FIXME os.environ['HOME'] portable ?  
-            instant_dir = os.path.join((os.environ['HOME']), ".instant")
+            instant_dir = get_instant_dir() 
             if not os.path.isdir(instant_dir):   
                 os.mkdir(instant_dir) 
-            shutil.copytree(self.module, os.path.join(instant_dir, md5sum, self.module))
+            shutil.copytree(os.path.join(get_tmp_dir(), self.module), os.path.join(instant_dir, md5sum, self.module))
+
+            try: 
+                found = find_module(md5sum)
+            except Exception, e: 
+                print  e
+            
+
 
 
     def debug(self):
@@ -451,7 +486,7 @@ void f()
 
         if (os.path.isfile(self.module+".md5")):
             current_md5sum = self.getmd5sumfiles(md5sum_files )
-            if SEARCH_CACHE and find_module(current_md5sum):
+            if USE_CACHE and find_module(current_md5sum):
                 return 1 
             else: 
                 file = open(self.module + ".md5") 
