@@ -216,8 +216,22 @@ void f()
             if not os.path.isdir(tmp_dir): 
                 os.mkdir(tmp_dir)
             module_path = os.path.join(tmp_dir, self.module) 
-        if not os.path.isdir(module_path): 
-            os.mkdir(module_path)
+            if not os.path.isdir(module_path): 
+                os.mkdir(module_path)
+
+            files_to_copy = []
+            files_to_copy.extend(self.sources) 
+            files_to_copy.extend(self.local_headers)
+            files_to_copy.extend(self.object_files)
+            files_to_copy.extend(self.wrap_headers)
+            for file in self.wrap_headers: 
+                shutil.copyfile(file, os.path.join(tmp_dir, self.module,  file))
+        else: 
+            if not os.path.isdir(module_path): 
+                os.mkdir(module_path)
+
+
+
         os.chdir(module_path)
         f = open("__init__.py", 'w')
         f.write("from %s import *"% self.module)
@@ -443,6 +457,7 @@ void f()
         for filename in filenames: 
          
 #            print "Adding file ", filename, "to md5 sum "
+            print "dir ", os.getcwd(), "file ", filename
 
             try:
                 fp = open(filename, 'rb')
@@ -494,6 +509,7 @@ void f()
                 if current_md5sum == last_md5sum:
                     return 1 
                 else: 
+                    print "md5sum_files ", md5sum_files
                     self.writemd5sumfile(md5sum_files, self.module + ".md5")
                     return 0 
         else:
