@@ -457,7 +457,6 @@ void f()
         for filename in filenames: 
          
 #            print "Adding file ", filename, "to md5 sum "
-            print "dir ", os.getcwd(), "file ", filename
 
             try:
                 fp = open(filename, 'rb')
