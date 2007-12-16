@@ -563,10 +563,10 @@ sources = %s
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
                      include_dirs=%s, 
-                     library_dirs=%s, libraries=%s)])  
+                     library_dirs=%s, libraries=%s,  extra_compile_args=['%s'])])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
-               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries ))   
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, self.cppargs))   
         f.close()
 
 
