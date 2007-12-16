@@ -86,10 +86,10 @@ void f()
         self.local_headers  = []
         self.wrap_headers   = []
         self.sources        = []
-        self.include_dirs   = ['-I.']
+        self.include_dirs   = ['.']
         self.libraries      = []
         self.library_dirs   = []
-        self.cppargs        = ''
+        self.cppargs        = '-O3'
         self.object_files   = []
         self.arrays         = []
         self.additional_definitions = ""
@@ -562,8 +562,8 @@ os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
-                     include_dirs=%s, 
-                     library_dirs=%s, libraries=%s,  extra_compile_args=['%s'])])  
+                     include_dirs=%s, library_dirs=%s, 
+                     libraries=%s,  extra_compile_args=['%s'])])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
                self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, self.cppargs))   
