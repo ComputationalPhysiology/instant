@@ -89,7 +89,7 @@ void f()
         self.include_dirs   = ['.']
         self.libraries      = []
         self.library_dirs   = []
-        self.cppargs        = '-O3'
+        self.cppargs        = '-O2'
         self.object_files   = []
         self.arrays         = []
         self.additional_definitions = ""
@@ -302,7 +302,7 @@ void f()
             instant_dir = get_instant_dir() 
             if not os.path.isdir(instant_dir):   
                 os.mkdir(instant_dir) 
-            shutil.copytree(os.path.join(get_tmp_dir(), self.module), os.path.join(instant_dir, md5sum, self.module))
+            shutil.copytree(os.path.join(get_tmp_dir(), self.module), os.path.join(instant_dir, md5sum))
 
             try: 
                 found = find_module(md5sum)
