@@ -25,7 +25,7 @@ import shutil
 
 
 VERBOSE = 1
-USE_CACHE=1 
+USE_CACHE=0 
 COPY_LOCAL_FILES=0
 
 def get_instant_dir():
