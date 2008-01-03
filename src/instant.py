@@ -26,6 +26,7 @@ import shutil
 
 VERBOSE = 1
 USE_CACHE=1 
+COPY_LOCAL_FILES=0
 
 def get_instant_dir():
     instant_dir = '.'
@@ -235,8 +236,9 @@ void f()
         else: 
             if not os.path.isdir(module_path): 
                 os.mkdir(module_path)
-            for file in files_to_copy: 
-                shutil.copyfile(file, os.path.join(self.module,  file))
+            if COPY_LOCAL_FILES: 
+                for file in files_to_copy: 
+                    shutil.copyfile(file, os.path.join(self.module,  file))
 
 
 
