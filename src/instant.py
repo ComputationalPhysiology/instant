@@ -563,6 +563,10 @@ void f()
         self.cppsrcs.append( "%s_wrap.cxx" %self.module )
         f = open(self.module+'_setup.py', 'w')
         inc_dir = ""
+        compile_args = ""
+        if len(self.cppargs) > 1:  
+            compile_args = ", extra_compile_args=['%s']" % self.cppargs 
+        
         if len(self.local_headers) > 0: inc_dir = "-I.."  
         # >& compile.log
         f.write(""" 
@@ -575,10 +579,10 @@ sources = %s
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
                      include_dirs=%s, library_dirs=%s, 
-                     libraries=%s,  extra_compile_args=['%s'])])  
+                     libraries=%s %s)])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
-               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, self.cppargs))   
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args))   
         f.close()
 
 
