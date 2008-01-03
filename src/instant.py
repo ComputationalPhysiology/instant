@@ -209,9 +209,20 @@ void f()
         previous_path = os.getcwd()
         instant_dir = get_instant_dir()
 
+
+        # create list of files that should be copyied
+        files_to_copy = []
+        files_to_copy.extend(self.sources) 
+        files_to_copy.extend(self.local_headers)
+        files_to_copy.extend(self.object_files)
+        files_to_copy.extend(self.wrap_headers)
+
+        #copy files either to cache or to local directory
         if USE_CACHE: 
+            #ensure that the cache dir exists
             if not os.path.isdir(instant_dir):
                 os.mkdir(instant_dir)
+            #ensure that the tmp dir exists
             tmp_dir = get_tmp_dir () 
             if not os.path.isdir(tmp_dir): 
                 os.mkdir(tmp_dir)
@@ -219,16 +230,14 @@ void f()
             if not os.path.isdir(module_path): 
                 os.mkdir(module_path)
 
-            files_to_copy = []
-            files_to_copy.extend(self.sources) 
-            files_to_copy.extend(self.local_headers)
-            files_to_copy.extend(self.object_files)
-            files_to_copy.extend(self.wrap_headers)
-            for file in self.wrap_headers: 
+            for file in files_to_copy: 
                 shutil.copyfile(file, os.path.join(tmp_dir, self.module,  file))
         else: 
             if not os.path.isdir(module_path): 
                 os.mkdir(module_path)
+            for file in files_to_copy: 
+                shutil.copyfile(file, os.path.join(self.module,  file))
+
 
 
 
