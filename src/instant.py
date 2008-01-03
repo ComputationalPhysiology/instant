@@ -508,7 +508,8 @@ void f()
                 if current_md5sum == last_md5sum:
                     return 1 
                 else: 
-                    print "md5sum_files ", md5sum_files
+                    if VERBOSE > 2:  
+                        print "md5sum_files ", md5sum_files
                     self.writemd5sumfile(md5sum_files, self.module + ".md5")
                     return 0 
         else:
