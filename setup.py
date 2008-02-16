@@ -9,7 +9,7 @@ setup(name="instant", version='0.9.3',
       author_email ="magnew@simula.no, kent-and@simula.no", 
       url="http://www.fenics.org/instant", 
       package_dir={'': 'src' }, 
-      scripts = [join("etc" , "instant-cache-clean.sh")]
+      scripts = [join("etc" , "instant-cache-clean.sh")],
       py_modules=['instant'])
 
 
