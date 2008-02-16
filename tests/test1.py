@@ -1,6 +1,5 @@
+#!/usr/bin/env python
 
-import instant
-instant.USE_CACHE = 0
 from instant import inline
 
 add_func = inline("double add(double a, double b){ return a+b; }") 

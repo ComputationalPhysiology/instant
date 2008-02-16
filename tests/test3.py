@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import instant
-instant.USE_CACHE=0
 from instant import create_extension  
 
 

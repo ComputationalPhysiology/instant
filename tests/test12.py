@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import Numeric  as N
 import time

@@ -1,8 +1,4 @@
-#!/bin/sh
-""":"
-exec python $0 ${1+"$@"}
-"""#"
-
+#!/usr/bin/env python
 
 from instant import create_extension 
 import Numeric,sys

@@ -1,12 +1,10 @@
-
-
+#!/usr/bin/env python
 
 import numpy 
 import time
 import instant
 from instant import inline_with_numpy
 
-#instant.USE_CACHE=0 
 
 c_code = """
 double sum_of_some_func(int n1, double* array1){
