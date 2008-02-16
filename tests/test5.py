@@ -22,7 +22,7 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 """
 
 
-create_extension(code=c_code, system_headers=["arrayobject.h"], cppargs='',
+create_extension(code=c_code, system_headers=["arrayobject.h"], cppargs='-pg',
           include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
           init_code='import_array();', module='test5_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
