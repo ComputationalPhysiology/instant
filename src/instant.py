@@ -81,7 +81,7 @@ void f()
 }"""
         self.gen_setup  = 1 
         self.module  = 'instant_swig_module'
-        self.swigopts     = '-I.'
+        self.swigopts     = ' -c++ -fcompact -O -I. -small'
         self.init_code    = '  //Code for initialisation here'
         self.system_headers = []
         self.local_headers  = []
@@ -96,6 +96,7 @@ void f()
         self.additional_definitions = ""
         self.additional_declarations = ""
         self.generate_Interface = True
+        self.signature          = ""
 
 
     def parse_args(self, dict):
@@ -136,6 +137,8 @@ void f()
                 self.additional_declarations = dict[key]
             elif key == 'generate_Interface': 
                 self.generate_Interface= dict[key]
+            elif key == 'signature': 
+                self.signature = dict[key]
 
 
         self.makefile_name = self.module+".mak"
@@ -420,9 +423,10 @@ void f()
         self.typemaps = typemaps 
 
         interface_string = """
-%%module (directors="1") %(module)s
+%%module  %(module)s
+//%%module (directors="1") %(module)s
 
-%%feature("director");
+//%%feature("director");
 
 %%{
 #include <iostream>
@@ -433,7 +437,7 @@ void f()
 %(code)s
 %%}
 
-%%feature("autodoc", "1");
+//%%feature("autodoc", "1");
 %%init%%{
 %(init_code)s
 %%}
@@ -441,7 +445,7 @@ void f()
 %(additional_definitions)s
 %(additional_declarations)s
 %(wrap_headers_code2)s
-%(typemaps)s
+//%(typemaps)s
 %(code)s;
 
 """ % vars(self)
@@ -454,7 +458,16 @@ void f()
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
 
-    def getmd5sumfiles(self, filenames):
+    def get_md5sum_signature(self, signature):
+        '''
+        get the md5 value of signature 
+        '''
+        m = md5.new()
+        m.update(signature)
+        return m.hexdigest().upper()
+
+
+    def get_md5sum_files(self, filenames):
         '''
         get the md5 value of filename
         modified based on Python24\Tools\Scripts\md5sum.py
@@ -463,7 +476,6 @@ void f()
         m = md5.new()
 
         filenames.sort()
-
 
         for filename in filenames: 
          
@@ -489,13 +501,12 @@ void f()
 
         return m.hexdigest().upper()
 
-    def writemd5sumfile(self, filenames, md5out=sys.stdout):
-        result=self.getmd5sumfiles(filenames)
+    def write_md5sum_file(self, sum, md5out=sys.stdout):
         try:
             fp = open(md5out, 'w')
         except IOError, msg:
             sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
-        fp.write(result)
+        fp.write(sum)
         fp.close()
 
     def check_md5sum(self): 
@@ -503,14 +514,20 @@ void f()
         Check if the md5sum of the generated interface file has changed since the last
         time the module was compiled. If it has changed then recompilation is necessary.  
         """ 
+
         md5sum_files = []
-        md5sum_files.append(self.ifile_name)
-        for i in self.sources:       md5sum_files.append(i)
-        for i in self.wrap_headers:  md5sum_files.append(i)
-        for i in self.local_headers: md5sum_files.append(i)
+        if not self.signature: 
+            md5sum_files.append(self.ifile_name)
+            for i in self.sources:       md5sum_files.append(i)
+            for i in self.wrap_headers:  md5sum_files.append(i)
+            for i in self.local_headers: md5sum_files.append(i)
 
         if (os.path.isfile(self.module+".md5")):
-            current_md5sum = self.getmd5sumfiles(md5sum_files )
+            current_md5sum = ""
+            if self.signature: 
+                current_md5sum = self.get_md5sum_signature(self.signature)
+            else:
+                current_md5sum = self.get_md5sum_files(md5sum_files)
             if USE_CACHE and find_module(current_md5sum):
                 return 1 
             else: 
@@ -521,40 +538,23 @@ void f()
                 else: 
                     if VERBOSE > 2:  
                         print "md5sum_files ", md5sum_files
-                    self.writemd5sumfile(md5sum_files, self.module + ".md5")
+                    self.write_md5sum_file(current_md5sum, self.module + ".md5")
                     return 0 
         else:
-            self.writemd5sumfile(md5sum_files, self.module + ".md5")
-            current_md5sum = self.getmd5sumfiles(md5sum_files )
+
+            if self.signature: 
+                current_md5sum = self.get_md5sum_signature(self.signature)
+            else:
+                current_md5sum = self.get_md5sum_files(md5sum_files)
+
+            self.write_md5sum_file(current_md5sum, self.module + ".md5")
+
             if find_module(current_md5sum):
                 return 1 
             else: 
                 return 0
         return 0; 
 
-
-    
-#    def check_md5sum(self): 
-#        """ 
-#        Check if the md5sum of the generated interface file has changed since the last
-#        time the module was compiled. If it has changed then recompilation is necessary.  
-#        """ 
-#        if (os.path.isfile(self.module+".md5")):
-#            pipe = os.popen("md5sum " + self.ifile_name)  
-#            current_md5sum = pipe.readline() 
-#            file = open(self.module + ".md5") 
-#            last_md5sum = file.readline()
-#            if ( current_md5sum == last_md5sum) : return 1  
-#            else: 
-#                os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
-#                return 0 
-#                
-#            
-#        else:
-#            os.system("md5sum " + self.ifile_name +  " > " + self.module + ".md5")  
-#            return 0
-#        
-#        return 0; 
 
     def generate_setup(self): 
         """
@@ -573,7 +573,7 @@ void f()
 import os
 from distutils.core import setup, Extension
 name = '%s' 
-swig_cmd ='swig -python -c++ -O %s %s %s'
+swig_cmd ='swig -python %s %s %s'
 os.system(swig_cmd)
 sources = %s 
 setup(name = '%s', 
@@ -691,7 +691,7 @@ def create_extension(**args):
     ext.create_extension(**args)
 
 
-def inline(c_code):
+def inline(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
        in instant. 
@@ -709,14 +709,17 @@ def inline(c_code):
 
     """
     ext = instant()
+    args_dict["code"] = c_code 
+    if not args_dict.has_key("module"):
+        args_dict["module"] = "inline_ext" 
     try: 
         func = c_code[:c_code.index('(')]
         ret, func_name = func.split()
-        ext.create_extension(code=c_code, module="inline_ext")
+        ext.create_extension(**args_dict)
         exec("from inline_ext import %s as func_name"% func_name) 
         return func_name
     except: 
-        ext.create_extension(code=c_code, module="inline_ext")
+        ext.create_extension(**args_dict)
         exec("import inline_ext as I") 
         return I 
 
