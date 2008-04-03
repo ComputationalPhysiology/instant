@@ -43,7 +43,7 @@ print 'With instant:',t2-t1,'seconds'
 t1 = time.time() 
 Numeric.add(a,b,d)
 t2 = time.time()
-print 'Med numpy:   ',t2-t1,'seconds'
+print 'With numpy:   ',t2-t1,'seconds'
 
 difference = abs(d - c) 
 sum = reduce( lambda a,b: a+b, difference)  

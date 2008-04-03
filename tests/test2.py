@@ -27,7 +27,7 @@ print 'With instant:',t2-t1,'seconds'
 t1 = time.time() 
 sum2 =  Numeric.sum(a)
 t2 = time.time()
-print 'Med Numeric:   ',t2-t1,'seconds'
+print 'With Numeric:   ',t2-t1,'seconds'
 
 difference = abs(sum1 - sum2) 
 print "The difference between the sums computed by numpy and instant is " + str(difference) 

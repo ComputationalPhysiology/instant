@@ -59,7 +59,7 @@ t1 = time.time()
 c = a+b
 t2 = time.time()
 
-print 'Med numpy:   ',t2-t1,'seconds'
+print 'With numpy:   ',t2-t1,'seconds'
 
 difference = abs(c - d) 
 

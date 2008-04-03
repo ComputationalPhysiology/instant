@@ -27,7 +27,7 @@ print 'With instant:',t2-t1,'seconds'
 t1 = time.time() 
 sum2 =  numarray.sum(a)
 t2 = time.time()
-print 'Med numarray:   ',t2-t1,'seconds'
+print 'With numarray:   ',t2-t1,'seconds'
 
 difference = abs(sum1 - sum2) 
 print "The difference between the sums computed by numarray and instant is " + str(difference) 
