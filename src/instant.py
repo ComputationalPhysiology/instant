@@ -890,7 +890,9 @@ def inline_with_numarray(c_code, **args_dict):
     args_dict["code"] = c_code 
     args_dict["module"] = "inline_ext_numarray" 
     import numarray 
-    inc_dir = numarray.numinclude.include_dir
+    inc_dir =  [numarray.numinclude.include_dir, 
+                "/usr/local/include/python" + sys.version[:3] + "numarray"] 
+
     if args_dict.has_key("system_headers"):  
         args_dict["system_headers"].append ("arrayobject.h")
     else: 
