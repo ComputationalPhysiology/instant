@@ -822,10 +822,12 @@ def inline_with_numeric(c_code, **args_dict):
 
     if args_dict.has_key("include_dirs"): 
         args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                                            sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']])
+                                            sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
+                                            "/usr/local/include/python" + sys.version[:3] +  "/Numeric"])
     else: 
         args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                                      sys.prefix + "/include" + "/Numeric"][sys.platform=='win32']]
+                                      sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
+                                      "/usr/local/include/python"  + sys.version[:3] +  "/Numeric" ]
 
     if args_dict.has_key("init_code"):
         args_dict["init_code"] += "\nimport_array();\n"
