@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from instant import create_extension  
-import Numeric as N
+import numpy as N
 import sys
 import time
 
@@ -25,12 +25,9 @@ void add(int n1, int* p1, double* array1,
 """
 
 # Guess arrayobject is either in sys.prefix or /usr/local
-include_dirs = [sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                "/usr/local/include/python" + sys.version[:3] + "/Numeric" ]
 
-
-create_extension(code=c_code, system_headers=["arrayobject.h"], cppargs='-g',
-          include_dirs=include_dirs,
+create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-g',
+          include_dirs=[N.get_include()],
           init_code='import_array();', module='test6_ext', 
           arrays = [['n1', 'p1', 'array1'],
                     ['n2', 'p2', 'array2'],
@@ -50,7 +47,10 @@ t3 = time.time()
 N.add(a,b,d)
 t4 = time.time()
 
-max_difference = max(max(abs(d - c))) 
+e = abs(d-c)
+e.shape=(4000000,)
+
+max_difference = max(e) 
 print "The difference between the arrays computed by numpy and instant is ", max_difference 
 
 print 'With instant:',t2-t1,'seconds'

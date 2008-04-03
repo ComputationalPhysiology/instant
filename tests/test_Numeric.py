@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import numpy 
+import Numeric 
 import time
-from instant import inline_with_numpy
+from instant import inline_with_numeric
 
 c_code = """
 double sum (int n1, double* array1){
@@ -15,9 +15,9 @@ double sum (int n1, double* array1){
 """
 
 
-sum_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']])
+sum_func = inline_with_numeric(c_code, arrays = [['n1', 'array1']])
 
-a = numpy.arange(10000000); a = numpy.sin(a)
+a = Numeric.arange(10000000); a = Numeric.sin(a)
 
 t1 = time.time()
 sum1 = sum_func(a)
@@ -25,9 +25,9 @@ t2 = time.time()
 print 'With instant:',t2-t1,'seconds'
 
 t1 = time.time() 
-sum2 =  numpy.sum(a)
+sum2 =  Numeric.sum(a)
 t2 = time.time()
-print 'With numpy:   ',t2-t1,'seconds'
+print 'With Numeric:   ',t2-t1,'seconds'
 
 difference = abs(sum1 - sum2) 
 print "The difference between the sums computed by numpy and instant is " + str(difference) 

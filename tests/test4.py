@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 from instant import create_extension 
-import Numeric,sys
+import numpy,sys
 
-a = Numeric.arange(10000000)
-a = Numeric.sin(a)
-b = Numeric.arange(10000000)
-b = Numeric.cos(b)
+a = numpy.arange(10000000)
+a = numpy.sin(a)
+b = numpy.arange(10000000)
+b = numpy.cos(b)
 
 
 
@@ -39,12 +39,9 @@ return PyArray_Return(ret);
 }
 """
 
-# Guess arrayobject is either in sys.prefix or /usr/local
-include_dirs = [sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                "/usr/local/include/python" + sys.version[:3] + "/Numeric" ]
 
-create_extension(code=s, system_headers=["arrayobject.h"],
-              include_dirs=include_dirs,
+create_extension(code=s, system_headers=["numpy/arrayobject.h"],
+              include_dirs=[numpy.get_include()],
               init_code='import_array();', module="test4_ext"
               )
 
