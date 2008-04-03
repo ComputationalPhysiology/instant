@@ -39,9 +39,12 @@ return PyArray_Return(ret);
 }
 """
 
+# Guess arrayobject is either in sys.prefix or /usr/local
+include_dirs = [sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
+                "/usr/local/include/python" + sys.version[:3] + "/Numeric" ]
 
 create_extension(code=s, system_headers=["arrayobject.h"],
-              include_dirs=[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"],
+              include_dirs=include_dirs,
               init_code='import_array();', module="test4_ext"
               )
 
