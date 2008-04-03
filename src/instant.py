@@ -887,17 +887,17 @@ def inline_with_numarray(c_code, **args_dict):
 
     args_dict["code"] = c_code 
     args_dict["module"] = "inline_ext_numarray" 
+    import numarray 
+    inc_dir = numarray.numinclude.include_dir
     if args_dict.has_key("system_headers"):  
         args_dict["system_headers"].append ("arrayobject.h")
     else: 
         args_dict["system_headers"] = ["arrayobject.h"]
 
     if args_dict.has_key("include_dirs"): 
-        args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
-                                            sys.prefix + "/include" + "/numarray"][sys.platform=='win32']])
+        args_dict["include_dirs"].extend(inc_dir)
     else: 
-        args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/numarray", 
-                                      sys.prefix + "/include" + "/numarray"][sys.platform=='win32']]
+        args_dict["include_dirs"] = [inc_dir]
     if args_dict.has_key("init_code"):
         args_dict["init_code"] += "\nimport_array();\n"
     else: 
