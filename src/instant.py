@@ -393,7 +393,7 @@ void f()
   }
   PyArrayObject* pyarray;
   pyarray = (PyArrayObject*)$input; 
-  $1 = pyarray->dimensions[0];
+  $1 = int(pyarray->dimensions[0]);
   $2 = (double*)pyarray->data;
 }
 """ % { 'n' : a[0] , 'array' : a[1] }
@@ -408,8 +408,13 @@ void f()
   }
   PyArrayObject* pyarray;
   pyarray = (PyArrayObject*)$input; 
-  $1 = pyarray->nd;
-  $2 = pyarray->dimensions;
+  $1 = int(pyarray->nd);
+  int* dims = new int($1); 
+  for (int d=0; d<$1; d++) {
+      dims[d] = int(pyarray->dimensions[d]);
+  }
+
+  $2 = dims;  
   $3 = (double*)pyarray->data;
 }
 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
