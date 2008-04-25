@@ -417,6 +417,10 @@ void f()
   $2 = dims;  
   $3 = (double*)pyarray->data;
 }
+%%typemap(freearg) (int %(n)s,int* %(ptv)s,double* %(array)s){
+    // deleting dims
+    delete $2; 
+}
 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
               typemaps += typemap
 
