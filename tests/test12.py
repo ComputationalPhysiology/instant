@@ -38,7 +38,7 @@ a2 = N.zeros([n, n])
 t1 = time.time()
 a2[:,:] = N.sin(xv + yv)
 t2 = time.time()
-print 'With Numeric:',t2-t1,'seconds'
+print 'With numpy:',t2-t1,'seconds'
 
 d = a-a2 
 d.shape = (n*n,) 
