@@ -90,7 +90,7 @@ void f()
         self.include_dirs   = ['.']
         self.libraries      = []
         self.library_dirs   = []
-        self.cppargs        = '-O2'
+        self.cppargs        = ['-O2']
         self.object_files   = []
         self.arrays         = []
         self.additional_definitions = ""
@@ -126,7 +126,11 @@ void f()
             elif key == 'library_dirs':
                 self.library_dirs = dict[key]
             elif key == 'cppargs':
-                self.cppargs = dict[key]
+                assert isinstance(dict[key], (str,tuple, list)), "Wrong type of argument to cppargs" 
+                if isinstance(dict[key], str): 
+                    self.cppargs = [dict[key]]
+                elif isinstance(dict[key], (tuple, list)): 
+                    self.cppargs = dict[key]
             elif key == 'object_files':
                 self.object_files = dict[key]
             elif key == 'arrays':
@@ -574,7 +578,7 @@ void f()
         inc_dir = ""
         compile_args = ""
         if len(self.cppargs) > 1:  
-            compile_args = ", extra_compile_args=['%s']" % self.cppargs 
+            compile_args = ", extra_compile_args=%s" % self.cppargs 
         
         if len(self.local_headers) > 0: inc_dir = "-I.."  
         # >& compile.log

@@ -11,7 +11,7 @@ double sum(double a, double b){
 }
 """
 
-create_extension(code=c_code, module='test3_ext', cppargs='-pg')
+create_extension(code=c_code, module='test3_ext', cppargs=['-pg -O3', '-g'])
 
 from test3_ext import sum 
 a = 3.7
