@@ -32,6 +32,7 @@ COPY_LOCAL_FILES=1
 def get_instant_dir():
     instant_dir = '.'
     if USE_CACHE: 
+        # FIXME os.environ['HOME'] portable ?
         instant_dir = os.path.join((os.environ['HOME']), ".instant")
         if not os.path.isdir(instant_dir):
             os.mkdir(instant_dir)
@@ -45,18 +46,6 @@ def get_tmp_dir():
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
     return tmp_dir
-
-
-def path_walk_callback(arg, directory, files):
-    stack = []
-    tmp_dir = get_tmp_dir() 
-    for file in files:
-        if not directory == tmp_dir: 
-            if file[-3:] == "md5":
-                f = open(os.path.join(directory,file))
-                line = f.readline()
-                if arg[0] == line:
-                    arg.append(directory)                                                                    
 
 
 def get_md5sum_from_signature(signature):
@@ -106,15 +95,31 @@ def write_md5sum_file(sum, md5out=sys.stdout):
     fp.close()
 
 
+def path_walk_callback(arg, directory, files):
+    if directory != get_tmp_dir():
+        # find .md5 file and compare its contents with given md5 sum in arg
+        for filename in files:
+            if filename[-3:] == "md5":
+                f = open(os.path.join(directory, filename))
+                line = f.readline()
+                if arg[0] == line:
+                    arg.append(directory)                                                                    
+
+
 def find_module(md5sum):
-    list = [md5sum]
+    arg = [md5sum]
     instant_dir = get_instant_dir()
-    os.path.walk(instant_dir, path_walk_callback, list)
-    if len(list) == 2:                                                                     
-        dir = list[1]
-        sys.path.insert(0,os.path.join(instant_dir, md5sum,dir)) 
-        return 1
-    return 0
+    os.path.walk(instant_dir, path_walk_callback, arg)
+    if len(arg) == 2:
+        assert arg[1]
+        directory = os.path.join(instant_dir, md5sum, arg[1])
+        # add found module directory to path
+        if not directory in sys.path:
+            sys.path.insert(0, directory) 
+        # return module name
+        return arg[1]
+        #return 1
+    return None
 
 
 class instant:
@@ -255,30 +260,28 @@ void f()
            
         """
         if self.parse_args(args):
-            print 'Nothing done!'
+            print 'Nothing done!' # Martin: What does this mean?
             return
         #self.debug()
         
         previous_path = os.getcwd()
-        instant_dir = get_instant_dir()
 
-        # create list of files that should be copied
-        files_to_copy = []
-        files_to_copy.extend(self.sources) 
-        files_to_copy.extend(self.local_headers)
-        files_to_copy.extend(self.object_files)
-        files_to_copy.extend(self.wrap_headers)
-        
-        # get module path, either in cache or a local directory
+        # create module path, either in cache or a local directory
         if USE_CACHE: 
             module_path = os.path.join(get_tmp_dir(), self.module) 
         else: 
             module_path = self.module
-        
-        # copy files either to cache or to local directory
         if not os.path.isdir(module_path): 
             os.mkdir(module_path)
+        
+        # copy files either to cache or to local directory
         if USE_CACHE or COPY_LOCAL_FILES:
+            # create list of files that should be copied
+            files_to_copy = []
+            files_to_copy.extend(self.sources) 
+            files_to_copy.extend(self.local_headers)
+            files_to_copy.extend(self.object_files)
+            files_to_copy.extend(self.wrap_headers)
             for file in files_to_copy:
                 shutil.copyfile(file, os.path.join(module_path,  file))
         
@@ -293,9 +296,9 @@ void f()
             self.generate_Interfacefile()
             if self.check_md5sum():
                 os.chdir(previous_path)
-                return 1
+                return 1 # Martin: What does return 1 mean?
         else:
-            # if we don't generate the interface, we remove the .md5 file, why is that?
+            # Martin: If we don't generate the interface, we remove the .md5 file, why is that?
             if os.path.isfile(self.module + ".md5"):
                 os.remove(self.module + ".md5")
 
@@ -305,47 +308,45 @@ void f()
         #    null = '/dev/null'
         #if os.system("swig -version 2> %s" % null) == 0:
         
-        # the next steps require swig!
-        (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
-        if swig_stat != 0:
-            os.chdir(previous_path)
-            raise RuntimeError("Could not find swig! You can download swig from http://www.swig.org")
-        
-        # generate Makefile or setup.py and run it
-        if not self.gen_setup:
-            self.generate_Makefile()
-            if os.path.isfile(self.makefile_name):
-                os.system("make -f "+self.makefile_name+" clean")
-            os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
-            if VERBOSE >= 9:
-                os.remove(self.logfile_name)
-        else:
-            self.generate_setup()
-            cmd = "python " + self.module + "_setup.py build_ext"
-            if VERBOSE > 0: print "--- Instant: compiling ---"
-            if VERBOSE > 1: print cmd
-            ret, output = commands.getstatusoutput(cmd)
-            compile_log_file = open("compile.log",  'w')
-            compile_log_file.write(output)
-            if ret != 0:
-                # compilation failed
-                os.remove("%s.md5" % self.module)
-                os.chdir(previous_path)
-                raise RuntimeError("The extension module did not compile, check %s/compile.log" % self.module)
+        try:
+            # the next steps require swig!
+            (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
+            if swig_stat != 0:
+                raise RuntimeError("Could not find swig! You can download swig from http://www.swig.org")
+            
+            # generate Makefile or setup.py and run it
+            if not self.gen_setup:
+                self.generate_Makefile()
+                if os.path.isfile(self.makefile_name):
+                    os.system("make -f "+self.makefile_name+" clean")
+                os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
+                if VERBOSE >= 9:
+                    os.remove(self.logfile_name)
             else:
-                #cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1"
-                cmd = "python " + self.module + "_setup.py install --install-platlib=."
+                self.generate_setup()
+                cmd = "python " + self.module + "_setup.py build_ext"
+                if VERBOSE > 0: print "--- Instant: compiling ---"
                 if VERBOSE > 1: print cmd
                 ret, output = commands.getstatusoutput(cmd)
+                compile_log_file = open("compile.log",  'w')
                 compile_log_file.write(output)
                 if ret != 0:
-                    # "installation" failed
+                    # compilation failed
                     os.remove("%s.md5" % self.module)
-                    os.chdir(previous_path)
-                    raise RuntimeError("Could not install the extension module, check %s/compile.log" % self.module)
-
-        #finally: # This code could possibly be cleaned up with the use of finally or with for resource management
-        os.chdir(previous_path)
+                    raise RuntimeError("The extension module did not compile, check %s/compile.log" % self.module)
+                else:
+                    #cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1"
+                    cmd = "python " + self.module + "_setup.py install --install-platlib=."
+                    if VERBOSE > 1: print cmd
+                    ret, output = commands.getstatusoutput(cmd)
+                    compile_log_file.write(output)
+                    if ret != 0:
+                        # "installation" failed
+                        os.remove("%s.md5" % self.module)
+                        raise RuntimeError("Could not install the extension module, check %s/compile.log" % self.module)
+        finally:
+            # always get back to original directory
+            os.chdir(previous_path)
         
         #print "Module name is \'"+self.module+"\'"
         
@@ -354,11 +355,10 @@ void f()
         file.close()
         
         if USE_CACHE and md5sum:
-            # FIXME os.environ['HOME'] portable ?
             instant_dir = get_instant_dir()
             shutil.copytree(os.path.join(get_tmp_dir(), self.module), os.path.join(instant_dir, md5sum))
-            try: 
-                found = find_module(md5sum)
+            try:
+                find_module(md5sum)
             except Exception, e:
                 print e
     
@@ -519,24 +519,26 @@ void f()
         if os.path.isfile(self.module+".md5"):
             if USE_CACHE and find_module(current_md5sum):
                 return 1
-            else: 
+            else:
                 last_md5sum = open(self.module + ".md5").readline()
                 if current_md5sum == last_md5sum:
                     return 1
-                else: 
+                else:
                     write_md5sum_file(current_md5sum, self.module + ".md5")
                     return 0
         else:
             write_md5sum_file(current_md5sum, self.module + ".md5")
-            return find_module(current_md5sum)
-
+            if find_module(current_md5sum):
+                return 1
+        
         return 0
 
-    def generate_setup(self): 
+    def generate_setup(self):
         """
         Generates a setup.py file
         """
-        self.cppsrcs.append( "%s_wrap.cxx" %self.module )
+        # handle arguments
+        self.cppsrcs.append( "%s_wrap.cxx" % self.module ) # Martin: is it safe to just append to this here?
         
         compile_args = ""
         if len(self.cppargs) > 1:  
@@ -545,7 +547,6 @@ void f()
         inc_dir = ""
         if len(self.local_headers) > 0:
             inc_dir = "-I.."
-        # >& compile.log
         
         # generate
         code = """ 
@@ -611,6 +612,7 @@ clean::
            list2str(self.include_dirs),
            list2str(self.library_dirs),
            self.module)
+        # end code
         
         # write
         f = open(self.makefile_name, 'w')
@@ -619,7 +621,9 @@ clean::
         
         if VERBOSE > 1:
             print 'Makefile', self.makefile_name, 'generated'
-            
+    
+    ### End of class instant
+
 
 # convert list values to string
 def list2str(list):
@@ -629,15 +633,15 @@ def list2str(list):
     return s
 
 
-
 def find_module_by_signature(signature):
     return find_module(get_md5sum_from_signature(signature))
 
 
 def import_module_by_signature(signature):
-    if not find_module_by_signature(signature):
+    module_name = find_module_by_signature(signature)
+    if not module_name:
         raise RuntimeError("Couldn't find module with signature %s" % signature)
-    imported_module = FIXME
+    exec("import %s as imported_module" % module_name)
     return imported_module
 
 
@@ -692,7 +696,6 @@ def create_extension(**args):
     ext.create_extension(**args)
 
 
-
 def inline(c_code, **args_dict):
     """
        This is a short wrapper around the create_extention function 
@@ -724,7 +727,6 @@ def inline(c_code, **args_dict):
         ext.create_extension(**args_dict)
         exec("import inline_ext as I") 
         return I 
-
 
 
 def inline_with_numpy(c_code, **args_dict):
@@ -778,12 +780,9 @@ def inline_with_numpy(c_code, **args_dict):
     else: 
         args_dict["init_code"] = "\nimport_array();\n"
 
-
-
     ext.create_extension(**args_dict)
     exec("from inline_ext_numpy import %s as func_name"% func_name) 
     return func_name
-
 
 
 def inline_with_numeric(c_code, **args_dict):
@@ -818,25 +817,12 @@ def inline_with_numeric(c_code, **args_dict):
 
     args_dict["code"] = c_code 
     args_dict["module"] = "inline_ext_numeric" 
-    if args_dict.has_key("system_headers"):  
-        args_dict["system_headers"].append ("arrayobject.h")
-    else: 
-        args_dict["system_headers"] = ["arrayobject.h"]
-
-    if args_dict.has_key("include_dirs"): 
-        args_dict["include_dirs"].extend( [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                                            sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
-                                            "/usr/local/include/python" + sys.version[:3] +  "/Numeric"])
-    else: 
-        args_dict["include_dirs"] = [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-                                      sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
-                                      "/usr/local/include/python"  + sys.version[:3] +  "/Numeric" ]
-
-    if args_dict.has_key("init_code"):
-        args_dict["init_code"] += "\nimport_array();\n"
-    else: 
-        args_dict["init_code"] = "\nimport_array();\n"
-
+    args_dict["system_headers"] = args_dict.get("system_headers", []) + ["arrayobject.h"]
+    args_dict["include_dirs"] = args_dict.get("include_dirs", []) + \
+        [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
+          sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
+          "/usr/local/include/python" + sys.version[:3] +  "/Numeric"]
+    args_dict["init_code"] =  args_dict.get("init_code", "") + "\nimport_array();\n"
 
     try: 
         ext = instant()
@@ -845,7 +831,7 @@ def inline_with_numeric(c_code, **args_dict):
 
         ext.create_extension(**args_dict)
 
-        exec("from inline_ext_numeric import %s as func_name"% func_name) 
+        exec("from inline_ext_numeric import %s as func_name" % func_name)
         return func_name
     except: 
         ext = instant()
@@ -853,7 +839,6 @@ def inline_with_numeric(c_code, **args_dict):
 
         exec("import inline_ext_numeric as I") 
         return I  
-
 
 
 def inline_with_numarray(c_code, **args_dict):
@@ -917,7 +902,6 @@ def inline_with_numarray(c_code, **args_dict):
     return func_name
 
 
-
 def header_and_libs_from_pkgconfig(*packages):
     """
     This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file. 
@@ -930,12 +914,12 @@ def header_and_libs_from_pkgconfig(*packages):
     libs = []
     libdirs = []
     for pack in packages:
-#        print commands.getstatusoutput("pkg-config --exists %s " % pack)
+        #print commands.getstatusoutput("pkg-config --exists %s " % pack)
         if  commands.getstatusoutput("pkg-config --exists %s " % pack)[0] == 0: 
             tmp = string.split(commands.getoutput("pkg-config --cflags-only-I %s " % pack ))  
             for i in tmp: includes.append(i[2:]) 
             tmp = string.split(commands.getoutput("pkg-config --cflags-only-other %s " % pack ))  
-            for i in tmp: flags.append(i) 
+            for i in tmp: flags.append(i)
             tmp = string.split(commands.getoutput("pkg-config --libs-only-l  %s " % pack ))  
             for i in tmp: libs.append(i[2:]) 
             tmp = string.split(commands.getoutput("pkg-config --libs-only-L  %s " % pack ))  
