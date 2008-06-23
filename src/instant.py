@@ -28,11 +28,15 @@ VERBOSE = 1
 USE_CACHE=0 
 COPY_LOCAL_FILES=1
 
+
 def get_instant_dir():
     instant_dir = '.'
     if USE_CACHE: 
         instant_dir = os.path.join((os.environ['HOME']), ".instant")
+        if not os.path.isdir(instant_dir):
+            os.mkdir(instant_dir)
     return instant_dir
+
 
 def get_tmp_dir(): 
     tmp_dir = '.'
@@ -55,18 +59,66 @@ def path_walk_callback(arg, directory, files):
                     arg.append(directory)                                                                    
 
 
-def find_module(md5sum):  
+def get_md5sum_from_signature(signature):
+    '''
+    get the md5 value of signature 
+    '''
+    m = md5.new()
+    m.update(signature)
+    return m.hexdigest().upper()
+
+
+def get_md5sum_from_files(filenames):
+    '''
+    get the md5 value of filename
+    modified based on Python24\Tools\Scripts\md5sum.py
+    '''
+    m = md5.new()
+    for filename in sorted(filenames): 
+        #print "Adding file ", filename, "to md5 sum "
+        try:
+            fp = open(filename, 'rb')
+        except IOError, msg:
+            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+            return None
+
+        try:
+            while 1:
+                data = fp.read()
+                if not data:
+                    break
+                m.update(data)
+        except IOError, msg:
+            print "filename ", filename 
+            sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
+            return None
+        fp.close() 
+
+    return m.hexdigest().upper()
+
+
+def write_md5sum_file(sum, md5out=sys.stdout):
+    try:
+        fp = open(md5out, 'w')
+    except IOError, msg:
+        sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+    fp.write(sum)
+    fp.close()
+
+
+def find_module_by_signature(signature):
+    return find_module(get_md5sum_from_signature(signature))
+
+
+def find_module(md5sum):
     list = [md5sum]
     instant_dir = get_instant_dir()
     os.path.walk(instant_dir, path_walk_callback, list)
     if len(list) == 2:                                                                     
         dir = list[1]
         sys.path.insert(0,os.path.join(instant_dir, md5sum,dir)) 
-        return 1 
+        return 1
     return 0
-
-
-
 
 
 class instant:
@@ -97,7 +149,6 @@ void f()
         self.additional_declarations = ""
         self.generate_Interface = True
         self.signature          = ""
-
 
     def parse_args(self, dict):
         """ A method for parsing arguments. """
@@ -163,7 +214,6 @@ void f()
                 return 1 # Parsing of argurments detected errors
         return 0 # all ok
 
-
     def create_extension(self, **args):
         """
         Call this function to instantly create an extension module.
@@ -177,8 +227,7 @@ void f()
            - B{module}:
               - The name you want for the module (Default is 'instant_swig_module'.). String.
            - B{swigopts}:
-              - Options to swig, for instance C{-lpointers.i} to include the
-                SWIG pointers.i library. String.
+              - Options to swig, for instance C{-lpointers.i} to include the SWIG pointers.i library. String.
            - B{init_code}:
               - Code that should be executed when the instant extension is imported. String.
            - B{system_headers}:
@@ -201,12 +250,12 @@ void f()
               - If you want to compile the files yourself. NOT YET SUPPORTED.
            - B{arrays}:
               - A list of the C arrays to be made from NumPy arrays.
-           -B{additional_definitions}:
-              - A list of additional definitions (typically needed for 
-                inheritance) 
-           -B{additional_declarations}:
-              - A list of additional declarations (typically needed for 
-                inheritance) 
+           - B{additional_definitions}:
+              - A list of additional definitions (typically needed for inheritance) 
+           - B{additional_declarations}:
+              - A list of additional declarations (typically needed for inheritance) 
+           - B{signature}:
+              - A signature string to identify the form instead of the source code.
            
         """
         if self.parse_args(args):
@@ -217,42 +266,33 @@ void f()
         previous_path = os.getcwd()
         instant_dir = get_instant_dir()
 
-
-        # create list of files that should be copyied
+        # create list of files that should be copied
         files_to_copy = []
         files_to_copy.extend(self.sources) 
         files_to_copy.extend(self.local_headers)
         files_to_copy.extend(self.object_files)
         files_to_copy.extend(self.wrap_headers)
-
-        #copy files either to cache or to local directory
+        
+        # copy files either to cache or to local directory
         if USE_CACHE: 
-            #ensure that the cache dir exists
-            if not os.path.isdir(instant_dir):
-                os.mkdir(instant_dir)
-            #ensure that the tmp dir exists
-            tmp_dir = get_tmp_dir () 
-            if not os.path.isdir(tmp_dir): 
-                os.mkdir(tmp_dir)
+            tmp_dir = get_tmp_dir() 
             module_path = os.path.join(tmp_dir, self.module) 
             if not os.path.isdir(module_path): 
                 os.mkdir(module_path)
-
-            for file in files_to_copy: 
-                shutil.copyfile(file, os.path.join(tmp_dir, self.module,  file))
+            for file in files_to_copy:
+                shutil.copyfile(file, os.path.join(module_path,  file))
         else: 
             if not os.path.isdir(module_path): 
                 os.mkdir(module_path)
             if COPY_LOCAL_FILES: 
                 for file in files_to_copy: 
                     shutil.copyfile(file, os.path.join(self.module,  file))
-
-
-
-
+        
+        # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
         f = open("__init__.py", 'w')
         f.write("from %s import *"% self.module)
+        f.close()
         
         md5sum = 0 
         if self.generate_Interface: 
@@ -292,7 +332,7 @@ void f()
                 if not ret == 0:  
                     os.remove("%s.md5" % self.module)
                     os.chdir(previous_path)
-                    raise RuntimeError, "The extension module did not compile, check %s/compile.log" % self.module 
+                    raise RuntimeError("The extension module did not compile, check %s/compile.log" % self.module)
                 else: 
 #                    cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1" 
                     cmd = "python " + self.module + "_setup.py install --install-platlib=." 
@@ -303,13 +343,13 @@ void f()
                     if not ret == 0:  
                         os.remove("%s.md5" % self.module)
                         os.chdir(previous_path)
-                        raise RuntimeError, "Could not install the  extension module, check %s/compile.log" % self.module
+                        raise RuntimeError("Could not install the  extension module, check %s/compile.log" % self.module)
 
 #            print "Module name is \'"+self.module+"\'"
             os.chdir(previous_path)
         else: 
             os.chdir(previous_path)
-            raise RuntimeError, "Could not find swig!\nYou can download swig from http://www.swig.org" 
+            raise RuntimeError("Could not find swig! You can download swig from http://www.swig.org")
 
         file = open(os.path.join(get_tmp_dir(), self.module, self.module + ".md5"))  
         md5sum = file.readline() 
@@ -326,9 +366,6 @@ void f()
                 found = find_module(md5sum)
             except Exception, e: 
                 print  e
-            
-
-
 
     def debug(self):
         """
@@ -347,7 +384,6 @@ void f()
         print 'srcs',self.srcs
         print 'cppsrcs',self.cppsrcs
         print 'cppargs',self.cppargs
-
 
     def clean(self):
         """ Clean up files the current session. """
@@ -378,10 +414,8 @@ void f()
         """
         if VERBOSE > 1:
             print "\nGenerating interface file \'"+ self.ifile_name +"\':"
-    
 
         func_name = self.code[:self.code.index(')')+1]
-
 
         # create typemaps 
         typemaps = "" 
@@ -428,10 +462,10 @@ void f()
 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
               typemaps += typemap
 
-        self.system_headers_code = "\n".join(['#include <%s>' % header for header in self.system_headers])
-        self.local_headers_code = "\n".join(['#include "%s"' % header for header in self.local_headers])
-        self.wrap_headers_code1 = "\n".join(['#include "%s"' % header for header in self.wrap_headers])
-        self.wrap_headers_code2 = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
+        self.system_headers_code = "\n".join(['#include <%s>'  % header for header in self.system_headers])
+        self.local_headers_code  = "\n".join(['#include "%s"'  % header for header in self.local_headers])
+        self.wrap_headers_code1  = "\n".join(['#include "%s"'  % header for header in self.wrap_headers])
+        self.wrap_headers_code2  = "\n".join(['%%include "%s"' % header for header in self.wrap_headers])
 
         self.typemaps = typemaps 
 
@@ -462,7 +496,6 @@ void f()
 %(code)s;
 
 """ % vars(self)
-     
 
         f = open(self.ifile_name, 'w')
         f.write(interface_string)
@@ -470,57 +503,6 @@ void f()
         if VERBOSE > 1:
             print '... Done'
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
-
-    def get_md5sum_signature(self, signature):
-        '''
-        get the md5 value of signature 
-        '''
-        m = md5.new()
-        m.update(signature)
-        return m.hexdigest().upper()
-
-
-    def get_md5sum_files(self, filenames):
-        '''
-        get the md5 value of filename
-        modified based on Python24\Tools\Scripts\md5sum.py
-        '''
-
-        m = md5.new()
-
-        filenames.sort()
-
-        for filename in filenames: 
-         
-#            print "Adding file ", filename, "to md5 sum "
-
-            try:
-                fp = open(filename, 'rb')
-            except IOError, msg:
-                sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
-                return None
-
-            try:
-                while 1:
-                    data = fp.read()
-                    if not data:
-                        break
-                    m.update(data)
-            except IOError, msg:
-                print "filename ", filename 
-                sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
-                return None
-            fp.close() 
-
-        return m.hexdigest().upper()
-
-    def write_md5sum_file(self, sum, md5out=sys.stdout):
-        try:
-            fp = open(md5out, 'w')
-        except IOError, msg:
-            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
-        fp.write(sum)
-        fp.close()
 
     def check_md5sum(self): 
         """ 
@@ -531,58 +513,54 @@ void f()
         md5sum_files = []
         if not self.signature: 
             md5sum_files.append(self.ifile_name)
-            for i in self.sources:       md5sum_files.append(i)
-            for i in self.wrap_headers:  md5sum_files.append(i)
-            for i in self.local_headers: md5sum_files.append(i)
+            md5sum_files.extend(self.sources)
+            md5sum_files.extend(self.wrap_headers)
+            md5sum_files.extend(self.local_headers)
 
         if (os.path.isfile(self.module+".md5")):
             current_md5sum = ""
             if self.signature: 
-                current_md5sum = self.get_md5sum_signature(self.signature)
+                current_md5sum = get_md5sum_from_signature(self.signature)
             else:
-                current_md5sum = self.get_md5sum_files(md5sum_files)
+                current_md5sum = get_md5sum_from_files(md5sum_files)
             if USE_CACHE and find_module(current_md5sum):
-                return 1 
+                return 1
             else: 
                 file = open(self.module + ".md5") 
                 last_md5sum = file.readline()
                 if current_md5sum == last_md5sum:
-                    return 1 
+                    return 1
                 else: 
-                    if VERBOSE > 2:  
+                    if VERBOSE > 2:
                         print "md5sum_files ", md5sum_files
-                    self.write_md5sum_file(current_md5sum, self.module + ".md5")
-                    return 0 
+                    write_md5sum_file(current_md5sum, self.module + ".md5")
+                    return 0
         else:
-
-            if self.signature: 
-                current_md5sum = self.get_md5sum_signature(self.signature)
+            if self.signature:
+                current_md5sum = get_md5sum_from_signature(self.signature)
             else:
-                current_md5sum = self.get_md5sum_files(md5sum_files)
-
-            self.write_md5sum_file(current_md5sum, self.module + ".md5")
-
-            if find_module(current_md5sum):
-                return 1 
-            else: 
-                return 0
-        return 0; 
-
+                current_md5sum = get_md5sum_from_files(md5sum_files)
+            write_md5sum_file(current_md5sum, self.module + ".md5")
+            return find_module(current_md5sum)
+        return 0
 
     def generate_setup(self): 
         """
         Generates a setup.py file
         """
         self.cppsrcs.append( "%s_wrap.cxx" %self.module )
-        f = open(self.module+'_setup.py', 'w')
-        inc_dir = ""
+        
         compile_args = ""
         if len(self.cppargs) > 1:  
             compile_args = ", extra_compile_args=%s" % self.cppargs 
         
-        if len(self.local_headers) > 0: inc_dir = "-I.."  
+        inc_dir = ""
+        if len(self.local_headers) > 0:
+            inc_dir = "-I.."
         # >& compile.log
-        f.write(""" 
+        
+        # generate
+        code = """ 
 import os
 from distutils.core import setup, Extension
 name = '%s' 
@@ -595,9 +573,11 @@ setup(name = '%s',
                      libraries=%s %s)])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
-               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args))   
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args)
+        # write
+        f = open(self.module+'_setup.py', 'w')
+        f.write(code)
         f.close()
-
 
     def generate_Makefile(self):
         """
@@ -928,9 +908,6 @@ def inline_with_numarray(c_code, **args_dict):
 
 
 
-
-
-
 def header_and_libs_from_pkgconfig(*packages):
     """
     This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file. 
@@ -954,14 +931,8 @@ def header_and_libs_from_pkgconfig(*packages):
             tmp = string.split(commands.getoutput("pkg-config --libs-only-L  %s " % pack ))  
             for i in tmp: libdirs.append(i[2:]) 
         else: 
-            raise OSError, "The pkg-config file %s does not exist" % pack  
-
+            raise OSError("The pkg-config file %s does not exist" % pack)
 
     return (includes,flags,libs, libdirs) 
         
-
-
-
-
-
 
