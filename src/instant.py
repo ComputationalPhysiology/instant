@@ -679,6 +679,12 @@ def create_extension(**args):
               - If you want to compile the files yourself. NOT YET SUPPORTED.
            - B{arrays}:
               - A list of the C arrays to be made from NumPy arrays.
+           - B{additional_definitions}:
+              - A list of additional definitions (typically needed for inheritance) 
+           - B{additional_declarations}:
+              - A list of additional declarations (typically needed for inheritance) 
+           - B{signature}:
+              - A signature string to identify the form instead of the source code.
     """ 
     ext = instant()
     ext.create_extension(**args)
