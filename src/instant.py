@@ -113,11 +113,13 @@ def find_module(md5sum):
     if len(arg) == 2:
         assert arg[1]
         directory = os.path.join(instant_dir, md5sum, arg[1])
+        if VERBOSE > 9: print "find_module: directory = ", directory
         # add found module directory to path
         if not directory in sys.path:
+            if VERBOSE > 9: print "Inserting directory in sys.path: ", directory
             sys.path.insert(0, directory) 
         # return module name
-        return arg[1]
+        return os.path.split(arg[1])[-1]
         #return 1
     return None
 
@@ -282,6 +284,7 @@ void f()
             files_to_copy.extend(self.local_headers)
             files_to_copy.extend(self.object_files)
             files_to_copy.extend(self.wrap_headers)
+            if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
             for file in files_to_copy:
                 shutil.copyfile(file, os.path.join(module_path,  file))
         
@@ -298,7 +301,8 @@ void f()
                 os.chdir(previous_path)
                 return 1 # Martin: What does return 1 mean?
         else:
-            # Martin: If we don't generate the interface, we remove the .md5 file, why is that?
+            # Martin: If we don't generate the interface,
+            #         we remove the .md5 file, what is the logic in that?
             if os.path.isfile(self.module + ".md5"):
                 os.remove(self.module + ".md5")
 
@@ -350,16 +354,20 @@ void f()
         
         #print "Module name is \'"+self.module+"\'"
         
-        file = open(os.path.join(get_tmp_dir(), self.module, self.module + ".md5"))
+        tmp_dir = get_tmp_dir()
+        file = open(os.path.join(tmp_dir, self.module, self.module + ".md5"))
         md5sum = file.readline()
         file.close()
         
         if USE_CACHE and md5sum:
             instant_dir = get_instant_dir()
-            shutil.copytree(os.path.join(get_tmp_dir(), self.module), os.path.join(instant_dir, md5sum))
+            shutil.copytree(os.path.join(tmp_dir, self.module), os.path.join(instant_dir, md5sum))
+            if VERBOSE > 9:
+                print "Copying module tree to cache...", os.path.join(tmp_dir, self.module), os.path.join(instant_dir, md5sum)
             try:
                 find_module(md5sum)
             except Exception, e:
+                print "Failed to find module from checksum after compiling!"
                 print e
     
     def debug(self):
@@ -641,6 +649,9 @@ def import_module_by_signature(signature):
     module_name = find_module_by_signature(signature)
     if not module_name:
         raise RuntimeError("Couldn't find module with signature %s" % signature)
+    instant_dir = get_instant_dir()
+    if not instant_dir in sys.path:
+        sys.path.insert(0, instant_dir)
     exec("import %s as imported_module" % module_name)
     return imported_module
 
