@@ -48,6 +48,10 @@ def get_tmp_dir():
     return tmp_dir
 
 
+def get_instant_module_dir(md5sum):
+    return os.path.join(get_instant_dir(), "instant_module_" + md5sum)
+
+
 def get_md5sum_from_signature(signature):
     '''
     get the md5 value of signature 
@@ -98,11 +102,12 @@ def write_md5sum_file(sum, md5out=sys.stdout):
 def path_walk_callback(arg, directory, files):
     if directory != get_tmp_dir():
         # find .md5 file and compare its contents with given md5 sum in arg
+        md5sum = arg[0]
         for filename in files:
             if filename[-3:] == "md5":
                 f = open(os.path.join(directory, filename))
                 line = f.readline()
-                if arg[0] == line:
+                if md5sum == line:
                     arg.append(directory)                                                                    
 
 
@@ -112,13 +117,15 @@ def find_module(md5sum):
     os.path.walk(instant_dir, path_walk_callback, arg)
     if len(arg) == 2:
         assert arg[1]
-        directory = os.path.join(instant_dir, md5sum, arg[1])
+        directory = os.path.join(get_instant_module_dir(md5sum), arg[1])
         if VERBOSE > 9: print "find_module: directory = ", directory
+        print "________ find_module: directory = ", directory
         # add found module directory to path
         if not directory in sys.path:
             if VERBOSE > 9: print "Inserting directory in sys.path: ", directory
             sys.path.insert(0, directory) 
-        # return module name
+        # return module (directory) name
+        print "___________ return:", os.path.split(arg[1])[-1]
         return os.path.split(arg[1])[-1]
         #return 1
     return None
@@ -259,7 +266,6 @@ void f()
               - A list of additional declarations (typically needed for inheritance) 
            - B{signature}:
               - A signature string to identify the form instead of the source code.
-           
         """
         if self.parse_args(args):
             print 'Nothing done!' # Martin: What does this mean?
@@ -267,7 +273,7 @@ void f()
         #self.debug()
         
         previous_path = os.getcwd()
-
+        
         # create module path, either in cache or a local directory
         if USE_CACHE: 
             module_path = os.path.join(get_tmp_dir(), self.module) 
@@ -284,9 +290,17 @@ void f()
             files_to_copy.extend(self.local_headers)
             files_to_copy.extend(self.object_files)
             files_to_copy.extend(self.wrap_headers)
+            
+            # hack to keep existing behaviour:
+            # (it might be a good idea to clean up the 'user interface' and behaviour
+            # specifications at some point before instant 1.0 is released!)
             if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
-            for file in files_to_copy:
-                shutil.copyfile(file, os.path.join(module_path,  file))
+            if COPY_LOCAL_FILES:
+                for file in files_to_copy:
+                    shutil.copyfile(file, os.path.join(module_path, file))
+            else:
+                for file in files_to_copy:
+                    shutil.copyfile(os.path.join(self.module, file), os.path.join(module_path, file))
         
         # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
@@ -305,7 +319,7 @@ void f()
             #         we remove the .md5 file, what is the logic in that?
             if os.path.isfile(self.module + ".md5"):
                 os.remove(self.module + ".md5")
-
+        
         #if sys.platform=='win32':
         #    null = 'nul'
         #else:
@@ -352,22 +366,24 @@ void f()
             # always get back to original directory
             os.chdir(previous_path)
         
-        #print "Module name is \'"+self.module+"\'"
-        
-        tmp_dir = get_tmp_dir()
-        file = open(os.path.join(tmp_dir, self.module, self.module + ".md5"))
+        # Get md5 sum from .md5 file in temporary module dir
+        tmp_module_dir = os.path.join(get_tmp_dir(), self.module)
+        file = open(os.path.join(tmp_module_dir, self.module + ".md5"))
         md5sum = file.readline()
         file.close()
         
+        # Copy temporary module tree to cache
         if USE_CACHE and md5sum:
-            instant_dir = get_instant_dir()
-            shutil.copytree(os.path.join(tmp_dir, self.module), os.path.join(instant_dir, md5sum))
+            cache_module_dir = get_instant_module_dir(md5sum)
+            shutil.copytree(tmp_module_dir, cache_module_dir)
+            
+            # Verify that everything is ok
             if VERBOSE > 9:
-                print "Copying module tree to cache...", os.path.join(tmp_dir, self.module), os.path.join(instant_dir, md5sum)
+                print "Copying module tree to cache...", tmp_module_dir, cache_module_dir
             try:
                 find_module(md5sum)
             except Exception, e:
-                print "Failed to find module from checksum after compiling!"
+                print "Failed to find module from checksum after compiling! Checksum is %s" % md5sum
                 print e
     
     def debug(self):
@@ -387,7 +403,8 @@ void f()
         print 'srcs',self.srcs
         print 'cppsrcs',self.cppsrcs
         print 'cppargs',self.cppargs
-
+        print 'signature',self.signature
+    
     def clean(self):
         """ Clean up files the current session. """
         if not gen_setup:
