@@ -119,13 +119,12 @@ def find_module(md5sum):
         assert arg[1]
         directory = os.path.join(get_instant_module_dir(md5sum), arg[1])
         if VERBOSE > 9: print "find_module: directory = ", directory
-        print "________ find_module: directory = ", directory
         # add found module directory to path
         if not directory in sys.path:
             if VERBOSE > 9: print "Inserting directory in sys.path: ", directory
             sys.path.insert(0, directory) 
         # return module (directory) name
-        print "___________ return:", os.path.split(arg[1])[-1]
+        if VERBOSE > 9: print "find_module returning:", os.path.split(arg[1])[-1]
         return os.path.split(arg[1])[-1]
         #return 1
     return None
