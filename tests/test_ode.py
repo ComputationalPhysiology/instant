@@ -53,14 +53,17 @@ print 'The max difference between p and p2 is ', max(abs(p - p2))
 
 tt = arange(0,1,1.0/N) 
 
-import pylab
-pylab.plot(tt, p)
-pylab.plot(tt, Q)
-pylab.xlabel('time ')
-pylab.ylabel('pressure ')
-pylab.title('Pressure ')
-#pylab.savefig('pressure_plot')
-pylab.show()
+try: 
+    import pylab
+    pylab.plot(tt, p)
+    pylab.plot(tt, Q)
+    pylab.xlabel('time ')
+    pylab.ylabel('pressure ')
+    pylab.title('Pressure ')
+    #pylab.savefig('pressure_plot')
+    pylab.show()
+except: 
+    print "To get a plot of the solution install pylab"
 
 
 
