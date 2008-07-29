@@ -1,4 +1,8 @@
 
+Release 0.9.4 
+Various new examples with swiginac and sympy implemented.
+Bug fix on 64bit. Removed director flag by default.  
+
 Release 0.9.3 
 Implemented caching
 

@@ -1,37 +1,60 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
-import numpy 
-import time
-from instant import inline_with_numpy
+import instant
+instant.USE_CACHE = True
+instant.VERBOSE = 0
+from instant import create_extension, find_module_by_signature, import_module_by_signature
 
-c_code = """
-    double sum (int n1, double* array1){
-        #pragma omp parallel default(none) shared(array1) private(i) reduction(+:tmp)
-        {
-            double tmp = 0.0; 
-            #pragma omp for
-            for (int i=0; i<n1; i++) {  
-                tmp += array1[i]; 
-            }
-            return tmp; 
-        }
+sig = "((instant unittest test16.py))"
+
+if not find_module_by_signature(sig):
+    print "Defining code"
+    c_code = """
+    class Sum { 
+    public: 
+      virtual double sum(double a, double b){
+        return a+b;
+      }
+    };
+
+
+    double use_Sum(Sum& sum, double a, double b) {  
+      return sum.sum(a,b); 
     }
-"""
+    """
+    print "Compiling code"
+    res = create_extension(code=c_code, signature=sig)
+    print "res = ", res
+
+print "Importing code"
+newmodule = import_module_by_signature(sig)
+Sum = newmodule.Sum
+use_Sum = newmodule.use_Sum
+
+sum = Sum()
+a = 3.7
+b = 4.8
+c = use_Sum(sum,a,b)
+print "The sum of %g and %g is %g"% (a,b,c) 
 
 
-sum_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']])
+class Sub(Sum): 
+  def __init__(self): 
+    Sum.__init__(self) 
+    
+  def sum(self,a,b): 
+    print "sub" 
+    return a-b; 
 
-a = numpy.arange(10000000); a = numpy.sin(a)
 
-t1 = time.time()
-sum1 = sum_func(a)
-t2 = time.time()
-print 'With instant:',t2-t1,'seconds'
 
-t1 = time.time() 
-sum2 =  numpy.sum(a)
-t2 = time.time()
-print 'With numpy:   ',t2-t1,'seconds'
+sub = Sub()
+a = 3.7
+b = 4.8
+c = use_Sum(sub,a,b)
+print "The sub of %g and %g is %g"% (a,b,c) 
 
-difference = abs(sum1 - sum2) 
-print "The difference between the sums computed by numpy and instant is " + str(difference) 
+
+
+
+
