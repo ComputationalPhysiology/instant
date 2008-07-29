@@ -15,11 +15,12 @@ A simple example: (see test1.py)
 """
 
 
-import os, sys,re
+import os, sys, re
 import commands 
 import string
 import md5
 import shutil
+import tempfile
 
 
 
@@ -32,8 +33,9 @@ COPY_LOCAL_FILES=1
 def get_instant_dir():
     instant_dir = '.'
     if USE_CACHE: 
-        # FIXME os.environ['HOME'] portable ?
-        instant_dir = os.path.join((os.environ['HOME']), ".instant")
+        # os.path.expanduser works for Windows, Linux, and Mac
+        # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
+        instant_dir = os.path.join(os.path.expanduser('~'), ".instant")
         if not os.path.isdir(instant_dir):
             os.mkdir(instant_dir)
     return instant_dir
@@ -42,7 +44,7 @@ def get_instant_dir():
 def get_tmp_dir(): 
     tmp_dir = '.'
     if USE_CACHE: 
-        tmp_dir = os.path.join("/tmp/instant") 
+        tmp_dir = os.path.join(tempfile.gettempdir(), "instant") 
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
     return tmp_dir
