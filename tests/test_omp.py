@@ -20,7 +20,7 @@ void compute(int n, double* x,
 
 
 N = 100000        
-compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = '-fopenmp', system_headers=["omp.h"], libraries=['gomp'])  
+compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = '-fopenmp', system_headers=["omp.h"])  
  
 os.environ['OMP_NUM_THREADS'] = '2'
 x = arange(0, 1, 1.0/N) 
