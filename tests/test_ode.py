@@ -32,7 +32,7 @@ void time_loop(int n, double* p,
 """
 
 N = 100000        
-time_loop = inline_with_numpy(c_code, arrays = [['n', 'p'], ['m', 'Q']])
+time_loop = inline_with_numpy(c_code, arrays = [['n', 'p'], ['m', 'Q']], cppargs='-g')
 p = zeros(N)
 T = 20.0
 Q = sin(arange(0, T, T/N))+1   
@@ -53,6 +53,7 @@ print 'The max difference between p and p2 is ', max(abs(p - p2))
 
 tt = arange(0,1,1.0/N) 
 
+a = """
 try: 
     import pylab
     pylab.plot(tt, p)
@@ -64,7 +65,7 @@ try:
     pylab.show()
 except: 
     print "To get a plot of the solution install pylab"
-
+"""
 
 
 
