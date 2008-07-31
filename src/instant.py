@@ -193,6 +193,12 @@ void f()
                     self.cppargs = [dict[key]]
                 elif isinstance(dict[key], (tuple, list)): 
                     self.cppargs = dict[key]
+            elif key == 'lddargs':
+                assert isinstance(dict[key], (str,tuple, list)), "Wrong type of argument to lddargs" 
+                if isinstance(dict[key], str): 
+                    self.lddargs = [dict[key]]
+                elif isinstance(dict[key], (tuple, list)): 
+                    self.lddargs = dict[key]
             elif key == 'object_files':
                 self.object_files = dict[key]
             elif key == 'arrays':
@@ -252,6 +258,8 @@ void f()
            - B{sources}:
               - A list of source files to compile and link with the extension.
            - B{cppargs}:
+              - Flags like C{-D}, C{-U}, etc. String.
+           - B{lddargs}:
               - Flags like C{-D}, C{-U}, etc. String.
            - B{libraries}:
               - A list of libraries needed by the instant extension.
@@ -567,9 +575,13 @@ void f()
         self.cppsrcs.append( "%s_wrap.cxx" % self.module ) # Martin: is it safe to just append to this here?
         
         compile_args = ""
-        if len(self.cppargs) > 1:  
+        if len(self.cppargs) > 0:  
             compile_args = ", extra_compile_args=%s" % self.cppargs 
-        
+
+        link_args = ""
+        if len(self.lddargs) > 0:  
+            link_args = ", extra_link_args=%s" % self.lddargs 
+
         inc_dir = ""
         if len(self.local_headers) > 0:
             inc_dir = "-I.."
@@ -585,10 +597,10 @@ sources = %s
 setup(name = '%s', 
       ext_modules = [Extension('_' + '%s', sources, 
                      include_dirs=%s, library_dirs=%s, 
-                     libraries=%s %s)])  
+                     libraries=%s %s %s)])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
-               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args)
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args, link_args)
         # write
         f = open(self.module+'_setup.py', 'w')
         f.write(code)
