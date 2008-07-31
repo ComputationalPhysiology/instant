@@ -6,6 +6,11 @@ import os
 c_code = """
 void compute(int n, double* x, 
              int m, double*y) {   
+    #pragma omp parallel
+
+    int id = omp_get_thread_num(); 
+    printf("Thread %d\n", id); 
+
     if ( n != m ) {
         printf("n and m should be equal");  
         return; 
@@ -20,7 +25,8 @@ void compute(int n, double* x,
 
 
 N = 100000        
-compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-fopenmp'], system_headers=["omp.h"])  
+#compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-fopenmp'], system_headers=["omp.h"])  
+compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], system_headers=["omp.h"])  
  
 os.environ['OMP_NUM_THREADS'] = '2'
 x = arange(0, 1, 1.0/N) 

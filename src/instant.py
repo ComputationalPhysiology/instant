@@ -154,6 +154,7 @@ void f()
         self.libraries      = []
         self.library_dirs   = []
         self.cppargs        = ['-O2']
+        self.lddargs        = []
         self.object_files   = []
         self.arrays         = []
         self.additional_definitions = ""
