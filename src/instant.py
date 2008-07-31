@@ -567,7 +567,7 @@ void f()
         self.cppsrcs.append( "%s_wrap.cxx" % self.module ) # Martin: is it safe to just append to this here?
         
         compile_args = ""
-        if len(self.cppargs) > 1:  
+        if len(self.cppargs) > 0:  
             compile_args = ", extra_compile_args=%s" % self.cppargs 
         
         inc_dir = ""
