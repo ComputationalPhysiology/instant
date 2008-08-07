@@ -375,6 +375,10 @@ void f()
         finally:
             # always get back to original directory
             os.chdir(previous_path)
+            
+            # Close the log file in case of a raised RuntimeError,
+            # otherwise the stream will not get flushed
+            compile_log_file.close()
         
         # Get md5 sum from .md5 file in temporary module dir
         tmp_module_dir = os.path.join(get_tmp_dir(), self.module)
