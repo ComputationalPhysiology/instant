@@ -190,16 +190,22 @@ void f()
                 self.library_dirs = dict[key]
             elif key == 'cppargs':
                 assert isinstance(dict[key], (str,tuple, list)), "Wrong type of argument to cppargs" 
-                if isinstance(dict[key], str): 
-                    self.cppargs = [dict[key]]
-                elif isinstance(dict[key], (tuple, list)): 
-                    self.cppargs = dict[key]
+                if isinstance(dict[key], str):
+                    if dict[key] is "":
+                        self.cppargs = []
+                    else:
+                        self.cppargs = [dict[key].strip()]
+                elif isinstance(dict[key], (tuple, list)):
+                    self.cppargs = [s.strip() for s in dict[key]] 
             elif key == 'lddargs':
                 assert isinstance(dict[key], (str,tuple, list)), "Wrong type of argument to lddargs" 
                 if isinstance(dict[key], str): 
-                    self.lddargs = [dict[key]]
-                elif isinstance(dict[key], (tuple, list)): 
-                    self.lddargs = dict[key]
+                    if dict[key] is "":
+                        self.lddargs = []
+                    else:
+                        self.lddargs = [dict[key].strip()]
+                elif isinstance(dict[key], (tuple, list)):
+                    self.lddargs = [s.strip() for s in dict[key]] 
             elif key == 'object_files':
                 self.object_files = dict[key]
             elif key == 'arrays':
