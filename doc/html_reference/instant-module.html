@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>instant</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.fenics.org/instant">Project Homepage</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Module&nbsp;instant
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="instant-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module instant</h1><span class="codelink"><a href="instant-pysrc.html">source&nbsp;code</a></span><br /><br />
+<p>By using the class instant a Python extension module can be created at
+  runtime. For the user, it behaves somewhat like an inline module, except 
+  you have to import the module manually.</p>
+  <p>The code can be either C or C++, but like when programming C or C++, 
+  it has to be inside a function or a similar C/C++ construct.</p>
+  A simple example: (see test1.py)
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline
+<span class="py-prompt">&gt;&gt;&gt; </span>add_func = inline(<span class="py-string">&quot;double add(double a, double b){ return a+b; }&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> <span class="py-string">&quot;The sum of 3 and 4.5 is &quot;</span>, add_func(3, 4.5)</pre><br /><br />
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="instant.instant-class.html" class="summary-name">instant</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_instant_dir"></a><span class="summary-sig-name">get_instant_dir</span>()</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#get_instant_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_tmp_dir"></a><span class="summary-sig-name">get_tmp_dir</span>()</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#get_tmp_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_instant_module_dir"></a><span class="summary-sig-name">get_instant_module_dir</span>(<span class="summary-sig-arg">md5sum</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#get_instant_module_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_md5sum_from_signature"></a><span class="summary-sig-name">get_md5sum_from_signature</span>(<span class="summary-sig-arg">signature</span>)</span><br />
+      get the md5 value of signature</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#get_md5sum_from_signature">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_md5sum_from_files"></a><span class="summary-sig-name">get_md5sum_from_files</span>(<span class="summary-sig-arg">filenames</span>)</span><br />
+      get the md5 value of filename modified based on 
+      Python24\Tools\Scripts\md5sum.py</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#get_md5sum_from_files">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_md5sum_file"></a><span class="summary-sig-name">write_md5sum_file</span>(<span class="summary-sig-arg">sum</span>,
+        <span class="summary-sig-arg">md5out</span>=<span class="summary-sig-default">sys.stdout</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#write_md5sum_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="path_walk_callback"></a><span class="summary-sig-name">path_walk_callback</span>(<span class="summary-sig-arg">arg</span>,
+        <span class="summary-sig-arg">directory</span>,
+        <span class="summary-sig-arg">files</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#path_walk_callback">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="find_module"></a><span class="summary-sig-name">find_module</span>(<span class="summary-sig-arg">md5sum</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#find_module">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="list2str"></a><span class="summary-sig-name">list2str</span>(<span class="summary-sig-arg">list</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#list2str">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="find_module_by_signature"></a><span class="summary-sig-name">find_module_by_signature</span>(<span class="summary-sig-arg">signature</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#find_module_by_signature">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="import_module_by_signature"></a><span class="summary-sig-name">import_module_by_signature</span>(<span class="summary-sig-arg">signature</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#import_module_by_signature">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#create_extension" class="summary-sig-name">create_extension</a>(<span class="summary-sig-arg">**args</span>)</span><br />
+      This is a small wrapper around the create_extension function in 
+      instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#create_extension">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#inline" class="summary-sig-name">inline</a>(<span class="summary-sig-arg">c_code</span>,
+        <span class="summary-sig-arg">**args_dict</span>)</span><br />
+      This is a short wrapper around the create_extention function in 
+      instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#inline">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#inline_with_numpy" class="summary-sig-name">inline_with_numpy</a>(<span class="summary-sig-arg">c_code</span>,
+        <span class="summary-sig-arg">**args_dict</span>)</span><br />
+      This is a short wrapper around the create_extention function in 
+      instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#inline_with_numpy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#inline_with_numeric" class="summary-sig-name">inline_with_numeric</a>(<span class="summary-sig-arg">c_code</span>,
+        <span class="summary-sig-arg">**args_dict</span>)</span><br />
+      This is a short wrapper around the create_extention function in 
+      instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#inline_with_numeric">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#inline_with_numarray" class="summary-sig-name">inline_with_numarray</a>(<span class="summary-sig-arg">c_code</span>,
+        <span class="summary-sig-arg">**args_dict</span>)</span><br />
+      This is a short wrapper around the create_extention function in 
+      instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#inline_with_numarray">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="instant-module.html#header_and_libs_from_pkgconfig" class="summary-sig-name">header_and_libs_from_pkgconfig</a>(<span class="summary-sig-arg">*packages</span>)</span><br />
+      This function returns list of include files, flags, libraries and 
+      library directories obtain from a pkgconfig file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant-pysrc.html#header_and_libs_from_pkgconfig">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="VERBOSE"></a><span class="summary-name">VERBOSE</span> = <code title="1">1</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="USE_CACHE"></a><span class="summary-name">USE_CACHE</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="COPY_LOCAL_FILES"></a><span class="summary-name">COPY_LOCAL_FILES</span> = <code title="1">1</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="create_extension"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">create_extension</span>(<span class="sig-arg">**args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#create_extension">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>This is a small wrapper around the create_extension function in 
+  instant.</p>
+  Call this function to instantly create an extension module. SWIG is 
+  used to generate code that can be compiled and used as an ordinary Python
+  module.
+  <h1 class="heading">Arguments:</h1>
+    <ul>
+      <li>
+        <b>code</b>:
+        <ul>
+          <li>
+            A Python string containing C or C++ function, class, 
+            ....
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>module</b>:
+        <ul>
+          <li>
+            The name you want for the module (Default is 
+            'instant_swig_module'.). String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>swigopts</b>:
+        <ul>
+          <li>
+            Options to swig, for instance <code>-lpointers.i</code> to 
+            include the SWIG pointers.i library. String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>init_code</b>:
+        <ul>
+          <li>
+            Code that should be executed when the instant extension is 
+            imported. String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>system_headers</b>:
+        <ul>
+          <li>
+            A list of system header files required by the instant 
+            code.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>local_headers</b>:
+        <ul>
+          <li>
+            A list of local header files required by the instant 
+            code.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>wrap_headers</b>:
+        <ul>
+          <li>
+            A list of local header files that will be wrapped by 
+            SWIG.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>include_dirs</b>:
+        <ul>
+          <li>
+            A list of directories to search for header files.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>sources</b>:
+        <ul>
+          <li>
+            A list of source files to compile and link with the 
+            extension.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>cppargs</b>:
+        <ul>
+          <li>
+            Flags like <code>-D</code>, <code>-U</code>, etc. 
+            String.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>libraries</b>:
+        <ul>
+          <li>
+            A list of libraries needed by the instant extension.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>library_dirs</b>:
+        <ul>
+          <li>
+            A list of directories to search for libraries 
+            (<code>-l</code>).
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>object_files</b>:
+        <ul>
+          <li>
+            If you want to compile the files yourself. NOT YET 
+            SUPPORTED.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>arrays</b>:
+        <ul>
+          <li>
+            A list of the C arrays to be made from NumPy arrays.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>additional_definitions</b>:
+        <ul>
+          <li>
+            A list of additional definitions (typically needed for 
+            inheritance)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>additional_declarations</b>:
+        <ul>
+          <li>
+            A list of additional declarations (typically needed for 
+            inheritance)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>signature</b>:
+        <ul>
+          <li>
+            A signature string to identify the form instead of the 
+            source code.
+          </li>
+        </ul>
+      </li>
+    </ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="inline"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inline</span>(<span class="sig-arg">c_code</span>,
+        <span class="sig-arg">**args_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#inline">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>This is a short wrapper around the create_extention function in 
+  instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time.</p>
+  Usage:
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline
+<span class="py-prompt">&gt;&gt;&gt; </span>add_func = inline(<span class="py-string">&quot;double add(double a, double b){ return a+b; }&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> <span class="py-string">&quot;The sum of 3 and 4.5 is &quot;</span>, add_func(3, 4.5)</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="inline_with_numpy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inline_with_numpy</span>(<span class="sig-arg">c_code</span>,
+        <span class="sig-arg">**args_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#inline_with_numpy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>This is a short wrapper around the create_extention function in 
+  instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that C-arrays
+  can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numpy
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline_with_numpy
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;
+<span class="py-output">    double sum (int n1, double* array1){</span>
+<span class="py-output">        double tmp = 0.0; </span>
+<span class="py-output">        for (int i=0; i&lt;n1; i++) {  </span>
+<span class="py-output">            tmp += array1[i]; </span>
+<span class="py-output">        }</span>
+<span class="py-output">        return tmp; </span>
+<span class="py-output">    }</span>
+<span class="py-output">    &quot;&quot;&quot;</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numpy(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numpy.arange(10000000); a = numpy.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="inline_with_numeric"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inline_with_numeric</span>(<span class="sig-arg">c_code</span>,
+        <span class="sig-arg">**args_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#inline_with_numeric">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>This is a short wrapper around the create_extention function in 
+  instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that C-arrays
+  can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numpy 
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline_with_numeric
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;
+<span class="py-output">    double sum (int n1, double* array1){</span>
+<span class="py-output">        double tmp = 0.0; </span>
+<span class="py-output">        for (int i=0; i&lt;n1; i++) {  </span>
+<span class="py-output">            tmp += array1[i]; </span>
+<span class="py-output">        }</span>
+<span class="py-output">        return tmp; </span>
+<span class="py-output">    }</span>
+<span class="py-output">    &quot;&quot;&quot;</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numeric(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numpy.arange(10000000); a = numpy.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="inline_with_numarray"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inline_with_numarray</span>(<span class="sig-arg">c_code</span>,
+        <span class="sig-arg">**args_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#inline_with_numarray">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>This is a short wrapper around the create_extention function in 
+  instant.</p>
+  <p>It creates an extension module given that the input is a valid C 
+  function. It is only possible to inline one C function each time. The 
+  difference between this function and the inline function is that C-arrays
+  can be used. The following example illustrates that.</p>
+  Usage:
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> numarray 
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> time
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline_with_numarray
+<span class="py-prompt">&gt;&gt;&gt; </span>c_code = <span class="py-string">&quot;&quot;</span>&quot;
+<span class="py-output">    double sum (int n1, double* array1){</span>
+<span class="py-output">        double tmp = 0.0; </span>
+<span class="py-output">        for (int i=0; i&lt;n1; i++) {  </span>
+<span class="py-output">            tmp += array1[i]; </span>
+<span class="py-output">        }</span>
+<span class="py-output">        return tmp; </span>
+<span class="py-output">    }</span>
+<span class="py-output">    &quot;&quot;&quot;</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>sum_func = inline_with_numarray(c_code,  arrays = [[<span class="py-string">'n1'</span>, <span class="py-string">'array1'</span>]])
+<span class="py-prompt">&gt;&gt;&gt; </span>a = numarray.arange(10000000); a = numarray.sin(a)
+<span class="py-prompt">&gt;&gt;&gt; </span>sum_func(a)</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="header_and_libs_from_pkgconfig"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">header_and_libs_from_pkgconfig</span>(<span class="sig-arg">*packages</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="instant-pysrc.html#header_and_libs_from_pkgconfig">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  This function returns list of include files, flags, libraries and 
+  library directories obtain from a pkgconfig file. The usage is: 
+  (includes, flags, libraries, libdirs) = 
+  header_and_libs_from_pkgconfig(list_of_packages)
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.fenics.org/instant">Project Homepage</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Aug  8 15:09:14 2008
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>
