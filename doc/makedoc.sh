@@ -1,7 +1,6 @@
 #!/bin/sh -x
 
-epydoc   -c blue -o html_reference \
+epydoc   -c white -o html_reference \
 -u http://www.fenics.org/instant \
---html instant \
-../src/instant.py \
+--html ../src/instant.py 
 
