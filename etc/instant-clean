@@ -14,8 +14,8 @@ except:
     print "Instant not installed, exiting..."
     sys.exit(1)
 
-cache_dir = get_instant_dir()
-tmp_dir = get_tmp_dir()
+cache_dir = get_instant_dir(caching=True)
+tmp_dir = get_tmp_dir(caching=True)
 
 # Check if directory exists
 if not os.path.isdir(cache_dir):
