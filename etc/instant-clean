@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+#
+# This script cleans the Instant cache
+
+__author__ = "Ilmar Wilbers (ilmarw@simula.no)"
+__date__ = "2008-08-08 -- 2008-08-08"
+__copyright__ = "Copyright (C) 2008 Ilmar Wilbers"
+__license__  = "GNU GPL version 3 or any later version"
+
+import os, sys, shutil
+try:
+    from instant import get_instant_dir, get_tmp_dir
+except:
+    print "Instant not installed, exiting..."
+    sys.exit(1)
+
+cache_dir = get_instant_dir(caching=True)
+tmp_dir = get_tmp_dir(caching=True)
+
+# Check if directory exists
+if not os.path.isdir(cache_dir):
+    print "Instant cache does not exist"
+    sys.exit(0)
+
+# Get list of cached forms
+modules = os.listdir(cache_dir)
+if len(modules) == 0:
+    print "Instant cache is empty"
+    sys.exit(0)
+
+# Remove cached forms
+print "Removing %d modules from Instant cache..." % len(modules)
+for module in modules:
+    directory = os.path.join(cache_dir, module)
+    shutil.rmtree(directory)
+
+# Check if directory exists
+if os.path.isdir(tmp_dir):
+    shutil.rmtree(tmp_dir)
+    

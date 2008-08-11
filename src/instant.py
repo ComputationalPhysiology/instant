@@ -30,9 +30,9 @@ USE_CACHE=0
 COPY_LOCAL_FILES=1
 
 
-def get_instant_dir():
+def get_instant_dir(caching=False):
     instant_dir = '.'
-    if USE_CACHE: 
+    if USE_CACHE or caching:
         # os.path.expanduser works for Windows, Linux, and Mac
         # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
         instant_dir = os.path.join(os.path.expanduser('~'), ".instant")
@@ -41,9 +41,9 @@ def get_instant_dir():
     return instant_dir
 
 
-def get_tmp_dir(): 
+def get_tmp_dir(caching=False): 
     tmp_dir = '.'
-    if USE_CACHE: 
+    if USE_CACHE or caching:
         tmp_dir = os.path.join(tempfile.gettempdir(), "instant") 
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
