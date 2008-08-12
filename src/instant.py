@@ -23,11 +23,8 @@ import shutil
 import tempfile
 
 
-
-
 VERBOSE = 1
-USE_CACHE=0 
-COPY_LOCAL_FILES=1
+USE_CACHE = 0 
 
 
 def get_instant_dir(caching=False):
@@ -161,6 +158,7 @@ void f()
         self.additional_declarations = ""
         self.generate_Interface = True
         self.signature          = ""
+        self.use_cache          = False
 
     def parse_args(self, dict):
         """ A method for parsing arguments. """
@@ -218,7 +216,11 @@ void f()
                 self.generate_Interface= dict[key]
             elif key == 'signature': 
                 self.signature = dict[key]
-
+            elif key == 'use_cache':
+                self.use_cache = dict[key]
+                
+        global USE_CACHE
+        USE_CACHE = self.use_cache
 
         self.makefile_name = self.module+".mak"
         self.logfile_name  = self.module+".log"
@@ -280,8 +282,12 @@ void f()
               - A list of additional definitions (typically needed for inheritance) 
            - B{additional_declarations}:
               - A list of additional declarations (typically needed for inheritance) 
+           - B{generate_Interface}:
+              - Indicate if you want to generate the interface files. Bool.
            - B{signature}:
               - A signature string to identify the form instead of the source code.
+           - B{use_cache}:
+              - Indicate if you want to store the generated module for later use. Bool.
         """
         if self.parse_args(args):
             print 'Nothing done!' # Martin: What does this mean?
@@ -291,7 +297,7 @@ void f()
         previous_path = os.getcwd()
         
         # create module path, either in cache or a local directory
-        if USE_CACHE: 
+        if self.use_cache: 
             module_path = os.path.join(get_tmp_dir(), self.module) 
         else: 
             module_path = self.module
@@ -299,24 +305,16 @@ void f()
             os.mkdir(module_path)
         
         # copy files either to cache or to local directory
-        if USE_CACHE or COPY_LOCAL_FILES:
-            # create list of files that should be copied
-            files_to_copy = []
-            files_to_copy.extend(self.sources) 
-            files_to_copy.extend(self.local_headers)
-            files_to_copy.extend(self.object_files)
-            files_to_copy.extend(self.wrap_headers)
-            
-            # hack to keep existing behaviour:
-            # (it might be a good idea to clean up the 'user interface' and behaviour
-            # specifications at some point before instant 1.0 is released!)
-            if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
-            if COPY_LOCAL_FILES:
-                for file in files_to_copy:
-                    shutil.copyfile(file, os.path.join(module_path, file))
-            else:
-                for file in files_to_copy:
-                    shutil.copyfile(os.path.join(self.module, file), os.path.join(module_path, file))
+        # create list of files that should be copied
+        files_to_copy = []
+        files_to_copy.extend(self.sources) 
+        files_to_copy.extend(self.local_headers)
+        files_to_copy.extend(self.object_files)
+        files_to_copy.extend(self.wrap_headers)
+        
+        if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
+        for file in files_to_copy:
+            shutil.copyfile(file, os.path.join(module_path, file))
         
         # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
@@ -347,7 +345,9 @@ void f()
             (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
             if swig_stat != 0:
                 raise RuntimeError("Could not find swig! You can download swig from http://www.swig.org")
-            
+
+            # open file already here, else we might get an UnBoundLocalError 
+            compile_log_file = open("compile.log",  'w')
             # generate Makefile or setup.py and run it
             if not self.gen_setup:
                 self.generate_Makefile()
@@ -362,7 +362,6 @@ void f()
                 if VERBOSE > 0: print "--- Instant: compiling ---"
                 if VERBOSE > 1: print cmd
                 ret, output = commands.getstatusoutput(cmd)
-                compile_log_file = open("compile.log",  'w')
                 compile_log_file.write(output)
                 if ret != 0:
                     # compilation failed
@@ -393,7 +392,7 @@ void f()
         file.close()
         
         # Copy temporary module tree to cache
-        if USE_CACHE and md5sum:
+        if self.use_cache and md5sum:
             cache_module_dir = get_instant_module_dir(md5sum)
             shutil.copytree(tmp_module_dir, cache_module_dir)
             
@@ -423,7 +422,16 @@ void f()
         print 'srcs',self.srcs
         print 'cppsrcs',self.cppsrcs
         print 'cppargs',self.cppargs
+        print 'lddargs',self.lddargs
+        print 'libraries',self.libraries
+        print 'library_dirs',self.library_dirs
+        print 'object_files',self.object_files
+        print 'arrays',self.arrays
+        print 'additional_definitions',self.additional_definitions
+        print 'additional_declarations',self.additional_declarations
+        print 'generate_Interface',self.generate_Interface
         print 'signature',self.signature
+        print 'use_cache',self.use_cache
     
     def clean(self):
         """ Clean up files the current session. """
@@ -562,7 +570,7 @@ void f()
                 print "md5sum_files ", md5sum_files
         
         if os.path.isfile(self.module+".md5"):
-            if USE_CACHE and find_module(current_md5sum):
+            if self.use_cache and find_module(current_md5sum):
                 return 1
             else:
                 last_md5sum = open(self.module + ".md5").readline()
@@ -741,8 +749,12 @@ def create_extension(**args):
               - A list of additional definitions (typically needed for inheritance) 
            - B{additional_declarations}:
               - A list of additional declarations (typically needed for inheritance) 
+           - B{generate_Interface}:
+              - Indicate if you want to generate the interface files. Bool.
            - B{signature}:
               - A signature string to identify the form instead of the source code.
+           - B{use_cache}:
+              - Indicate if you want to store the generated module for later use. Bool.
     """ 
     ext = instant()
     ext.create_extension(**args)

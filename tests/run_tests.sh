@@ -1,6 +1,6 @@
 #!/bin/sh 
 
-sh clean.sh 
+instant-clean
 
 for file in *.py; do
    echo "running test $file ";
