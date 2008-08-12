@@ -311,10 +311,11 @@ void f()
         files_to_copy.extend(self.local_headers)
         files_to_copy.extend(self.object_files)
         files_to_copy.extend(self.wrap_headers)
-        
-        if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
-        for file in files_to_copy:
-            shutil.copyfile(file, os.path.join(module_path, file))
+
+        if self.use_cache:
+            if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
+            for file in files_to_copy:
+                shutil.copyfile(file, os.path.join(module_path, file))
         
         # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
