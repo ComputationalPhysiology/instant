@@ -23,16 +23,19 @@ import shutil
 import tempfile
 
 
-VERBOSE = 1
+VERBOSE = 0
 USE_CACHE = 0 
 
 
 def get_instant_dir(caching=False):
     instant_dir = '.'
     if USE_CACHE or caching:
-        # os.path.expanduser works for Windows, Linux, and Mac
-        # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
-        instant_dir = os.path.join(os.path.expanduser('~'), ".instant")
+        if isinstance(USE_CACHE, str):
+            instant_dir = USE_CACHE
+        else:
+            # os.path.expanduser works for Windows, Linux, and Mac
+            # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
+            instant_dir = os.path.join(os.path.expanduser('~'), ".instant")
         if not os.path.isdir(instant_dir):
             os.mkdir(instant_dir)
     return instant_dir
@@ -107,9 +110,8 @@ def path_walk_callback(arg, directory, files):
                 f = open(os.path.join(directory, filename))
                 line = f.readline()
                 if md5sum == line:
-                    arg.append(directory)                                                                    
-
-
+                    arg.append(directory)
+                    
 def find_module(md5sum):
     arg = [md5sum]
     instant_dir = get_instant_dir()
@@ -306,7 +308,7 @@ void f()
         
         # create module path, either in cache or a local directory
         if self.use_cache: 
-            module_path = os.path.join(get_tmp_dir(), self.module) 
+            module_path = os.path.join(get_instant_dir(), self.module) 
         else: 
             module_path = self.module
         if not os.path.isdir(module_path): 
@@ -394,9 +396,10 @@ void f()
             # Close the log file in case of a raised RuntimeError,
             # otherwise the stream will not get flushed
             compile_log_file.close()
+
         
         # Get md5 sum from .md5 file in temporary module dir
-        tmp_module_dir = os.path.join(get_tmp_dir(), self.module)
+        tmp_module_dir = get_tmp_dir()
         file = open(os.path.join(tmp_module_dir, self.module + ".md5"))
         md5sum = file.readline()
         file.close()
@@ -590,7 +593,7 @@ void f()
                     write_md5sum_file(current_md5sum, self.module + ".md5")
                     return 0
         else:
-            write_md5sum_file(current_md5sum, self.module + ".md5")
+            write_md5sum_file(current_md5sum, os.path.join(get_tmp_dir(), self.module + ".md5"))
             if find_module(current_md5sum):
                 return 1
         
