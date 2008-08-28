@@ -323,7 +323,8 @@ void f()
         if self.use_cache:
             if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
             for file in files_to_copy:
-                shutil.copyfile(file, os.path.join(module_path, file))
+                if not os.path.isfile(os.path.join(module_path, file)):
+                    shutil.copyfile(file, os.path.join(module_path, file))
         
         # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
