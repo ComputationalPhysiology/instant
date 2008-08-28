@@ -32,8 +32,3 @@ t2 = time.time()
 print 'With  numpy :',t2-t1,'seconds'
 
 print 'Difference: ', c - b  
-
-
-
-
-

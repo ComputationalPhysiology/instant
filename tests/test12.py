@@ -44,7 +44,3 @@ d = a-a2
 d.shape = (n*n,) 
 
 print 'The difference is ', max(d)
-
-
-
-

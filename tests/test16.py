@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 import instant
-instant.USE_CACHE = True
-instant.VERBOSE = 0
+use_cache = True
+
 from instant import create_extension, find_module_by_signature, import_module_by_signature
 
 sig = "((instant unittest test16.py))"
@@ -23,7 +23,7 @@ if not find_module_by_signature(sig):
     }
     """
     print "Compiling code"
-    res = create_extension(code=c_code, signature=sig)
+    res = create_extension(code=c_code, signature=sig, use_cache=use_cache)
     print "res = ", res
 
 print "Importing code"
@@ -53,8 +53,3 @@ a = 3.7
 b = 4.8
 c = use_Sum(sub,a,b)
 print "The sub of %g and %g is %g"% (a,b,c) 
-
-
-
-
-

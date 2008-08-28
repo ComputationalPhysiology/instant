@@ -114,7 +114,7 @@ def path_walk_callback(arg, directory, files):
                     
 def find_module(md5sum):
     arg = [md5sum]
-    instant_dir = get_instant_dir()
+    instant_dir = os.path.abspath(get_instant_dir())
     os.path.walk(instant_dir, path_walk_callback, arg)
     if len(arg) == 2:
         assert arg[1]
@@ -307,7 +307,7 @@ void f()
         previous_path = os.getcwd()
         
         # create module path, either in cache or a local directory
-        if self.use_cache: 
+        if len(self.use_cache) > 1: 
             module_path = os.path.join(get_instant_dir(), self.module) 
         else: 
             module_path = self.module
@@ -322,12 +322,11 @@ void f()
         files_to_copy.extend(self.object_files)
         files_to_copy.extend(self.wrap_headers)
 
-        if self.use_cache:
-            if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
-            for file in files_to_copy:
-                if not os.path.isfile(os.path.join(module_path, file)):
-                    shutil.copyfile(file, os.path.join(module_path, file))
-        
+        if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
+        for file in files_to_copy:
+            if not os.path.isfile(os.path.join(module_path, file)):
+                shutil.copyfile(file, os.path.join(module_path, file))
+
         # generate __init__.py which imports compiled module contents
         os.chdir(module_path)
         f = open("__init__.py", 'w')
@@ -397,7 +396,6 @@ void f()
             # otherwise the stream will not get flushed
             compile_log_file.close()
 
-        
         # Get md5 sum from .md5 file in temporary module dir
         tmp_module_dir = get_tmp_dir()
         file = open(os.path.join(tmp_module_dir, self.module + ".md5"))
@@ -405,7 +403,7 @@ void f()
         file.close()
         
         # Copy temporary module tree to cache
-        if self.use_cache and md5sum:
+        if len(self.use_cache) > 1 and md5sum:
             cache_module_dir = get_instant_module_dir(md5sum)
             shutil.copytree(tmp_module_dir, cache_module_dir)
             
@@ -569,9 +567,9 @@ void f()
         Check if the md5sum of the generated interface file has changed since the last
         time the module was compiled. If it has changed then recompilation is necessary.  
         """ 
-
         if self.signature: 
             current_md5sum = get_md5sum_from_signature(self.signature)
+            write_md5sum_file(current_md5sum, self.module + ".md5")
         else:
             md5sum_files = []
             md5sum_files.append(self.ifile_name)
@@ -581,9 +579,11 @@ void f()
             current_md5sum = get_md5sum_from_files(md5sum_files)
             if VERBOSE > 2:
                 print "md5sum_files ", md5sum_files
-        
+
+        if current_md5sum is not None:
+            write_md5sum_file(current_md5sum, os.path.join(get_tmp_dir(), self.module + ".md5"))
         if os.path.isfile(self.module+".md5"):
-            if self.use_cache and find_module(current_md5sum):
+            if len(self.use_cache) > 1 and find_module(current_md5sum):
                 return 1
             else:
                 last_md5sum = open(self.module + ".md5").readline()
@@ -593,7 +593,6 @@ void f()
                     write_md5sum_file(current_md5sum, self.module + ".md5")
                     return 0
         else:
-            write_md5sum_file(current_md5sum, os.path.join(get_tmp_dir(), self.module + ".md5"))
             if find_module(current_md5sum):
                 return 1
         
@@ -794,7 +793,7 @@ def inline(c_code, **args_dict):
 
     """
     ext = instant()
-    args_dict["code"] = c_code 
+    args_dict["code"] = c_code
     if not args_dict.has_key("module"):
         args_dict["module"] = "inline_ext" 
     try: 
