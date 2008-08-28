@@ -218,7 +218,12 @@ void f()
                 self.signature = dict[key]
             elif key == 'use_cache':
                 self.use_cache = dict[key]
-                
+
+        if isinstance(self.use_cache, bool) or isinstance(self.use_cache, int):
+            self.use_cache = get_instant_dir()
+        elif isinstance(self.use_cache, str) and self.use_cache:
+            self.use_cache = os.path.join(os.getcwd(), self.use_cache)
+
         global USE_CACHE
         USE_CACHE = self.use_cache
 
@@ -287,7 +292,10 @@ void f()
            - B{signature}:
               - A signature string to identify the form instead of the source code.
            - B{use_cache}:
-              - Indicate if you want to store the generated module for later use. Bool.
+              - Indicate if you want to store the generated module for later use.
+                If a bool or int is given that is evaluated as True, the
+                default cache directory will be used. To specify a cache
+                directory, a string with with the path relative to the current path is used.
         """
         if self.parse_args(args):
             print 'Nothing done!' # Martin: What does this mean?
@@ -755,7 +763,10 @@ def create_extension(**args):
            - B{signature}:
               - A signature string to identify the form instead of the source code.
            - B{use_cache}:
-              - Indicate if you want to store the generated module for later use. Bool.
+              - Indicate if you want to store the generated module for later use.
+                If a bool or int is given that is evaluated as True, the
+                default cache directory will be used. To specify a cache
+                directory, a string with with the path relative to the current path is used.
     """ 
     ext = instant()
     ext.create_extension(**args)
