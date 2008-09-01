@@ -305,7 +305,7 @@ void f()
             print 'Nothing done!' # Martin: What does this mean?
             return
         #self.debug()
-        
+
         previous_path = os.getcwd()
         
         # create module path, either in cache or a local directory
@@ -363,15 +363,10 @@ void f()
             compile_log_file = open("compile.log",  'w')
             # generate Makefile or setup.py and run it
             if not self.gen_setup:
-                self.generate_Makefile()
-                if os.path.isfile(self.makefile_name):
-                    os.system("make -f "+self.makefile_name+" clean")
-                os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
-                if VERBOSE >= 9:
-                    os.remove(self.logfile_name)
+                raise RuntimeError("Must generate setup file") 
             else:
                 self.generate_setup()
-                cmd = "python " + self.module + "_setup.py build_ext"
+                cmd = "python setup.py build_ext"
                 if VERBOSE > 0: print "--- Instant: compiling ---"
                 if VERBOSE > 1: print cmd
                 ret, output = commands.getstatusoutput(cmd)
@@ -382,7 +377,7 @@ void f()
                     raise RuntimeError("The extension module did not compile, check %s/compile.log" % self.module)
                 else:
                     #cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1"
-                    cmd = "python " + self.module + "_setup.py install --install-platlib=."
+                    cmd = "python setup.py install --install-platlib=."
                     if VERBOSE > 1: print cmd
                     ret, output = commands.getstatusoutput(cmd)
                     compile_log_file.write(output)
@@ -635,63 +630,10 @@ setup(name = '%s',
                self.cppsrcs, 
                self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args, link_args)
         # write
-        f = open(self.module+'_setup.py', 'w')
+        f = open('setup.py', 'w')
         f.write(code)
         f.close()
 
-    def generate_Makefile(self):
-        """
-        Generates a project dependent Makefile, which includes and
-        uses SWIG's own Makefile to create an extension module of
-        the supplied C/C++ code.
-        """
-        # generate
-        code = """
-LIBS = %s
-LDPATH = 
-
-FLAGS = %s
-
-SWIG       = swig 
-SWIGOPT    = %s
-INTERFACE  = %s
-TARGET     = %s
-INCLUDES   = 
-
-SWIGMAKEFILE = $(SWIGSRC)/Examples/Makefile
-
-python::
-	$(MAKE) -f '$(SWIGMAKEFILE)' INTERFACE='$(INTERFACE)' \\
-	SWIG='$(SWIG)' SWIGOPT='$(SWIGOPT)'  \\
-	SRCS='%s' \\
-	CPPSRCS='%s' \\
-	INCLUDES='$(INCLUDES) %s' \\
-	LIBS='$(LIBS) %s' \\
-	CFLAGS='$(CFLAGS) $(FLAGS)' \\
-	TARGET='$(TARGET)' \\
-	python_cpp
-
-clean::
-	rm -f *_wrap* _%s.so *.o $(OBJ_FILES)  *~
-    """ % (list2str(self.libraries),
-           self.cppargs,
-           self.swigopts,
-           self.ifile_name,
-           self.module,
-           list2str(self.srcs),
-           list2str(self.cppsrcs),
-           list2str(self.include_dirs),
-           list2str(self.library_dirs),
-           self.module)
-        # end code
-        
-        # write
-        f = open(self.makefile_name, 'w')
-        f.write(code)
-        f.close()
-        
-        if VERBOSE > 1:
-            print 'Makefile', self.makefile_name, 'generated'
     
     ### End of class instant
 
