@@ -1,2 +1,9 @@
 TODO:
+- Implement in-memory cache for already imported modules (based on 
+signature)
+  I.e. a global dict on the form
+  _module_cache = { "module signature": previously_compiled_module }
+  which is looked up transparently.
 
+- Instant should use this instead of md5:
+  http://www.python.org/doc/current/lib/module-hashlib.html
