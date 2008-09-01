@@ -3,30 +3,32 @@
 # This script cleans the Instant cache
 
 __author__ = "Ilmar Wilbers (ilmarw@simula.no)"
-__date__ = "2008-08-08 -- 2008-08-08"
+__date__ = "2008-08-08 -- 2008-09-01"
 __copyright__ = "Copyright (C) 2008 Ilmar Wilbers"
 __license__  = "GNU GPL version 3 or any later version"
 
+# Modified by Martin Alnes
+
 import os, sys, shutil, tempfile, glob
 try:
-    from instant import get_instant_dir
+    from instant import get_default_cache_dir
 except:
     print "Instant not installed, exiting..."
     sys.exit(1)
 
-cache_dir = get_instant_dir(caching=True)
+# Check if any temp directories exists
 tmp_dir = tempfile.gettempdir()
-
-# Check if directory exists
-tmp_dirs = glob.glob(os.path.join(tmp_dir, '*instant*'))
+tmp_dir_prefix = "FIXME" # FIXME: Use regexp to get prefix to tempdirs. Is it safe to assume this is constant?
+tmp_dirs = glob.glob(os.path.join(tmp_dir_prefix, '*_instant'))
 for tmp_dir in tmp_dirs:
     if os.path.isdir(tmp_dir):
         shutil.rmtree(tmp_dir)
 
-# Check if directory exists
-if not os.path.isdir(cache_dir):
-    print "Instant cache does not exist"
-    sys.exit(0)
+# Get default cache dir (won't and can't touch userdefined cache dirs)
+cache_dir = get_default_cache_dir()
+
+# Check if directory exists (always should after calling get_default_cache_dir)
+assert os.path.isdir(cache_dir)
 
 # Get list of cached forms
 modules = os.listdir(cache_dir)
@@ -39,3 +41,4 @@ print "Removing %d modules from Instant cache..." % len(modules)
 for module in modules:
     directory = os.path.join(cache_dir, module)
     shutil.rmtree(directory)
+
