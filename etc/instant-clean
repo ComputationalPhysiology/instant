@@ -7,15 +7,21 @@ __date__ = "2008-08-08 -- 2008-08-08"
 __copyright__ = "Copyright (C) 2008 Ilmar Wilbers"
 __license__  = "GNU GPL version 3 or any later version"
 
-import os, sys, shutil
+import os, sys, shutil, tempfile, glob
 try:
-    from instant import get_instant_dir, get_tmp_dir
+    from instant import get_instant_dir
 except:
     print "Instant not installed, exiting..."
     sys.exit(1)
 
 cache_dir = get_instant_dir(caching=True)
-tmp_dir = get_tmp_dir(caching=True)
+tmp_dir = tempfile.gettempdir()
+
+# Check if directory exists
+tmp_dirs = glob.glob(os.path.join(tmp_dir, '*instant*'))
+for tmp_dir in tmp_dirs:
+    if os.path.isdir(tmp_dir):
+        shutil.rmtree(tmp_dir)
 
 # Check if directory exists
 if not os.path.isdir(cache_dir):
@@ -33,8 +39,3 @@ print "Removing %d modules from Instant cache..." % len(modules)
 for module in modules:
     directory = os.path.join(cache_dir, module)
     shutil.rmtree(directory)
-
-# Check if directory exists
-if os.path.isdir(tmp_dir):
-    shutil.rmtree(tmp_dir)
-    

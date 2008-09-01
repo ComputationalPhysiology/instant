@@ -25,7 +25,7 @@ import tempfile
 
 VERBOSE = 0
 USE_CACHE = 0 
-
+TMP_DIR = 0
 
 def get_instant_dir(caching=False):
     instant_dir = '.'
@@ -41,12 +41,14 @@ def get_instant_dir(caching=False):
     return instant_dir
 
 
-def get_tmp_dir(caching=False): 
+def get_tmp_dir(): 
     tmp_dir = '.'
-    if USE_CACHE or caching:
-        tmp_dir = os.path.join(tempfile.gettempdir(), "instant") 
-        if not os.path.isdir(tmp_dir):
-            os.mkdir(tmp_dir)
+    global TMP_DIR
+    if TMP_DIR:
+        return TMP_DIR
+    elif USE_CACHE:
+        tmp_dir = tempfile.mkdtemp("instant")
+        TMP_DIR = tmp_dir
     return tmp_dir
 
 
