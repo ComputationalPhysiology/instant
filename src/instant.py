@@ -440,19 +440,6 @@ void f()
         print 'generate_Interface',self.generate_Interface
         print 'signature',self.signature
         print 'use_cache',self.use_cache
-    
-    def clean(self):
-        """ Clean up files the current session. """
-        if not gen_setup:
-            for file in [self.module+".log",
-                         self.module+".log",
-                         self.module+".i",
-                         self.module+".mak",
-                         self.module+".py",
-                         self.module+".pyc",
-                         "_"+self.module+".so"]:
-                if os.path.isfile(file):
-                    os.remove(file)
 
     def generate_Interfacefile(self):
         """
