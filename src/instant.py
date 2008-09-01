@@ -1,5 +1,5 @@
 """
-By using the class instant a Python extension module can
+By using the class Instant a Python extension module can
 be created at runtime. For the user, it behaves somewhat like
 an inline module, except you have to import the module manually.
 
@@ -21,11 +21,102 @@ import string
 import md5
 import shutil
 import tempfile
+import logging
+
+# Logging wrappers
+_log     = logging.getLogger("instant")
+_loghandler = logging.StreamHandler()
+_log.addHandler(_loghandler)
+
+def get_log_handler():
+    global _loghandler
+    return _loghandler
+
+def get_logger():
+    global _log
+    return _log
+
+def set_log_handler(handler):
+    global _loghandler
+    _log.removeHandler(_loghandler)
+    _loghandler = handler
+    _log.addHandler(_loghandler)
+
+# Aliases for calling log:
+
+def instant_debug(*message):
+    global _log
+    _log.debug(*message)
+
+def instant_info(*message):
+    global _log
+    _log.info(*message)
+
+def instant_warning(*message):
+    global _log
+    _log.warning(*message)
+
+def instant_error(*message):
+    global _log
+    _log.error(*message)
+    text = message[0] % message[1:]
+    raise RuntimeError, text
+
+def instant_assert(condition, *message):
+    global _log
+    if not condition:
+        _log.error(*message)
+        text = message[0] % message[1:]
+        raise RuntimeError, text
+
+# Utility functions:
+
+def write_file(filename, text):
+    "Write text to a file and close it."
+    try:
+        f = open(filename, "w")
+        f.write(text)
+        f.close()
+    except IOError, msg:
+        instant_error("Can't open '%s': %s" % (filename, msg))
+
+def run_command(cmd):
+    "Run a command, assert success, and return output."
+    ret, output = commands.getstatusoutput(cmd)
+    instant_assert(ret == 0, "Failed to run '%s'" % cmd)
+    return output
+
+def reindent(s):
+    '''Reindent a multiline string to allow easier to read syntax.
+    
+    Example:
+        code = reindent("""
+            Foo
+            Bar
+                Blatti
+            Ping
+            """)
+    makes all indentation relative to Foo.
+    '''
+    lines = s.split("\n")
+    space = ""
+    # Get initial spaces from first non-empty line:
+    for l in lines:
+        if l:
+            r = re.search(r"^( [ ]*)", l)
+            if r is not None:
+                space = r.groups()[0]
+            break
+    if not space:
+        return s
+    n = len(space)
+    assert space == " "*n
+    return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
 
 
-VERBOSE = 0
-USE_CACHE = 0 
-TMP_DIR = 0
+# Utilities for directory handling:
+
+USE_CACHE = 0 # FIXME: Get rid of this.
 
 def get_instant_dir(caching=False):
     instant_dir = '.'
@@ -40,21 +131,19 @@ def get_instant_dir(caching=False):
             os.mkdir(instant_dir)
     return instant_dir
 
-
+_tmp_dir = 0
 def get_tmp_dir(): 
+    global _tmp_dir
     tmp_dir = '.'
-    global TMP_DIR
-    if TMP_DIR:
-        return TMP_DIR
+    if _tmp_dir:
+        return _tmp_dir
     elif USE_CACHE:
         tmp_dir = tempfile.mkdtemp("instant")
-        TMP_DIR = tmp_dir
+        _tmp_dir = tmp_dir
     return tmp_dir
-
 
 def get_instant_module_dir(md5sum):
     return os.path.join(get_instant_dir(), "instant_module_" + md5sum)
-
 
 def get_md5sum_from_signature(signature):
     '''
@@ -64,7 +153,6 @@ def get_md5sum_from_signature(signature):
     m.update(signature)
     return m.hexdigest().upper()
 
-
 def get_md5sum_from_files(filenames):
     '''
     get the md5 value of filename
@@ -72,11 +160,11 @@ def get_md5sum_from_files(filenames):
     '''
     m = md5.new()
     for filename in sorted(filenames): 
-        #print "Adding file ", filename, "to md5 sum "
+        instant_debug("Adding file ", filename, "to md5 sum ")
         try:
             fp = open(filename, 'rb')
         except IOError, msg:
-            sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+            instant_warning('%s: Can\'t open: %s\n' % (filename, msg))
             return None
 
         try:
@@ -86,8 +174,7 @@ def get_md5sum_from_files(filenames):
                     break
                 m.update(data)
         except IOError, msg:
-            print "filename ", filename 
-            sys.stderr.write('%s: I/O error: %s\n' % (filename, msg))
+            instant_warning("I/O error reading '%s': %s" % (filename, msg))
             return None
         fp.close() 
 
@@ -95,10 +182,7 @@ def get_md5sum_from_files(filenames):
 
 
 def write_md5sum_file(sum, md5out=sys.stdout):
-    try:
-        fp = open(md5out, 'w')
-    except IOError, msg:
-        sys.stderr.write('%s: Can\'t open: %s\n' % (filename, msg))
+    write_file(md5out, sum)
     fp.write(sum)
     fp.close()
 
@@ -121,28 +205,29 @@ def find_module(md5sum):
     if len(arg) == 2:
         assert arg[1]
         directory = os.path.join(get_instant_module_dir(md5sum), arg[1])
-        if VERBOSE > 9: print "find_module: directory = ", directory
+        instant_debug("find_module: directory = ", directory)
         # add found module directory to path
         if not directory in sys.path:
-            if VERBOSE > 9: print "Inserting directory in sys.path: ", directory
+            instant_debug("Inserting directory in sys.path: ", directory)
             sys.path.insert(0, directory) 
         # return module (directory) name
-        if VERBOSE > 9: print "find_module returning:", os.path.split(arg[1])[-1]
+        instant_debug("find_module returning:", os.path.split(arg[1])[-1])
         return os.path.split(arg[1])[-1]
         #return 1
     return None
 
 
-class instant:
+class Instant:
     # Default values:
 
     def __init__(self):
-        """ instant constructor """
-        self.code         = """
-void f()
-{
-  printf("No code supplied!\\n");
-}"""
+        """Instant constructor"""
+        self.code = reindent("""
+            void f()
+            {
+                printf("No code supplied!\\n");
+            }
+            """)
         self.gen_setup  = 1 
         self.module  = 'instant_swig_module'
         self.swigopts     = ' -c++ -fcompact -O -I. -small'
@@ -244,8 +329,8 @@ void f()
             elif file.endswith('.c'):
                 self.srcs.append(file)
             else:
-                print 'Source files must have \'.c\' or \'.cpp\' suffix!'
-                print 'This is not the case for',file
+                instant_warning('Source files must have \'.c\' or \'.cpp\' suffix!')
+                instant_warning('This is not the case for', file)
                 return 1 # Parsing of argurments detected errors
         return 0 # all ok
 
@@ -302,7 +387,7 @@ void f()
                 directory, a string with with the path relative to the current path is used.
         """
         if self.parse_args(args):
-            print 'Nothing done!' # Martin: What does this mean?
+            instant_warning('Nothing done!') # Martin: What does this mean?
             return
         #self.debug()
         
@@ -324,7 +409,7 @@ void f()
         files_to_copy.extend(self.object_files)
         files_to_copy.extend(self.wrap_headers)
 
-        if VERBOSE > 9: print "Copying files: ", files_to_copy, " to ", module_path
+        instant_debug("Copying files: ", files_to_copy, " to ", module_path)
         for file in files_to_copy:
             if not os.path.isfile(os.path.join(module_path, file)):
                 shutil.copyfile(file, os.path.join(module_path, file))
@@ -364,16 +449,14 @@ void f()
             # generate Makefile or setup.py and run it
             if not self.gen_setup:
                 self.generate_Makefile()
-                if os.path.isfile(self.makefile_name):
-                    os.system("make -f "+self.makefile_name+" clean")
-                os.system("make -f "+self.makefile_name+" >& "+self.logfile_name)
-                if VERBOSE >= 9:
-                    os.remove(self.logfile_name)
+                run_command("make -f %s clean" %  self.makefile_name)
+                output = run_command("make -f %s" % self.makefile_name)
+                write_file(self.logfile_name, output)
             else:
                 self.generate_setup()
                 cmd = "python " + self.module + "_setup.py build_ext"
-                if VERBOSE > 0: print "--- Instant: compiling ---"
-                if VERBOSE > 1: print cmd
+                instant_info("--- Instant: compiling ---")
+                instant_info(cmd)
                 ret, output = commands.getstatusoutput(cmd)
                 compile_log_file.write(output)
                 if ret != 0:
@@ -383,7 +466,7 @@ void f()
                 else:
                     #cmd = "python " + self.module + "_setup.py install --install-platlib=. >& compile.log 2>&1"
                     cmd = "python " + self.module + "_setup.py install --install-platlib=."
-                    if VERBOSE > 1: print cmd
+                    instant_info(cmd)
                     ret, output = commands.getstatusoutput(cmd)
                     compile_log_file.write(output)
                     if ret != 0:
@@ -410,41 +493,38 @@ void f()
             shutil.copytree(tmp_module_dir, cache_module_dir)
             
             # Verify that everything is ok
-            if VERBOSE > 9:
-                print "Copying module tree to cache...", tmp_module_dir, cache_module_dir
-            try:
-                find_module(md5sum)
-            except Exception, e:
-                print "Failed to find module from checksum after compiling! Checksum is %s" % md5sum
-                print e
+            instant_info("Copying module tree to cache...", tmp_module_dir, cache_module_dir)
+            cached_module = find_module(md5sum)
+            if cached_module is None:
+                instant_warning("Failed to find module from checksum after compiling! Checksum is %s" % md5sum)
     
     def debug(self):
         """
         print out all instance variable
         """
-        print 'DEBUG CODE:'
-        print 'code',self.code
-        print 'module',self.module
-        print 'swigopts',self.swigopts
-        print 'init_code',self.init_code
-        print 'system_headers',self.system_headers
-        print 'local_headers',self.local_headers
-        print 'wrap_headers',self.wrap_headers
-        print 'include_dirs',self.include_dirs
-        print 'sources',self.sources
-        print 'srcs',self.srcs
-        print 'cppsrcs',self.cppsrcs
-        print 'cppargs',self.cppargs
-        print 'lddargs',self.lddargs
-        print 'libraries',self.libraries
-        print 'library_dirs',self.library_dirs
-        print 'object_files',self.object_files
-        print 'arrays',self.arrays
-        print 'additional_definitions',self.additional_definitions
-        print 'additional_declarations',self.additional_declarations
-        print 'generate_Interface',self.generate_Interface
-        print 'signature',self.signature
-        print 'use_cache',self.use_cache
+        instant_debug('DEBUG CODE:')
+        instant_debug('code',self.code)
+        instant_debug('module',self.module)
+        instant_debug('swigopts',self.swigopts)
+        instant_debug('init_code',self.init_code)
+        instant_debug('system_headers',self.system_headers)
+        instant_debug('local_headers',self.local_headers)
+        instant_debug('wrap_headers',self.wrap_headers)
+        instant_debug('include_dirs',self.include_dirs)
+        instant_debug('sources',self.sources)
+        instant_debug('srcs',self.srcs)
+        instant_debug('cppsrcs',self.cppsrcs)
+        instant_debug('cppargs',self.cppargs)
+        instant_debug('lddargs',self.lddargs)
+        instant_debug('libraries',self.libraries)
+        instant_debug('library_dirs',self.library_dirs)
+        instant_debug('object_files',self.object_files)
+        instant_debug('arrays',self.arrays)
+        instant_debug('additional_definitions',self.additional_definitions)
+        instant_debug('additional_declarations',self.additional_declarations)
+        instant_debug('generate_Interface',self.generate_Interface)
+        instant_debug('signature',self.signature)
+        instant_debug('use_cache',self.use_cache)
     
     def clean(self):
         """ Clean up files the current session. """
@@ -473,8 +553,7 @@ void f()
          - wrap_headers (A list of local headers that will be wrapped by SWIG)
 
         """
-        if VERBOSE > 1:
-            print "\nGenerating interface file \'"+ self.ifile_name +"\':"
+        instant_debug("Generating interface file '%s'." % self.ifile_name)
 
         func_name = self.code[:self.code.index(')')+1]
 
@@ -483,42 +562,42 @@ void f()
         for a in self.arrays:  
             # 1 dimentional arrays, ie. vectors
             if (len(a) == 2):  
-                typemaps += """
-%%typemap(in) (int %(n)s,double* %(array)s){
-  if (!PyArray_Check($input)) { 
-    PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
-    return NULL; ;
-  }
-  PyArrayObject* pyarray;
-  pyarray = (PyArrayObject*)$input; 
-  $1 = int(pyarray->dimensions[0]);
-  $2 = (double*)pyarray->data;
-}
-""" % { 'n' : a[0] , 'array' : a[1] }
+                typemaps += reindent("""
+                    %%typemap(in) (int %(n)s,double* %(array)s){
+                      if (!PyArray_Check($input)) { 
+                        PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
+                        return NULL; ;
+                      }
+                      PyArrayObject* pyarray;
+                      pyarray = (PyArrayObject*)$input; 
+                      $1 = int(pyarray->dimensions[0]);
+                      $2 = (double*)pyarray->data;
+                    }
+                    """ % { 'n' : a[0] , 'array' : a[1] })
             # n dimentional arrays, ie. matrices and tensors  
             elif (len(a) == 3):  
-                typemaps += """
-%%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
-  if (!PyArray_Check($input)) { 
-    PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
-    return NULL; ;
-  }
-  PyArrayObject* pyarray;
-  pyarray = (PyArrayObject*)$input; 
-  $1 = int(pyarray->nd);
-  int* dims = new int($1); 
-  for (int d=0; d<$1; d++) {
-      dims[d] = int(pyarray->dimensions[d]);
-  }
+                typemaps += reindent("""
+                    %%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
+                      if (!PyArray_Check($input)) { 
+                        PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
+                        return NULL; ;
+                      }
+                      PyArrayObject* pyarray;
+                      pyarray = (PyArrayObject*)$input; 
+                      $1 = int(pyarray->nd);
+                      int* dims = new int($1); 
+                      for (int d=0; d<$1; d++) {
+                          dims[d] = int(pyarray->dimensions[d]);
+                      }
 
-  $2 = dims;  
-  $3 = (double*)pyarray->data;
-}
-%%typemap(freearg) (int %(n)s,int* %(ptv)s,double* %(array)s){
-    // deleting dims
-    delete $2; 
-}
-""" % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] }
+                      $2 = dims;  
+                      $3 = (double*)pyarray->data;
+                    }
+                    %%typemap(freearg) (int %(n)s,int* %(ptv)s,double* %(array)s){
+                        // deleting dims
+                        delete $2; 
+                    }
+                    """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] })
             # end if
         # end for
         
@@ -529,39 +608,38 @@ void f()
 
         self.typemaps = typemaps 
 
-        interface_string = """
-%%module  %(module)s
-//%%module (directors="1") %(module)s
+        interface_string = reindent("""
+            %%module  %(module)s
+            //%%module (directors="1") %(module)s
 
-//%%feature("director");
+            //%%feature("director");
 
-%%{
-#include <iostream>
-%(additional_definitions)s 
-%(system_headers_code)s 
-%(local_headers_code)s 
-%(wrap_headers_code1)s 
-%(code)s
-%%}
+            %%{
+            #include <iostream>
+            %(additional_definitions)s 
+            %(system_headers_code)s 
+            %(local_headers_code)s 
+            %(wrap_headers_code1)s 
+            %(code)s
+            %%}
 
-//%%feature("autodoc", "1");
-%%init%%{
-%(init_code)s
-%%}
+            //%%feature("autodoc", "1");
+            %%init%%{
+            %(init_code)s
+            %%}
 
-%(additional_definitions)s
-%(additional_declarations)s
-%(wrap_headers_code2)s
-//%(typemaps)s
-%(code)s;
+            %(additional_definitions)s
+            %(additional_declarations)s
+            %(wrap_headers_code2)s
+            //%(typemaps)s
+            %(code)s;
 
-""" % vars(self)
+            """ % vars(self))
 
         f = open(self.ifile_name, 'w')
         f.write(interface_string)
         f.close()
-        if VERBOSE > 1:
-            print '... Done'
+        instant_debug("Done generating interface file.")
         return func_name[func_name.rindex(' ')+1:func_name.index('(')]
 
     def check_md5sum(self): 
@@ -579,11 +657,11 @@ void f()
             md5sum_files.extend(self.wrap_headers)
             md5sum_files.extend(self.local_headers)
             current_md5sum = get_md5sum_from_files(md5sum_files)
-            if VERBOSE > 2:
-                print "md5sum_files ", md5sum_files
+            instant_debug("md5sum_files ", md5sum_files)
 
         if current_md5sum is not None:
             write_md5sum_file(current_md5sum, os.path.join(get_tmp_dir(), self.module + ".md5"))
+
         if os.path.isfile(self.module+".md5"):
             if len(self.use_cache) > 1 and find_module(current_md5sum):
                 return 1
@@ -620,20 +698,20 @@ void f()
             inc_dir = "-I.."
         
         # generate
-        code = """ 
-import os
-from distutils.core import setup, Extension
-name = '%s' 
-swig_cmd ='swig -python %s %s %s'
-os.system(swig_cmd)
-sources = %s 
-setup(name = '%s', 
-      ext_modules = [Extension('_' + '%s', sources, 
-                     include_dirs=%s, library_dirs=%s, 
-                     libraries=%s %s %s)])  
+        code = reindent(""" 
+            import os
+            from distutils.core import setup, Extension
+            name = '%s' 
+            swig_cmd ='swig -python %s %s %s'
+            os.system(swig_cmd)
+            sources = %s 
+            setup(name = '%s', 
+                  ext_modules = [Extension('_' + '%s', sources, 
+                                 include_dirs=%s, library_dirs=%s, 
+                                 libraries=%s %s %s)])  
         """ % (self.module, inc_dir, self.swigopts, self.ifile_name, 
                self.cppsrcs, 
-               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args, link_args)
+               self.module, self.module, self.include_dirs, self.library_dirs, self.libraries, compile_args, link_args))
         # write
         f = open(self.module+'_setup.py', 'w')
         f.write(code)
@@ -646,54 +724,49 @@ setup(name = '%s',
         the supplied C/C++ code.
         """
         # generate
-        code = """
-LIBS = %s
-LDPATH = 
+        code = reindent("""
+            LIBS = %s
+            LDPATH = 
 
-FLAGS = %s
+            FLAGS = %s
 
-SWIG       = swig 
-SWIGOPT    = %s
-INTERFACE  = %s
-TARGET     = %s
-INCLUDES   = 
+            SWIG       = swig 
+            SWIGOPT    = %s
+            INTERFACE  = %s
+            TARGET     = %s
+            INCLUDES   = 
 
-SWIGMAKEFILE = $(SWIGSRC)/Examples/Makefile
+            SWIGMAKEFILE = $(SWIGSRC)/Examples/Makefile
 
-python::
-	$(MAKE) -f '$(SWIGMAKEFILE)' INTERFACE='$(INTERFACE)' \\
-	SWIG='$(SWIG)' SWIGOPT='$(SWIGOPT)'  \\
-	SRCS='%s' \\
-	CPPSRCS='%s' \\
-	INCLUDES='$(INCLUDES) %s' \\
-	LIBS='$(LIBS) %s' \\
-	CFLAGS='$(CFLAGS) $(FLAGS)' \\
-	TARGET='$(TARGET)' \\
-	python_cpp
+            python::
+                $(MAKE) -f '$(SWIGMAKEFILE)' INTERFACE='$(INTERFACE)' \\
+                SWIG='$(SWIG)' SWIGOPT='$(SWIGOPT)'  \\
+                SRCS='%s' \\
+                CPPSRCS='%s' \\
+                INCLUDES='$(INCLUDES) %s' \\
+                LIBS='$(LIBS) %s' \\
+                CFLAGS='$(CFLAGS) $(FLAGS)' \\
+                TARGET='$(TARGET)' \\
+                python_cpp
 
-clean::
-	rm -f *_wrap* _%s.so *.o $(OBJ_FILES)  *~
-    """ % (list2str(self.libraries),
-           self.cppargs,
-           self.swigopts,
-           self.ifile_name,
-           self.module,
-           list2str(self.srcs),
-           list2str(self.cppsrcs),
-           list2str(self.include_dirs),
-           list2str(self.library_dirs),
-           self.module)
+            clean::
+                rm -f *_wrap* _%s.so *.o $(OBJ_FILES)  *~
+            """ % (list2str(self.libraries),
+                   self.cppargs,
+                   self.swigopts,
+                   self.ifile_name,
+                   self.module,
+                   list2str(self.srcs),
+                   list2str(self.cppsrcs),
+                   list2str(self.include_dirs),
+                   list2str(self.library_dirs),
+                   self.module))
         # end code
         
-        # write
-        f = open(self.makefile_name, 'w')
-        f.write(code)
-        f.close()
-        
-        if VERBOSE > 1:
-            print 'Makefile', self.makefile_name, 'generated'
+        write_file(self.makefile_name, code)
+        instant_debug('Makefile', self.makefile_name, 'generated.')
     
-    ### End of class instant
+    ### End of class Instant
 
 
 # convert list values to string
@@ -773,7 +846,7 @@ def create_extension(**args):
                 default cache directory will be used. To specify a cache
                 directory, a string with with the path relative to the current path is used.
     """ 
-    ext = instant()
+    ext = Instant()
     ext.create_extension(**args)
 
 
@@ -794,7 +867,7 @@ def inline(c_code, **args_dict):
 
 
     """
-    ext = instant()
+    ext = Instant()
     args_dict["code"] = c_code
     if not args_dict.has_key("module"):
         args_dict["module"] = "inline_ext" 
@@ -840,7 +913,7 @@ def inline_with_numpy(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = instant()
+    ext = Instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
     import numpy
@@ -906,7 +979,7 @@ def inline_with_numeric(c_code, **args_dict):
     args_dict["init_code"] =  args_dict.get("init_code", "") + "\nimport_array();\n"
 
     try: 
-        ext = instant()
+        ext = Instant()
         func = c_code[:c_code.index('(')]
         ret, func_name = func.split()
 
@@ -915,7 +988,7 @@ def inline_with_numeric(c_code, **args_dict):
         exec("from inline_ext_numeric import %s as func_name" % func_name)
         return func_name
     except: 
-        ext = instant()
+        ext = Instant()
         ext.create_extension(**args_dict)
 
         exec("import inline_ext_numeric as I") 
@@ -952,7 +1025,7 @@ def inline_with_numarray(c_code, **args_dict):
        >>> sum_func(a)
     """
 
-    ext = instant()
+    ext = Instant()
     func = c_code[:c_code.index('(')]
     ret, func_name = func.split()
 
@@ -988,7 +1061,6 @@ def header_and_libs_from_pkgconfig(*packages):
     This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file. 
     The usage is: 
     (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(list_of_packages)
-
     """
     includes = []
     flags = []
