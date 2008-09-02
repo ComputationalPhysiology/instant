@@ -92,6 +92,9 @@ def create_extension(modulename=None, source_directory=".",
     def assert_is_str(x):
         instant_assert(isinstance(x, str), "Expecting string.")
     
+    def assert_is_bool(x):
+        instant_assert(isinstance(x, bool), "Expecting bool.")
+    
     def assert_is_str_list(x):
         instant_assert(isinstance(x, (list, tuple)), "Expecting sequence.")
         instant_assert(all(isinstance(i, str) for i in x), "Expecting sequence of strings.")
@@ -194,9 +197,9 @@ def create_extension(modulename=None, source_directory=".",
                 cache_md5sum = compute_md5(signature, [])
             # Lookup cache_md5sum in cache
             if in_cache(cache_md5sum, cache_dir):
-                cached_module = import_extension_from_cache(md5sum, cache_dir)
+                cached_module = import_extension_from_cache(cache_md5sum, cache_dir)
                 instant_assert(cached_module, "Couldn't import module from cache, "\
-                    "even though in_cache(%r,%r) returned True." % (md5sum, cache_dir))
+                    "even though in_cache(%r,%r) returned True." % (cache_md5sum, cache_dir))
                 instant_info("Found module in cache.")
                 return cached_module
             # Define modulename and path automatically
@@ -277,7 +280,7 @@ def create_extension(modulename=None, source_directory=".",
                 instant_error("Could not find swig! You can download swig from http://www.swig.org")
             
             # Create log file for logging of compilation errors
-            compile_log_filename = os.path.join(modulepath, "compile.log")
+            compile_log_filename = os.path.join(module_path, "compile.log")
             compile_log_file = open(compile_log_filename, "w")
             
             # Run makefile or setup.py.
@@ -337,7 +340,7 @@ def create_extension(modulename=None, source_directory=".",
             if os.path.exists(cache_module_path):
                 instant_warning("Path '%s' already exists, but module wasn't found in cache previously. Overwriting." % cache_module_path) # TODO: Error instead? Indicates race condition on disk or bug in Instant.
                 shutil.rmtree(cache_module_path)
-            instant_info("Copying built module to cache...", module_path, cache_module_dir)
+            instant_info("Copying built module to cache...", module_path, cache_module_path)
             shutil.copytree(module_path, cache_module_path)
             # Verify that we can load the module from the cache now
             if in_cache(cache_md5sum, cache_dir):
@@ -354,7 +357,7 @@ def create_extension(modulename=None, source_directory=".",
     except:
         # Remove md5 file if something went wrong FIXME: Is this correct? Can we do it cleaner?
         md5_filename = locals().get("md5_filename", None)
-        if md5_filename and os.exists(md5_filename):
+        if md5_filename and os.path.exists(md5_filename):
             md5_file = locals().get("md5_file", None)
             if md5_file:
                 md5_file.close()

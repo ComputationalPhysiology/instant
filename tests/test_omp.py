@@ -27,8 +27,8 @@ void compute(int n, double* x,
 
 
 N = 20000000
-#compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-fopenmp'], system_headers=["omp.h"])  
-compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-lgomp'], system_headers=["omp.h"])  
+#compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-fopenmp'], system_headers=["omp.h"], cache_dir="test_cache")  
+compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-lgomp'], system_headers=["omp.h"], cache_dir="test_cache")  
 
 # It is not possible to change the environment variable while
 # running the script, that is, the change is not seen when

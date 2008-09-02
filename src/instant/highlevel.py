@@ -1,6 +1,7 @@
 
+import sys
+from output import instant_assert, instant_warning, instant_error
 from create_extension import create_extension
-from output import instant_assert, instant_warning
 
 
 def get_func_name(c_code):

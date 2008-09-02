@@ -140,7 +140,7 @@ def write_interfacefile(modulename, code, init_code,
     instant_debug("Done generating interface file.")
 
 
-def write_setupfile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
+def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
     """Generate a setup.py file.
 
     The arguments are as follows:
@@ -198,7 +198,6 @@ def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, libr
     The arguments are as follows:
     FIXME
     """
-    # FIXME: What's csrcs, not used in setup.py.
     instant_warning("FIXME: Not using local_headers in write_makefile().")
     instant_warning("FIXME: Not using lddargs in write_makefile().")
     instant_debug("Generating makefile.")

@@ -15,7 +15,7 @@ double sum (int n1, double* array1){
 """
 
 
-sum_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']])
+sum_func = inline_with_numpy(c_code, arrays = [['n1', 'array1']], cache_dir="test_cache")
 
 a = numpy.arange(10000000); a = numpy.sin(a)
 

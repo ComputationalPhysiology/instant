@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import instant
-use_cache = True
 
 from instant import create_extension, find_module_by_signature, import_module_by_signature
 
@@ -23,7 +22,7 @@ if not find_module_by_signature(sig):
     }
     """
     print "Compiling code"
-    res = create_extension(code=c_code, signature=sig, use_cache=use_cache)
+    res = create_extension(code=c_code, signature=sig, cache_dir="test_cache")
     print "res = ", res
 
 print "Importing code"

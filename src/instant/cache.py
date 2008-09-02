@@ -11,7 +11,8 @@ Example operations:
 - modules = cached_extensions(path)
 """
 
-import os
+import os, sys
+from output import instant_warning, instant_assert
 from paths import get_default_cache_dir
 
 
@@ -67,5 +68,5 @@ def cached_extensions(cache_dir=None):
     "Return a list with the names of all cached extension modules."
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
-    return os.list(cache_dir)
+    return os.listdir(cache_dir)
 

@@ -23,7 +23,7 @@ def test():
     from instant import inline
 
     t0 = time.time()
-    func = inline("double f(double x) { return %s; }" % f.printc()) 
+    func = inline("double f(double x) { return %s; }" % f.printc(), cache_dir="test_cache") 
     t1 = time.time()
     print "Compile time  ", t1-t0
 

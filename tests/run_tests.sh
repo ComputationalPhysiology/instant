@@ -1,6 +1,8 @@
 #!/bin/sh 
 
-instant-clean
+#instant-clean
+rm -rf test_cache
+rm -rf *_ext
 
 for file in *.py; do
    echo "running test $file ";
