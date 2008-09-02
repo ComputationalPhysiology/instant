@@ -14,10 +14,10 @@ double sum (int n1, double* array1){
 }
 """
 
+sum_func = inline_with_numarray(c_code, arrays = [['n1', 'array1']], cache_dir="test_cache")
 
-sum_func = inline_with_numarray(c_code, arrays = [['n1', 'array1']])
-
-a = numarray.arange(10000000); a = numarray.sin(a)
+a = numarray.arange(10000000)
+a = numarray.sin(a)
 
 t1 = time.time()
 sum1 = sum_func(a)
@@ -31,6 +31,4 @@ print 'With numarray:   ',t2-t1,'seconds'
 
 difference = abs(sum1 - sum2) 
 print "The difference between the sums computed by numarray and instant is " + str(difference) 
-
-
 

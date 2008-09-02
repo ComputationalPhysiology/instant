@@ -22,9 +22,9 @@ void func(int n1, double* array1, int n2, double* array2){
 
 # Guess arrayobject is either in sys.prefix or /usr/local
 
-create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-g',
+test7_ext = create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-g',
           include_dirs=[N.get_include()],
-          init_code='import_array();', module='test7_ext', 
+          init_code='import_array();', modulename='test7_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2']])
 
 

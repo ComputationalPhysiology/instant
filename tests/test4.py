@@ -39,15 +39,11 @@ return PyArray_Return(ret);
 }
 """
 
-
-create_extension(code=s, system_headers=["numpy/arrayobject.h"],
+test4_ext = create_extension(code=s, system_headers=["numpy/arrayobject.h"],
               include_dirs=[numpy.get_include()],
-              init_code='import_array();', module="test4_ext"
-              )
-
+              init_code='import_array();', modulename="test4_ext")
 
 import time
-import test4_ext 
 
 t1 = time.time() 
 d = test4_ext.add(a,b)
@@ -65,9 +61,4 @@ difference = abs(c - d)
 
 sum = reduce( lambda a,b: a+b, difference)  
 print "The difference between the arrays computed by numpy and instant is " + str(sum) 
-
-
-
-
-
 

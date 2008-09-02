@@ -22,12 +22,13 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 """
 
 
-create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-pg',
+test5_ext = create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs=['-pg'],
           include_dirs=[numpy.get_include()],
-          init_code='import_array();', module='test5_ext', 
+          init_code='import_array();', modulename='test5_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
 
 from test5_ext import add 
+add = test5_ext.add
 a = numpy.arange(10000000); a = numpy.sin(a)
 b = numpy.arange(10000000); b = numpy.cos(b)
 c = numpy.arange(10000000); c = numpy.cos(c)

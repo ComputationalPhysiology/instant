@@ -32,7 +32,7 @@ void time_loop(int n, double* p,
 """
 
 N = 100000        
-time_loop = inline_with_numpy(c_code, arrays = [['n', 'p'], ['m', 'Q']], cppargs='-g')
+time_loop = inline_with_numpy(c_code, arrays = [['n', 'p'], ['m', 'Q']], cppargs='-g', cache_dir="test_cache")
 p = zeros(N)
 T = 20.0
 Q = sin(arange(0, T, T/N))+1   

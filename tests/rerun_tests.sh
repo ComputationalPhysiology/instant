@@ -1,8 +1,6 @@
 #!/bin/sh 
 
-echo Cleaning local test cache before tests.
-./clean.sh
-
+echo Not cleaning local test cache before tests.
 rm -f failed_tests
 
 for file in test*.py; do
