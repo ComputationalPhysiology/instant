@@ -36,7 +36,7 @@ def reindent(code):
     return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
 
 
-def generate_interfacefile(modulename, code, init_code,
+def write_interfacefile(modulename, code, init_code,
         additional_definitions, additional_declarations,
         system_headers, local_headers, wrap_headers, arrays):
     """
@@ -140,14 +140,14 @@ def generate_interfacefile(modulename, code, init_code,
     instant_debug("Done generating interface file.")
 
 
-def generate_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
+def write_setupfile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
     """Generate a setup.py file.
 
     The arguments are as follows:
     FIXME
     """
     instant_debug("Generating setup.py.")
-    instant_warning("FIXME: Not using csrcs in generate_setup().")
+    instant_warning("FIXME: Not using csrcs in write_setupfile().")
     
     # Handle arguments
     swigfilename = "%s.i" % modulename
@@ -190,7 +190,7 @@ def generate_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, libr
     return filename
 
 
-def generate_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
+def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
     """Generates a project dependent Makefile.
     
     This makefile includes and uses SWIG's own Makefile to 
@@ -199,8 +199,8 @@ def generate_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, l
     FIXME
     """
     # FIXME: What's csrcs, not used in setup.py.
-    instant_warning("FIXME: Not using local_headers in generate_makefile().")
-    instant_warning("FIXME: Not using lddargs in generate_makefile().")
+    instant_warning("FIXME: Not using local_headers in write_makefile().")
+    instant_warning("FIXME: Not using lddargs in write_makefile().")
     instant_debug("Generating makefile.")
     swigfilename = "%s.i" % modulename
     code = reindent("""
@@ -247,7 +247,7 @@ def generate_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, l
     return filename
 
 
-def _test_generate_interfacefile():
+def _test_write_interfacefile():
     modulename = "testmodule"
     code = "void foo() {}"
     init_code = "/* custom init code */"
@@ -258,11 +258,11 @@ def _test_generate_interfacefile():
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
     arrays = [] # FIXME: Example input here
     
-    generate_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
+    write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
     print "".join(open("%s.i" % modulename).readlines())
 
 
-def _test_generate_setup():
+def _test_write_setup():
     modulename = "testmodule"
     csrcs = ["csrc1.c", "csrc2.c"]
     cppsrcs = ["cppsrc1.cpp", "cppsrc2.cpp"]
@@ -274,11 +274,11 @@ def _test_generate_setup():
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
     
-    generate_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+    write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
     print "".join(open("setup.py").readlines())
 
 
-def _test_generate_makefile():
+def _test_write_makefile():
     modulename = "testmodule"
     csrcs = ["csrc1.c", "csrc2.c"]
     cppsrcs = ["cppsrc1.cpp", "cppsrc2.cpp"]
@@ -290,15 +290,15 @@ def _test_generate_makefile():
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
     
-    generate_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+    write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
     print "".join(open("Makefile").readlines())
 
 
 if __name__ == "__main__":
-    _test_generate_interfacefile()
+    _test_write_interfacefile()
     print "\n"*3
-    _test_generate_setup()
+    _test_write_setup()
     print "\n"*3
-    _test_generate_makefile()
+    _test_write_makefile()
 
 

@@ -2,18 +2,17 @@
 import hashlib
 from output import instant_assert, instant_debug, instant_error
 
-def signature_to_md5(signature):
-    """Get the md5 value of signature"""
-    instant_assert(isinstance(signature, str), "Expecting string signature.")
-    m = hashlib.md5(signature)
-    return m.hexdigest().upper()
-
-def files_to_md5(filenames):
+def compute_md5(text="", filenames=[]):
     """
     Get the md5 value of filename
     modified based on Python24\Tools\Scripts\md5sum.py
     """
+    instant_assert(isinstance(text, str), "Expecting string.")
+    instant_assert(isinstance(filenames, (list,tuple)), "Expecting sequence.")
+    
     m = hashlib.new("md5")
+    if text:
+        m.update(text)
     
     for filename in sorted(filenames): 
         instant_debug("Adding file '%s' to md5 sum." % filename)
@@ -35,17 +34,18 @@ def files_to_md5(filenames):
     
     return m.hexdigest().upper()
 
+
 def _test():
     signature = "(Test signature)"
     files = ["signatures.py", "__init__.py"]
     print
     print "Signature:", repr(signature)
-    print "MD5 sum:", signature_to_md5(signature)
+    print "MD5 sum:", compute_md5(signature, [])
     print
     print "files:", files
-    print "MD5 sum:", files_to_md5(files)
+    print "MD5 sum:", compute_md5("", files)
     print
-    
+
 if __name__ == "__main__":
     _test()
 

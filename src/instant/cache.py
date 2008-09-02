@@ -1,19 +1,18 @@
+"""
+Example operations:
+- modulename = modulename_from_md5sum(md5sum)
+- modulename = modulename_from_md5sum(compute_md5(signature))
+- found = in_cache(md5sum)
+- found = in_cache(compute_md5(signature))
+- module = import_extension_from_cache(md5sum)
+- module = import_extension_from_cache(compute_md5(signature))
+- module = import_extension(path, modulename)
+- modules = cached_extensions()
+- modules = cached_extensions(path)
+"""
 
 import os
-from signatures import signature_to_md5, files_to_md5
 from paths import get_default_cache_dir
-
-#
-# Cache operations needed:
-# - modulename = modulename_from_md5sum(md5sum)
-# - modulename = modulename_from_md5sum(signature_to_md5(signature))
-# - found = in_cache(md5sum)
-# - found = in_cache(signature_to_md5(signature))
-# - module = import_extension_from_cache(md5sum)
-# - module = import_extension_from_cache(signature_to_md5(signature))
-# - module = import_extension(path, modulename)
-# - modules = cached_extensions(path)
-#
 
 
 # TODO: Could make this an argument, but it's used indirectly many places.
@@ -69,5 +68,4 @@ def cached_extensions(cache_dir=None):
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
     return os.list(cache_dir)
-
 
