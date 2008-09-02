@@ -1,6 +1,6 @@
 
 import re
-from output import instant_warning, instant_debug, write_file
+from output import instant_assert, instant_warning, instant_debug, write_file
 
 
 def mapstrings(format, sequence):
@@ -32,7 +32,7 @@ def reindent(code):
     if not space:
         return code
     n = len(space)
-    assert space == " "*n
+    instant_assert(space == " "*n, "Logic breach in reindent.")
     return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
 
 
@@ -138,6 +138,7 @@ def write_interfacefile(modulename, code, init_code,
     
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
+    return filename
 
 
 def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
@@ -155,13 +156,17 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
     
     cppsrcs = cppsrcs + [wrapperfilename]
     
+    swig_args = ""
+    if swigargs:
+        swig_args = " ".join(swigargs)
+    
     compile_args = ""
-    if len(cppargs) > 0:  
-        compile_args = ", extra_compile_args=%s" % cppargs 
+    if cppargs:  
+        compile_args = ", extra_compile_args=%r" % cppargs 
 
     link_args = ""
-    if len(lddargs) > 0:  
-        link_args = ", extra_link_args=%s" % lddargs 
+    if lddargs:  
+        link_args = ", extra_link_args=%r" % lddargs 
 
     inc_dir = ""
     if len(local_headers) > 0:
@@ -181,7 +186,7 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
                              include_dirs=%s,
                              library_dirs=%s,
                              libraries=%s %s %s)])  
-        """ % (modulename, inc_dir, swigargs, swigfilename, cppsrcs, 
+        """ % (modulename, inc_dir, swig_args, swigfilename, cppsrcs, 
                modulename, modulename, include_dirs, library_dirs, libraries, compile_args, link_args))
     
     filename = "setup.py"
@@ -230,8 +235,8 @@ def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, libr
         clean::
             rm -f *_wrap* _%s.so *.o $(OBJ_FILES)  *~
         """ % (" ".join(libraries),
-               cppargs,
-               swigargs,
+               " ".join(cppargs),
+               " ".join(swigargs),
                swigfilename,
                modulename,
                " ".join(csrcs),

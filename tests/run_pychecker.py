@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 "Find potential bugs in instant by static code analysis."
 
 # PyChecker skips previously loaded modules

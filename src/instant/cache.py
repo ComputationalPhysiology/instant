@@ -14,9 +14,10 @@ Example operations:
 import os, sys
 from output import instant_warning, instant_assert
 from paths import get_default_cache_dir
+from signatures import compute_md5
 
 
-# TODO: Could make this an argument, but it's used indirectly many places.
+# TODO: We could make this an argument, but it's used indirectly several places so take care.
 _modulename_prefix = "instant_module_"
 
 
@@ -30,18 +31,28 @@ def md5sum_from_modulename(modulename):
     return modulename.remove(_modulename_prefix)
 
 
-def in_cache(md5sum, cache_dir=None):
-    "Return wether a module with the given md5 sum is found in cache."
+def find_extension(signature, cache_dir=None):
+    "Return wether a module with the given signature or md5sum is found in cache."
+    # TODO: This does a rather crude check, we could check some directory contents as well to make it more robust.
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
-    modulename = modulename_from_md5sum(md5sum)
+    
+    # Attempt to see signature as md5sum
+    modulename = modulename_from_md5sum(signature)
     if os.path.isdir(os.path.join(cache_dir, modulename)):
-        # TODO: A rather crude check, check directory contents as well?
         return True
+    
+    # Compute md5sum of signature
+    signature = compute_md5(signature)
+    modulename = modulename_from_md5sum(signature)
+    if os.path.isdir(os.path.join(cache_dir, modulename)):
+        return True
+    
+    # All attempts failed
     return False
 
 
-def import_extension(path, modulename):
+def import_extension_directly(path, modulename):
     "Import an extension module with the given module name that resides in the given path."
     sys.path.insert(0, path)
     try:
@@ -50,18 +61,29 @@ def import_extension(path, modulename):
         instant_warning("Failed to import extension module '%s' from '%s'." % (modulename, path))
         extension = None
     finally:
-        sys.path.remove(0)
+        sys.path.pop(0)
     return extension
 
 
-def import_extension_from_cache(md5sum, cache_dir=None):
-    "Import extension from cache given its md5sum."
+def import_extension(signature, cache_dir=None):
+    "Import extension from cache given its signature or md5sum."
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
-    instant_assert(in_cache(md5sum, cache_dir),
-        "Can't find module with md5sum '%s' in cache at '%s'." % (md5sum, cache_dir))
-    modulename = modulename_from_md5sum(md5sum)
-    return import_extension(cache_dir, modulename)
+    
+    # Attempt to see signature as md5sum
+    modulename = modulename_from_md5sum(signature)
+    if os.path.isdir(os.path.join(cache_dir, modulename)):
+        return import_extension_directly(cache_dir, modulename)
+    
+    # Compute md5sum of signature
+    signature = compute_md5(signature)
+    modulename = modulename_from_md5sum(signature)
+    if os.path.isdir(os.path.join(cache_dir, modulename)):
+        return import_extension_directly(cache_dir, modulename)
+
+    # All attempts failed.
+    instant_warning("Can't find module with signature or md5sum '%s' in cache at '%s'." % (signature, cache_dir))
+    return None
 
 
 def cached_extensions(cache_dir=None):

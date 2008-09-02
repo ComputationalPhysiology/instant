@@ -67,7 +67,7 @@ def create_extension(modulename=None, source_directory=".",
        - B{object_files}:
           - If you want to compile the files yourself. NOT YET SUPPORTED. # TODO
        - B{arrays}:
-          - A list of the C arrays to be made from NumPy arrays. # TODO
+          - A list of the C arrays to be made from NumPy arrays. # FIXME: Describe this correctly. Tests pass arrays of arrays of strings.
        - B{generate_interface}:
           - A bool to indicate if you want to generate the interface files.
        - B{generate_setup}:
@@ -120,7 +120,7 @@ def create_extension(modulename=None, source_directory=".",
     cppargs        = strip_strings(cppargs)
     lddargs        = strip_strings(lddargs)
     object_files   = strip_strings(object_files)
-    arrays         = strip_strings(arrays)
+    arrays         = [strip_strings(a) for a in arrays]
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
     assert_is_bool(generate_makefile)
@@ -133,7 +133,11 @@ def create_extension(modulename=None, source_directory=".",
     
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
-    assert_is_str(cache_dir)
+    else:
+        assert_is_str(cache_dir)
+        cache_dir = os.path.abspath(cache_dir)
+        if not os.path.isdir(cache_dir):
+            os.mkdir(cache_dir)
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = []
@@ -148,30 +152,30 @@ def create_extension(modulename=None, source_directory=".",
 
     # --- Debugging code
     instant_debug('::: Begin Arguments :::')
-    instant_debug('modulename',modulename)
-    instant_debug('code',code)
-    instant_debug('init_code',init_code)
-    instant_debug('additional_definitions',additional_definitions)
-    instant_debug('additional_declarations',additional_declarations)
-    instant_debug('sources',sources)
-    instant_debug('csrcs',csrcs)
-    instant_debug('cppsrcs',cppsrcs)
-    instant_debug('wrap_headers',wrap_headers)
-    instant_debug('local_headers',local_headers)
-    instant_debug('system_headers',system_headers)
-    instant_debug('include_dirs',include_dirs)
-    instant_debug('library_dirs',library_dirs)
-    instant_debug('libraries',libraries)
-    instant_debug('swigargs',swigargs)
-    instant_debug('cppargs',cppargs)
-    instant_debug('lddargs',lddargs)
-    instant_debug('object_files',object_files)
-    instant_debug('arrays',arrays)
-    instant_debug('generate_interface',generate_interface)
-    instant_debug('generate_setup',generate_setup)
-    instant_debug('generate_makefile',generate_makefile)
-    instant_debug('signature',signature)
-    instant_debug('cache_dir',cache_dir)
+    instant_debug('modulename: %r' % modulename)
+    instant_debug('code: %r' % code)
+    instant_debug('init_code: %r' % init_code)
+    instant_debug('additional_definitions: %r' % additional_definitions)
+    instant_debug('additional_declarations: %r' % additional_declarations)
+    instant_debug('sources: %r' % sources)
+    instant_debug('csrcs: %r' % csrcs)
+    instant_debug('cppsrcs: %r' % cppsrcs)
+    instant_debug('wrap_headers: %r' % wrap_headers)
+    instant_debug('local_headers: %r' % local_headers)
+    instant_debug('system_headers: %r' % system_headers)
+    instant_debug('include_dirs: %r' % include_dirs)
+    instant_debug('library_dirs: %r' % library_dirs)
+    instant_debug('libraries: %r' % libraries)
+    instant_debug('swigargs: %r' % swigargs)
+    instant_debug('cppargs: %r' % cppargs)
+    instant_debug('lddargs: %r' % lddargs)
+    instant_debug('object_files: %r' % object_files)
+    instant_debug('arrays: %r' % arrays)
+    instant_debug('generate_interface: %r' % generate_interface)
+    instant_debug('generate_setup: %r' % generate_setup)
+    instant_debug('generate_makefile: %r' % generate_makefile)
+    instant_debug('signature: %r' % signature)
+    instant_debug('cache_dir: %r' % cache_dir)
     instant_debug('::: End Arguments :::')
 
     # --- Wrapping rest of code in try-block to clean up at the end if something fails.
@@ -196,11 +200,12 @@ def create_extension(modulename=None, source_directory=".",
                 # If given a user-provided signature, we don't look at anything else.
                 cache_md5sum = compute_md5(signature, [])
             # Lookup cache_md5sum in cache
-            if in_cache(cache_md5sum, cache_dir):
-                cached_module = import_extension_from_cache(cache_md5sum, cache_dir)
+            if find_extension(cache_md5sum, cache_dir):
+                cached_module = import_extension(cache_md5sum, cache_dir)
                 instant_assert(cached_module, "Couldn't import module from cache, "\
-                    "even though in_cache(%r,%r) returned True." % (cache_md5sum, cache_dir))
+                    "even though find_extension(%r,%r) returned True." % (cache_md5sum, cache_dir))
                 instant_info("Found module in cache.")
+                instant_debug("Returning %s from create_extension." % cached_module)
                 return cached_module
             # Define modulename and path automatically
             modulename = modulename_from_md5sum(cache_md5sum)
@@ -222,7 +227,7 @@ def create_extension(modulename=None, source_directory=".",
             files_to_copy.extend(local_headers)
             files_to_copy.extend(object_files)
             
-            instant_debug("Copying files: ", files_to_copy, " from ", source_directory, " to ", module_path)
+            instant_debug("Copying files %r from %r to %r" % (files_to_copy, source_directory, module_path))
             for f in files_to_copy:
                 a = os.path.join(source_directory, f)
                 b = os.path.join(module_path, f)
@@ -244,7 +249,7 @@ def create_extension(modulename=None, source_directory=".",
         ifile_name = "%s.i" % modulename
         if generate_interface:
             ifile_name2 = write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
-            assert ifile_name == ifile_name2
+            instant_assert(ifile_name == ifile_name2, "Logic breach in create_extension, %r != %r." % (ifile_name, ifile_name2))
         
         if generate_setup:
             setup_name = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
@@ -260,7 +265,7 @@ def create_extension(modulename=None, source_directory=".",
         # Compute new_md5sum
         allfiles = sources + wrap_headers + local_headers + [ifile_name]
         text = "" # TODO: Maybe append *args here? (all sourcecode text is embedded in above files)
-        new_md5sum = compute_md5(allfiles, text)
+        new_md5sum = compute_md5(text, allfiles)
         
         md5_filename = "%s.md5" % modulename
         
@@ -299,7 +304,7 @@ def create_extension(modulename=None, source_directory=".",
                     instant_error("Failed cleaning the extension module directory, see '%s'" % compile_log_filename)
                 
                 # build module
-                cmd = "make -f %s" % makefile_name
+                cmd = "make -f %s python" % makefile_name
                 instant_info(cmd)
                 ret, output = commands.getstatusoutput(cmd)
                 compile_log_file.write(output)
@@ -320,8 +325,7 @@ def create_extension(modulename=None, source_directory=".",
                     instant_error("The extension module did not compile, see '%s'" % compile_log_filename)
                 
                 # 'install' module
-                #cmd = "python " + modulename + "_setup.py install --install-platlib=. >& compile.log 2>&1"
-                cmd = "python " + modulename + "_setup.py install --install-platlib=."
+                cmd = "python %s install --install-platlib=." % setup_name
                 instant_info(cmd)
                 ret, output = commands.getstatusoutput(cmd)
                 compile_log_file.write(output)
@@ -340,28 +344,38 @@ def create_extension(modulename=None, source_directory=".",
             if os.path.exists(cache_module_path):
                 instant_warning("Path '%s' already exists, but module wasn't found in cache previously. Overwriting." % cache_module_path) # TODO: Error instead? Indicates race condition on disk or bug in Instant.
                 shutil.rmtree(cache_module_path)
-            instant_info("Copying built module to cache...", module_path, cache_module_path)
+            instant_info("Copying built module from %r to cache at %r" % (module_path, cache_module_path))
+            instant_assert(os.path.isdir(module_path), "Cannot copy non-existing directory %r!" % module_path)
+            instant_assert(not os.path.isdir(cache_module_path), "Cache directory %r shouldn't exist at this point!" % cache_module_path)
             shutil.copytree(module_path, cache_module_path)
+            delete_temp_dir()
             # Verify that we can load the module from the cache now
-            if in_cache(cache_md5sum, cache_dir):
-                cached_module = import_extension_from_cache(cache_md5sum, cache_dir)
+            if find_extension(cache_md5sum, cache_dir):
+                cached_module = import_extension(cache_md5sum, cache_dir)
                 instant_assert(cached_module, "Couldn't import freshly compiled module from cache.")
                 instant_debug("Found freshly compiled module in cache.")
+                instant_debug("Returning %s from create_extension." % cached_module)
                 return cached_module
             else:
                 instant_error("Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_md5sum)
         else:
-            compiled_module = import_extension(module_path, modulename)
+            compiled_module = import_extension_directly(module_path, modulename)
+            instant_debug("Returning %s from create_extension." % compiled_module)
             return compiled_module
+        
         # The end!
-    except:
-        # Remove md5 file if something went wrong FIXME: Is this correct? Can we do it cleaner?
-        md5_filename = locals().get("md5_filename", None)
-        if md5_filename and os.path.exists(md5_filename):
-            md5_file = locals().get("md5_file", None)
-            if md5_file:
-                md5_file.close()
-            os.remove(md5_filename)
+    # FIXME: Return statements above will skip finally?
+    # FIXME: re-raising doesn't give the proper stack info...
+    #except Exception, e:
+    #    # Remove md5 file if something went wrong FIXME: Is this correct? Can we do it cleaner?
+    #    md5_filename = locals().get("md5_filename", None)
+    #    if md5_filename and os.path.exists(md5_filename):
+    #        md5_file = locals().get("md5_file", None)
+    #        if md5_file:
+    #            md5_file.close()
+    #        os.remove(md5_filename)
+    #    # Reraise exception
+    #    raise e
     finally:
         # Always get back to original directory.
         os.chdir(original_path)
@@ -370,5 +384,7 @@ def create_extension(modulename=None, source_directory=".",
         compile_log_file = locals().get("compile_log_file", None)
         if compile_log_file:
             compile_log_file.close()
+    
+    instant_error("Should never reach this point!")
     # end create_extension
 

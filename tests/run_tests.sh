@@ -1,10 +1,8 @@
 #!/bin/sh 
 
-#instant-clean
-rm -rf test_cache
-rm -rf *_ext
+./clean.sh
 
-for file in *.py; do
+for file in test*.py; do
    echo "running test $file ";
    if [ $file != "test_omp.py" ]; then
      python $file;

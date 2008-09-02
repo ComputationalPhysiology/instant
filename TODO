@@ -5,3 +5,4 @@ signature)
   _module_cache = { "module signature": previously_compiled_module }
   which is looked up transparently.
 
+- Use subprocess instead of commands

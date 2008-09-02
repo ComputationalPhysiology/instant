@@ -70,7 +70,7 @@ def inline_with_numpy(c_code, **kwargs):
     kwargs["code"] = c_code 
     kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
     kwargs["include_dirs"] = kwargs.get("include_dirs",[]) + ["%s/numpy"% numpy.get_include()]
-    kwargs["init_code"] = kwargs.get("init_code",[]) + ["\nimport_array();\n"]
+    kwargs["init_code"] = kwargs.get("init_code","") + "\nimport_array();\n"
     func_name = get_func_name(c_code)
     extension = create_extension(**kwargs)
     if hasattr(extension, func_name):
@@ -162,7 +162,7 @@ def inline_with_numarray(c_code, **kwargs):
                 "/usr/include/python" + sys.version[:3] + "/numarray" ] 
     kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
     kwargs["include_dirs"] = kwargs.get("include_dirs",[]) + inc_dirs
-    kwargs["init_code"] = kwargs.get("init_code",[]) + ["\nimport_array();\n"]
+    kwargs["init_code"] = kwargs.get("init_code", "") + "\nimport_array();\n"
 
     func_name = get_func_name(c_code)
     extension = create_extension(**kwargs)

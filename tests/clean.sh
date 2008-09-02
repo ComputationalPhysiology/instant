@@ -1,2 +1,3 @@
 #!/bin/bash
-rm -rf *ext*
+rm -rf test_cache
+rm -rf *ext
