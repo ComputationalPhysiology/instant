@@ -1,9 +1,7 @@
 #!/bin/sh 
 
-./clean.sh
-
 for file in test*.py; do
-   echo "running test $file ";
+   echo "Running test $file ";
    python $file;
    if [ $? != 0 ]; then
      exit 1

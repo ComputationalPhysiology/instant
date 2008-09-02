@@ -68,9 +68,9 @@ def inline_with_numpy(c_code, **kwargs):
     import numpy
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code 
+    kwargs["init_code"]      = kwargs.get("init_code","")      + "\nimport_array();\n"
     kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
-    kwargs["include_dirs"] = kwargs.get("include_dirs",[]) + ["%s/numpy"% numpy.get_include()]
-    kwargs["init_code"] = kwargs.get("init_code","") + "\nimport_array();\n"
+    kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s/numpy" % numpy.get_include()]
     func_name = get_func_name(c_code)
     extension = create_extension(**kwargs)
     if hasattr(extension, func_name):
@@ -109,12 +109,16 @@ def inline_with_numeric(c_code, **kwargs):
     '''
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code 
+    kwargs["init_code"]      = kwargs.get("init_code", "")      + "\nimport_array();\n"
     kwargs["system_headers"] = kwargs.get("system_headers", []) + ["arrayobject.h"]
-    kwargs["include_dirs"] = kwargs.get("include_dirs", []) + \
-        [[sys.prefix + "/include/python" + sys.version[:3] + "/Numeric", 
-          sys.prefix + "/include" + "/Numeric"][sys.platform=='win32'],
-          "/usr/local/include/python" + sys.version[:3] +  "/Numeric"]
-    kwargs["init_code"] =  kwargs.get("init_code", "") + "\nimport_array();\n"
+    
+    # TODO: This isn't very general!
+    if sys.platform=='win32':
+        inc_dirs = [sys.prefix + "/include" + "/Numeric"]
+    else:
+        inc_dirs = [sys.prefix + "/include/python" + sys.version[:3] + "/Numeric"]
+    inc_dirs.append("/usr/local/include/python" + sys.version[:3] +  "/Numeric")
+    kwargs["include_dirs"] = kwargs.get("include_dirs", []) + inc_dirs
     
     extension = create_extension(**kwargs)
     func_name = get_func_name(c_code)
@@ -157,12 +161,14 @@ def inline_with_numarray(c_code, **kwargs):
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code 
 
+    kwargs["init_code"]      = kwargs.get("init_code", "")     + "\nimport_array();\n"
+    kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
+    
+    # TODO: Is the second and third path here necessary?
     inc_dirs = [numarray.numinclude.include_dir, 
                 "/usr/local/include/python" + sys.version[:3] + "/numarray",
                 "/usr/include/python" + sys.version[:3] + "/numarray" ] 
-    kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
     kwargs["include_dirs"] = kwargs.get("include_dirs",[]) + inc_dirs
-    kwargs["init_code"] = kwargs.get("init_code", "") + "\nimport_array();\n"
 
     func_name = get_func_name(c_code)
     extension = create_extension(**kwargs)

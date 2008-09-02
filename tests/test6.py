@@ -26,7 +26,7 @@ void add(int n1, int* p1, double* array1,
 
 # Guess arrayobject is either in sys.prefix or /usr/local
 
-test6_ext = create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-g',
+test6_ext = create_extension(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs=['-g'],
           include_dirs=[N.get_include()],
           init_code='import_array();', modulename='test6_ext', 
           arrays = [['n1', 'p1', 'array1'],
