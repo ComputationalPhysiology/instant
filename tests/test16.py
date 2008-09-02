@@ -6,7 +6,7 @@ from instant import create_extension, find_extension, import_extension
 
 sig = "((instant unittest test16.py))"
 
-if not find_extension(sig, cache_dir=None):
+if not find_extension(sig, cache_dir="test_cache"):
     print "Defining code"
     c_code = """
     class Sum { 
@@ -25,7 +25,7 @@ if not find_extension(sig, cache_dir=None):
     create_extension(code=c_code, signature=sig, cache_dir="test_cache")
 
 print "Importing code"
-newmodule = import_extension(sig)
+newmodule = import_extension(sig, cache_dir="test_cache")
 Sum = newmodule.Sum
 use_Sum = newmodule.use_Sum
 
