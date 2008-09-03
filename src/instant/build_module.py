@@ -256,6 +256,8 @@ def build_module(modulename=None, source_directory=".",
             for f in files_to_copy:
                 a = os.path.join(source_directory, f)
                 b = os.path.join(module_path, f)
+                if a == b:
+                    continue
                 instant_assert(os.path.isfile(a), "Missing file '%s'." % a)
                 if os.path.isfile(b):
                     instant_warning("Overwriting file '%s' with '%s'." % (b, a))
