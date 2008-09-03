@@ -12,7 +12,7 @@ Example operations:
 """
 
 import os, sys
-from output import instant_warning, instant_assert
+from output import instant_warning, instant_assert, instant_debug
 from paths import get_default_cache_dir
 from signatures import compute_checksum
 
@@ -81,7 +81,7 @@ def find_module_location(moduleid, cache_dir=None):
         if os.path.isdir(os.path.join(cache_dir, modulename)):
             return cache_dir, modulename
     
-    instant_warning("In instant.find_module_location: Didn't find module with moduleid %r" % moduleid)
+    instant_debug("In instant.find_module_location: Didn't find module with moduleid %r" % moduleid)
     return (None, None)
 
 
@@ -128,7 +128,7 @@ def import_module(moduleid, cache_dir=None):
         return module
     
     # All attempts failed
-    instant_warning("In instant.import_module: Can't import module with moduleid %r using cache directory %r." % (moduleid, cache_dir))
+    instant_debug("In instant.import_module: Can't import module with moduleid %r using cache directory %r." % (moduleid, cache_dir))
     return None
 
 
