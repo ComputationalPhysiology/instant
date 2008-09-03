@@ -37,7 +37,7 @@ def import_module_directly(path, modulename):
     try:
         module = __import__(modulename)
     except:
-        instant_warning("Failed to import module '%s' from '%s'." % (modulename, path))
+        instant_warning("In instant.import_module_directly: Failed to import module '%s' from '%s'." % (modulename, path))
         module = None
     finally:
         sys.path.pop(0)
@@ -71,7 +71,7 @@ def find_module_location(moduleid, cache_dir=None):
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
     
-    instant_assert(isinstance(moduleid, str), "Expecting moduleid to be string in find_module_location.")
+    instant_assert(isinstance(moduleid, str), "In instant.find_module_location: Expecting moduleid to be string in find_module_location.")
     
     for modulename in moduleid_interpretations(moduleid):
         # Check in current directory
@@ -81,7 +81,7 @@ def find_module_location(moduleid, cache_dir=None):
         if os.path.isdir(os.path.join(cache_dir, modulename)):
             return cache_dir, modulename
     
-    instant_warning("Didn't find module with moduleid %r" % moduleid)
+    instant_warning("In instant.find_module_location: Didn't find module with moduleid %r" % moduleid)
     return (None, None)
 
 
@@ -128,7 +128,7 @@ def import_module(moduleid, cache_dir=None):
         return module
     
     # All attempts failed
-    instant_warning("Can't import module with moduleid %r using cache directory %r." % (moduleid, cache_dir))
+    instant_warning("In instant.import_module: Can't import module with moduleid %r using cache directory %r." % (moduleid, cache_dir))
     return None
 
 

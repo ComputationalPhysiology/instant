@@ -102,14 +102,14 @@ def build_module(modulename=None, source_directory=".",
     # --- Validate arguments 
     
     def assert_is_str(x):
-        instant_assert(isinstance(x, str), "Expecting string.")
+        instant_assert(isinstance(x, str), "In instant.build_module: Expecting string.")
     
     def assert_is_bool(x):
-        instant_assert(isinstance(x, bool), "Expecting bool.")
+        instant_assert(isinstance(x, bool), "In instant.build_module: Expecting bool.")
     
     def assert_is_str_list(x):
-        instant_assert(isinstance(x, (list, tuple)), "Expecting sequence.")
-        instant_assert(all(isinstance(i, str) for i in x), "Expecting sequence of strings.")
+        instant_assert(isinstance(x, (list, tuple)), "In instant.build_module: Expecting sequence.")
+        instant_assert(all(isinstance(i, str) for i in x), "In instant.build_module: Expecting sequence of strings.")
     
     def strip_strings(x):
         assert_is_str_list(x)
@@ -120,7 +120,7 @@ def build_module(modulename=None, source_directory=".",
             x = x.split()
         return strip_strings(x)
 
-    instant_assert(modulename is None or isinstance(modulename, str), "Expecting modulename to be string or None.")
+    instant_assert(modulename is None or isinstance(modulename, str), "In instant.build_module: Expecting modulename to be string or None.")
     assert_is_str(source_directory)
     assert_is_str(code)
     assert_is_str(init_code)
@@ -142,8 +142,9 @@ def build_module(modulename=None, source_directory=".",
     assert_is_bool(generate_setup)
     assert_is_bool(generate_makefile)
     instant_assert(signature is None or isinstance(signature, str) or hasattr(signature, "signature"),
-        "Expecting signature to be None, string, or a hashable object with a signature() function.")
-    instant_assert(cache_dir is None or isinstance(cache_dir, str), "Expecting cache_dir to be string or None.")
+        "In instant.build_module: Expecting signature to be None, string, or a hashable object with a signature() function.")
+    instant_assert(cache_dir is None or isinstance(cache_dir, str),
+        "In instant.build_module: Expecting cache_dir to be string or None.")
     
     # --- Replace arguments with defaults if necessary
     
@@ -177,9 +178,10 @@ def build_module(modulename=None, source_directory=".",
         elif f.endswith('.c') or f.endswith('.C'):
             csrcs.append(f)
         else:
-            instant_error("Source files must have '.c' or '.cpp' suffix, this is not the case for '%s'." % f)
+            instant_error("In instant.build_module: Source files must have '.c' or '.cpp' suffix, this is not the case for '%s'." % f)
 
     # --- Debugging code
+    instant_debug('In instant.build_module:')
     instant_debug('::: Begin Arguments :::')
     instant_debug('    modulename: %r' % modulename)
     instant_debug('    code: %r' % code)
@@ -231,17 +233,18 @@ def build_module(modulename=None, source_directory=".",
             # Lookup cache_checksum in cache
             cached_module = import_module(cache_checksum, cache_dir)
             if cached_module is not None:
-                instant_debug("Found module '%s' in cache." % cached_module.__name__)
+                instant_debug("In instant.build_module: Found module '%s' in cache." % cached_module.__name__)
                 return cached_module
             # Define modulename and path automatically
             modulename = modulename_from_checksum(cache_checksum)
             module_path = os.path.join(get_temp_dir(), modulename)
-            instant_assert(not os.path.exists(module_path), "")
+            instant_assert(not os.path.exists(module_path),
+                "In instant.build_module: Not expecting module_path to exist: '%s'" % module_path)
         
         # --- Copy files to module path
         module_path = os.path.abspath(module_path)
         if os.path.exists(module_path):
-            instant_warning("Path '%s' already exists, may overwrite existing files." % module_path)
+            instant_warning("In instant.build_module: Path '%s' already exists, may overwrite existing files." % module_path)
         else:
             os.mkdir(module_path)
         
@@ -254,14 +257,14 @@ def build_module(modulename=None, source_directory=".",
             files_to_copy.extend(local_headers)
             files_to_copy.extend(object_files)
             
-            instant_debug("Copying files %r from %r to %r" % (files_to_copy, source_directory, module_path))
+            instant_debug("In instant.build_module: Copying files %r from %r to %r" % (files_to_copy, source_directory, module_path))
             for f in files_to_copy:
                 a = os.path.join(source_directory, f)
                 b = os.path.join(module_path, f)
-                instant_assert(a != b, "Seems like the input files are absolute paths, should be relative to source_directory. (%r, %r)" % (a, b))
-                instant_assert(os.path.isfile(a), "Missing file '%s'." % a)
+                instant_assert(a != b, "In instant.build_module: Seems like the input files are absolute paths, should be relative to source_directory. (%r, %r)" % (a, b))
+                instant_assert(os.path.isfile(a), "In instant.build_module: Missing file '%s'." % a)
                 if os.path.isfile(b):
-                    instant_warning("Overwriting file '%s' with '%s'." % (b, a))
+                    instant_warning("In instant.build_module: Overwriting file '%s' with '%s'." % (b, a))
                     os.remove(b)
                 shutil.copyfile(a, b)
         
@@ -278,7 +281,7 @@ def build_module(modulename=None, source_directory=".",
         ifile_name = "%s.i" % modulename
         if generate_interface:
             ifile_name2 = write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
-            instant_assert(ifile_name == ifile_name2, "Logic breach in build_module, %r != %r." % (ifile_name, ifile_name2))
+            instant_assert(ifile_name == ifile_name2, "In instant.build_module: Logic breach in build_module, %r != %r." % (ifile_name, ifile_name2))
         
         if generate_setup:
             setup_name = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
@@ -311,7 +314,7 @@ def build_module(modulename=None, source_directory=".",
             # Verify that SWIG is on the system
             (swig_stat, swig_out) = get_status_output("swig -version")
             if swig_stat != 0:
-                instant_error("Could not find swig! You can download swig from http://www.swig.org")
+                instant_error("In instant.build_module: Could not find swig! You can download swig from http://www.swig.org")
             
             # Create log file for logging of compilation errors
             compile_log_filename = os.path.join(module_path, "compile.log")
@@ -330,7 +333,7 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.flush()
                 if ret != 0:
                     os.remove(compilation_checksum_filename)
-                    instant_error("Failed cleaning the module directory, see '%s'" % compile_log_filename)
+                    instant_error("In instant.build_module: Failed cleaning the module directory, see '%s'" % compile_log_filename)
                 
                 # build module
                 cmd = "make -f %s python" % makefile_name
@@ -340,7 +343,7 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.flush()
                 if ret != 0:
                     os.remove(compilation_checksum_filename)
-                    instant_error("The module did not compile, see '%s'" % compile_log_filename)
+                    instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
             else:
                 # build module
                 cmd = "python %s build_ext" % setup_name
@@ -351,7 +354,7 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.flush()
                 if ret != 0:
                     os.remove(compilation_checksum_filename)
-                    instant_error("The module did not compile, see '%s'" % compile_log_filename)
+                    instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
                 
                 # 'install' module
                 cmd = "python %s install --install-platlib=." % setup_name
@@ -361,7 +364,7 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.flush()
                 if ret != 0:
                     os.remove(compilation_checksum_filename)
-                    instant_error("Could not 'install' the module, see '%s'" % compile_log_filename)
+                    instant_error("In instant.build_module: Could not 'install' the module, see '%s'" % compile_log_filename)
             
             # Compilation succeeded, write new_compilation_checksum to checksum_file
             write_file(compilation_checksum_filename, new_compilation_checksum)
@@ -371,22 +374,23 @@ def build_module(modulename=None, source_directory=".",
             # Copy compiled module to cache
             cache_module_path = os.path.join(cache_dir, modulename)
             if os.path.exists(cache_module_path):
-                instant_warning("Path '%s' already exists, but module wasn't found in cache previously. Overwriting." % cache_module_path) # TODO: Error instead? Indicates race condition on disk or bug in Instant.
+                # TODO: Error instead? Indicates race condition on disk or bug in Instant.
+                instant_warning("In instant.build_module: Path '%s' already exists, but module wasn't found in cache previously. Overwriting." % cache_module_path)
                 shutil.rmtree(cache_module_path)
-            instant_info("Copying built module from %r to cache at %r" % (module_path, cache_module_path))
-            instant_assert(os.path.isdir(module_path), "Cannot copy non-existing directory %r!" % module_path)
-            instant_assert(not os.path.isdir(cache_module_path), "Cache directory %r shouldn't exist at this point!" % cache_module_path)
+            instant_info("In instant.build_module: Copying built module from %r to cache at %r" % (module_path, cache_module_path))
+            instant_assert(os.path.isdir(module_path), "In instant.build_module: Cannot copy non-existing directory %r!" % module_path)
+            instant_assert(not os.path.isdir(cache_module_path), "In instant.build_module: Cache directory %r shouldn't exist at this point!" % cache_module_path)
             shutil.copytree(module_path, cache_module_path)
             delete_temp_dir()
             # Verify that we can load the module from the cache now
             cached_module = import_module(cache_checksum, cache_dir)
             if cached_module is None:
-                instant_error("Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_checksum)
-            instant_debug("Returning module '%s' from build_module." % cached_module.__name__)
+                instant_error("In instant.build_module: Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_checksum)
+            instant_debug("In instant.build_module: Returning module '%s' from build_module." % cached_module.__name__)
             return cached_module
         else:
             compiled_module = import_module_directly(module_path, modulename)
-            instant_debug("Returning %s from build_module." % compiled_module)
+            instant_debug("In instant.build_module: Returning %s from build_module." % compiled_module)
             return compiled_module
         
         # The end!
@@ -399,6 +403,6 @@ def build_module(modulename=None, source_directory=".",
         if compile_log_file:
             compile_log_file.close()
     
-    instant_error("Should never reach this point!")
+    instant_error("In instant.build_module: Should never reach this point!")
     # end build_module
 
