@@ -43,7 +43,7 @@ def write_interfacefile(modulename, code, init_code,
     Generate a SWIG interface file.
     
     The input arguments are as follows:
-    - modulename (Name of the extension module)
+    - modulename (Name of the module)
     - code (Code to be wrapped)
     - init_code (Code to put in the init section of the interface file)
     - additional_definitions (FIXME: comment)
@@ -148,7 +148,7 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
     FIXME
     """
     instant_debug("Generating setup.py.")
-    instant_warning("FIXME: Not using csrcs in write_setupfile().")
+    #instant_warning("FIXME: Not using csrcs in write_setupfile().")
     
     # Handle arguments
     swigfilename = "%s.i" % modulename
@@ -199,12 +199,12 @@ def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, libr
     """Generates a project dependent Makefile.
     
     This makefile includes and uses SWIG's own Makefile to 
-    create an extension module of the supplied C/C++ code.
+    create a module of the supplied C/C++ code.
     The arguments are as follows:
     FIXME
     """
-    instant_warning("FIXME: Not using local_headers in write_makefile().")
-    instant_warning("FIXME: Not using lddargs in write_makefile().")
+    #instant_warning("FIXME: Not using local_headers in write_makefile().")
+    #instant_warning("FIXME: Not using lddargs in write_makefile().")
     instant_debug("Generating makefile.")
     swigfilename = "%s.i" % modulename
     code = reindent("""

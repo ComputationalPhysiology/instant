@@ -2,20 +2,20 @@
 import hashlib
 from output import instant_assert, instant_debug, instant_error
 
-def compute_md5(text="", filenames=[]):
+def compute_checksum(text="", filenames=[]):
     """
-    Get the md5 value of filename
-    modified based on Python24\Tools\Scripts\md5sum.py
+    Get the checksum value of filename
+    modified based on Python24\Tools\Scripts\md5.py
     """
     instant_assert(isinstance(text, str), "Expecting string.")
     instant_assert(isinstance(filenames, (list,tuple)), "Expecting sequence.")
     
-    m = hashlib.new("md5")
+    m = hashlib.new("sha1")
     if text:
         m.update(text)
     
     for filename in sorted(filenames): 
-        instant_debug("Adding file '%s' to md5 sum." % filename)
+        instant_debug("Adding file '%s' to checksum." % filename)
         try:
             fp = open(filename, 'rb')
         except IOError, e:
@@ -40,10 +40,10 @@ def _test():
     files = ["signatures.py", "__init__.py"]
     print
     print "Signature:", repr(signature)
-    print "MD5 sum:", compute_md5(signature, [])
+    print "Checksum:", compute_checksum(signature, [])
     print
-    print "files:", files
-    print "MD5 sum:", compute_md5("", files)
+    print "Files:", files
+    print "Checksum:", compute_checksum("", files)
     print
 
 if __name__ == "__main__":

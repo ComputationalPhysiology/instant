@@ -1,5 +1,5 @@
 """
-Instant allows compiled C/C++ extension modules to be created
+Instant allows compiled C/C++ modules to be created
 at runtime in your Python application, using SWIG to wrap the
 C/C++ code.
 
@@ -20,6 +20,6 @@ from paths import *
 from signatures import *
 from cache import *
 from codegeneration import *
-from create_extension import *
-from highlevel import *
+from build_module import *
+from inline import *
 

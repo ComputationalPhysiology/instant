@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from instant import create_extension 
+from instant import build_module 
 import numpy,sys
 
 a = numpy.arange(10000000)
@@ -39,7 +39,7 @@ return PyArray_Return(ret);
 }
 """
 
-test4_ext = create_extension(code=s, system_headers=["numpy/arrayobject.h"],
+test4_ext = build_module(code=s, system_headers=["numpy/arrayobject.h"],
               include_dirs=[numpy.get_include()],
               init_code='import_array();', modulename="test4_ext")
 

@@ -2,8 +2,8 @@
 import os
 import sys
 import shutil
-import commands 
 from itertools import chain
+from subprocess import Popen, PIPE, STDOUT
 
 # FIXME: Import only the official interface
 from output import *
@@ -14,7 +14,19 @@ from cache import *
 from codegeneration import *
 
 
-def create_extension(modulename=None, source_directory=".",
+# Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
+def get_status_output(cmd, input=None, cwd=None, env=None):
+    pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+
+    (output, errout) = pipe.communicate(input=input)
+    assert not errout
+
+    status = pipe.returncode
+
+    return (status, output)
+
+
+def build_module(modulename=None, source_directory=".",
                      code="", init_code="",
                      additional_definitions="", additional_declarations="",
                      sources=[], wrap_headers=[],
@@ -24,7 +36,7 @@ def create_extension(modulename=None, source_directory=".",
                      object_files=[], arrays=[],
                      generate_interface=True, generate_setup=True, generate_makefile=False,
                      signature=None, cache_dir=None):
-    """Generate and compile an extension module from C/C++ code using SWIG.
+    """Generate and compile a module from C/C++ code using SWIG.
     
     Arguments: 
     ==========
@@ -39,13 +51,13 @@ def create_extension(modulename=None, source_directory=".",
        - B{code}:
           - A string containing C or C++ code to be compiled and wrapped.
        - B{init_code}:
-          - Code that should be executed when the instant extension is imported.
+          - Code that should be executed when the instant module is imported.
        - B{additional_definitions}:
           - A list of additional definitions (typically needed for inheritance).
        - B{additional_declarations}:
           - A list of additional declarations (typically needed for inheritance). 
        - B{sources}:
-          - A list of source files to compile and link with the extension.
+          - A list of source files to compile and link with the module.
        - B{wrap_headers}:
           - A list of local header files that should be wrapped by SWIG.
        - B{local_headers}:
@@ -57,7 +69,7 @@ def create_extension(modulename=None, source_directory=".",
        - B{library_dirs}:
           - A list of directories to search for libraries (C{-l}).
        - B{libraries}:
-          - A list of libraries needed by the instant extension.
+          - A list of libraries needed by the instant module.
        - B{swigargs}:
           - List of arguments to swig, e.g. C{["-lpointers.i"]} to include the SWIG pointers.i library.
        - B{cppargs}:
@@ -129,7 +141,8 @@ def create_extension(modulename=None, source_directory=".",
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
     assert_is_bool(generate_makefile)
-    instant_assert(signature is None or isinstance(signature, str), "Expecting signature to be string or None.")
+    instant_assert(signature is None or isinstance(signature, str) or hasattr(signature, "signature"),
+        "Expecting signature to be None, string, or a hashable object with a signature() function.")
     instant_assert(cache_dir is None or isinstance(cache_dir, str), "Expecting cache_dir to be string or None.")
     
     # --- Replace arguments with defaults if necessary
@@ -143,6 +156,16 @@ def create_extension(modulename=None, source_directory=".",
         cache_dir = os.path.abspath(cache_dir)
         if not os.path.isdir(cache_dir):
             os.mkdir(cache_dir)
+    
+    signature_object = signature
+    if signature is not None:
+        # Check if module is in memory cache
+        module = memory_cached_module(signature)
+        if module is not None:
+            return module
+        # Module not found in memory cache, make signature a string if it isn't
+        if not isinstance(signature, str):
+            signature = signature.signature()
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = []
@@ -195,25 +218,22 @@ def create_extension(modulename=None, source_directory=".",
             module_path = os.path.join(original_path, modulename)
         else:
             use_cache = True
-            # Compute cache_md5sum (this is _before_ interface files are generated!)
+            # Compute cache_checksum (this is _before_ interface files are generated!)
             if signature is None:
                 # TODO: Add all files and arguments we want here!
                 allfiles = sources + wrap_headers + local_headers
                 text = code + init_code + additional_definitions + additional_declarations
-                cache_md5sum = compute_md5(text, allfiles)
+                cache_checksum = compute_checksum(text, allfiles)
             else:
                 # If given a user-provided signature, we don't look at anything else.
-                cache_md5sum = compute_md5(signature, [])
-            # Lookup cache_md5sum in cache
-            if find_extension(cache_md5sum, cache_dir):
-                cached_module = import_extension(cache_md5sum, cache_dir)
-                instant_assert(cached_module, "Couldn't import module from cache, "\
-                    "even though find_extension(%r,%r) returned True." % (cache_md5sum, cache_dir))
-                instant_info("Found module in cache.")
-                instant_debug("Returning %s from create_extension." % cached_module)
+                cache_checksum = compute_checksum(signature, [])
+            # Lookup cache_checksum in cache
+            cached_module = import_module(cache_checksum, cache_dir)
+            if cached_module is not None:
+                instant_debug("Found module '%s' in cache." % cached_module.__name__)
                 return cached_module
             # Define modulename and path automatically
-            modulename = modulename_from_md5sum(cache_md5sum)
+            modulename = modulename_from_checksum(cache_checksum)
             module_path = os.path.join(get_temp_dir(), modulename)
             instant_assert(not os.path.exists(module_path), "")
         
@@ -254,7 +274,7 @@ def create_extension(modulename=None, source_directory=".",
         ifile_name = "%s.i" % modulename
         if generate_interface:
             ifile_name2 = write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
-            instant_assert(ifile_name == ifile_name2, "Logic breach in create_extension, %r != %r." % (ifile_name, ifile_name2))
+            instant_assert(ifile_name == ifile_name2, "Logic breach in build_module, %r != %r." % (ifile_name, ifile_name2))
         
         if generate_setup:
             setup_name = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
@@ -262,30 +282,30 @@ def create_extension(modulename=None, source_directory=".",
         if generate_makefile:
             makefile_name = write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
         
-        # --- Build extension module
+        # --- Build module
         # At this point we have all the files, and can make the
-        # total md5sum from all file contents. This is used to
+        # total checksum from all file contents. This is used to
         # decide wether the module needs recompilation or not.
         
-        # Compute new_md5sum
+        # Compute new_compilation_checksum
         allfiles = sources + wrap_headers + local_headers + [ifile_name]
         text = "" # TODO: Maybe append *args here? (all sourcecode text is embedded in above files)
-        new_md5sum = compute_md5(text, allfiles)
+        new_compilation_checksum = compute_checksum(text, allfiles)
         
-        md5_filename = "%s.md5" % modulename
+        compilation_checksum_filename = "%s.checksum" % modulename
         
-        # Check if the old md5 sum matches the new one
+        # Check if the old checksum matches the new one
         need_recompilation = True
-        if os.path.exists(md5_filename):
-            md5_file = open(md5_filename)
-            old_md5sum = md5_file.readline()
-            md5_file.close()
-            if old_md5sum == new_md5sum:
+        if os.path.exists(compilation_checksum_filename):
+            checksum_file = open(compilation_checksum_filename)
+            old_compilation_checksum = checksum_file.readline()
+            checksum_file.close()
+            if old_compilation_checksum == new_compilation_checksum:
                 need_recompilation = False
         
         if need_recompilation:
             # Verify that SWIG is on the system
-            (swig_stat, swig_out) = commands.getstatusoutput("swig -version")
+            (swig_stat, swig_out) = get_status_output("swig -version")
             if swig_stat != 0:
                 instant_error("Could not find swig! You can download swig from http://www.swig.org")
             
@@ -301,46 +321,46 @@ def create_extension(modulename=None, source_directory=".",
                 cmd = "make -f %s clean" %  makefile_name
                 instant_info("--- Instant: compiling ---")
                 instant_info(cmd)
-                ret, output = commands.getstatusoutput(cmd)
+                ret, output = get_status_output(cmd)
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    #os.remove(md5_filename)
-                    instant_error("Failed cleaning the extension module directory, see '%s'" % compile_log_filename)
+                    os.remove(compilation_checksum_filename)
+                    instant_error("Failed cleaning the module directory, see '%s'" % compile_log_filename)
                 
                 # build module
                 cmd = "make -f %s python" % makefile_name
                 instant_info(cmd)
-                ret, output = commands.getstatusoutput(cmd)
+                ret, output = get_status_output(cmd)
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    #os.remove(md5_filename)
-                    instant_error("The extension module did not compile, see '%s'" % compile_log_filename)
+                    os.remove(compilation_checksum_filename)
+                    instant_error("The module did not compile, see '%s'" % compile_log_filename)
             else:
                 # build module
                 cmd = "python %s build_ext" % setup_name
                 instant_info("--- Instant: compiling ---")
                 instant_info(cmd)
-                ret, output = commands.getstatusoutput(cmd)
+                ret, output = get_status_output(cmd)
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    #os.remove(md5_filename)
-                    instant_error("The extension module did not compile, see '%s'" % compile_log_filename)
+                    os.remove(compilation_checksum_filename)
+                    instant_error("The module did not compile, see '%s'" % compile_log_filename)
                 
                 # 'install' module
                 cmd = "python %s install --install-platlib=." % setup_name
                 instant_info(cmd)
-                ret, output = commands.getstatusoutput(cmd)
+                ret, output = get_status_output(cmd)
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    #os.remove(md5_filename)
-                    instant_error("Could not 'install' the extension module, see '%s'" % compile_log_filename)
+                    os.remove(compilation_checksum_filename)
+                    instant_error("Could not 'install' the module, see '%s'" % compile_log_filename)
             
-            # Compilation succeeded, write new_md5sum to md5_file
-            write_file(md5_filename, new_md5sum)
+            # Compilation succeeded, write new_compilation_checksum to checksum_file
+            write_file(compilation_checksum_filename, new_compilation_checksum)
         
         # --- Load module and return it
         if use_cache:
@@ -355,32 +375,17 @@ def create_extension(modulename=None, source_directory=".",
             shutil.copytree(module_path, cache_module_path)
             delete_temp_dir()
             # Verify that we can load the module from the cache now
-            if find_extension(cache_md5sum, cache_dir):
-                cached_module = import_extension(cache_md5sum, cache_dir)
-                instant_assert(cached_module, "Couldn't import freshly compiled module from cache.")
-                instant_debug("Found freshly compiled module in cache.")
-                instant_debug("Returning %s from create_extension." % cached_module)
-                return cached_module
-            else:
-                instant_error("Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_md5sum)
+            cached_module = import_module(cache_checksum, cache_dir)
+            if cached_module is None:
+                instant_error("Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_checksum)
+            instant_debug("Returning module '%s' from build_module." % cached_module.__name__)
+            return cached_module
         else:
-            compiled_module = import_extension_directly(module_path, modulename)
-            instant_debug("Returning %s from create_extension." % compiled_module)
+            compiled_module = import_module_directly(module_path, modulename)
+            instant_debug("Returning %s from build_module." % compiled_module)
             return compiled_module
         
         # The end!
-    # FIXME: Return statements above will skip finally?
-    # FIXME: re-raising doesn't give the proper stack info...
-    #except Exception, e:
-    #    # Remove md5 file if something went wrong FIXME: Is this correct? Can we do it cleaner?
-    #    md5_filename = locals().get("md5_filename", None)
-    #    if md5_filename and os.path.exists(md5_filename):
-    #        md5_file = locals().get("md5_file", None)
-    #        if md5_file:
-    #            md5_file.close()
-    #        os.remove(md5_filename)
-    #    # Reraise exception
-    #    raise e
     finally:
         # Always get back to original directory.
         os.chdir(original_path)
@@ -391,5 +396,5 @@ def create_extension(modulename=None, source_directory=".",
             compile_log_file.close()
     
     instant_error("Should never reach this point!")
-    # end create_extension
+    # end build_module
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from instant import create_extension  
+from instant import build_module  
 
 c_code = """
 class Sum { 
@@ -16,7 +16,7 @@ double use_Sum(Sum& sum, double a, double b) {
 }
 """
 
-test8_ext = create_extension(code=c_code, modulename='test8_ext')
+test8_ext = build_module(code=c_code, modulename='test8_ext')
 
 from test8_ext import * 
 sum = Sum()

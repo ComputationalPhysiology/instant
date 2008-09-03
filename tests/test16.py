@@ -2,11 +2,13 @@
 
 import instant
 
-from instant import create_extension, find_extension, import_extension
+from instant import build_module, import_module
 
 sig = "((instant unittest test16.py))"
 
-if not find_extension(sig, cache_dir="test_cache"):
+# Trying to import module
+module = import_module(sig, cache_dir="test_cache")
+if module is None:
     print "Defining code"
     c_code = """
     class Sum { 
@@ -22,12 +24,11 @@ if not find_extension(sig, cache_dir="test_cache"):
     }
     """
     print "Compiling code"
-    create_extension(code=c_code, signature=sig, cache_dir="test_cache")
+    module = build_module(code=c_code, signature=sig, cache_dir="test_cache")
 
-print "Importing code"
-newmodule = import_extension(sig, cache_dir="test_cache")
-Sum = newmodule.Sum
-use_Sum = newmodule.use_Sum
+# Testing module
+Sum = module.Sum
+use_Sum = module.use_Sum
 
 sum = Sum()
 a = 3.7

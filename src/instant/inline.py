@@ -1,7 +1,7 @@
 
 import sys
 from output import instant_assert, instant_warning, instant_error
-from create_extension import create_extension
+from build_module import build_module
 
 
 def get_func_name(c_code):
@@ -17,7 +17,7 @@ def get_func_name(c_code):
 def inline(c_code, **kwargs):
     """This is a short wrapper around the create_extention function in instant. 
     
-    It creates an extension module given that
+    It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. 
 
@@ -30,18 +30,18 @@ def inline(c_code, **kwargs):
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code
     func_name = get_func_name(c_code)
-    extension = create_extension(**kwargs)
-    if hasattr(extension, func_name):
-        return getattr(extension, func_name)
+    module = build_module(**kwargs)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
     else:
         instant_warning("Didn't find function '%s', returning module." % func_name)
-    return extension
+    return module
 
 
 def inline_with_numpy(c_code, **kwargs):
     '''This is a short wrapper around the create_extention function in instant. 
        
-    It creates an extension module given that
+    It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. The difference between
     this function and the inline function is that C-arrays can be used. 
@@ -72,18 +72,18 @@ def inline_with_numpy(c_code, **kwargs):
     kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
     kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s/numpy" % numpy.get_include()]
     func_name = get_func_name(c_code)
-    extension = create_extension(**kwargs)
-    if hasattr(extension, func_name):
-        return getattr(extension, func_name)
+    module = build_module(**kwargs)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
     else:
         instant_warning("Didn't find function '%s', returning module." % func_name)
-    return extension
+    return module
 
 
 def inline_with_numeric(c_code, **kwargs):
     '''This is a short wrapper around the create_extention function in instant.
        
-    It creates an extension module given that
+    It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. The difference between
     this function and the inline function is that C-arrays can be used. 
@@ -120,19 +120,19 @@ def inline_with_numeric(c_code, **kwargs):
     inc_dirs.append("/usr/local/include/python" + sys.version[:3] +  "/Numeric")
     kwargs["include_dirs"] = kwargs.get("include_dirs", []) + inc_dirs
     
-    extension = create_extension(**kwargs)
+    module = build_module(**kwargs)
     func_name = get_func_name(c_code)
-    if hasattr(extension, func_name):
-        return getattr(extension, func_name)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
     else:
         instant_warning("Didn't find function '%s', returning module." % func_name)
-    return extension
+    return module
 
 
 def inline_with_numarray(c_code, **kwargs):
     """This is a short wrapper around the create_extention function in instant. 
        
-    It creates an extension module given that
+    It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. The difference between
     this function and the inline function is that C-arrays can be used. 
@@ -171,10 +171,10 @@ def inline_with_numarray(c_code, **kwargs):
     kwargs["include_dirs"] = kwargs.get("include_dirs",[]) + inc_dirs
 
     func_name = get_func_name(c_code)
-    extension = create_extension(**kwargs)
-    if hasattr(extension, func_name):
-        return getattr(extension, func_name)
+    module = build_module(**kwargs)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
     else:
         instant_warning("Didn't find function '%s', returning module." % func_name)
-    return extension
+    return module
 
