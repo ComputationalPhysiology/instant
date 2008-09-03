@@ -332,7 +332,8 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    os.remove(compilation_checksum_filename)
+                    if os.path.exists(compilation_checksum_filename):
+                        os.remove(compilation_checksum_filename)
                     instant_error("In instant.build_module: Failed cleaning the module directory, see '%s'" % compile_log_filename)
                 
                 # build module
@@ -353,7 +354,8 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    os.remove(compilation_checksum_filename)
+                    if os.path.exists(compilation_checksum_filename):
+                        os.remove(compilation_checksum_filename)
                     instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
                 
                 # 'install' module
@@ -363,7 +365,8 @@ def build_module(modulename=None, source_directory=".",
                 compile_log_file.write(output)
                 compile_log_file.flush()
                 if ret != 0:
-                    os.remove(compilation_checksum_filename)
+                    if os.path.exists(compilation_checksum_filename):
+                        os.remove(compilation_checksum_filename)
                     instant_error("In instant.build_module: Could not 'install' the module, see '%s'" % compile_log_filename)
             
             # Compilation succeeded, write new_compilation_checksum to checksum_file
