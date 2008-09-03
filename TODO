@@ -1,8 +1,25 @@
 TODO:
-- Implement in-memory cache for already imported modules (based on 
-signature)
-  I.e. a global dict on the form
-  _module_cache = { "module signature": previously_compiled_module }
-  which is looked up transparently.
-
 - Use subprocess instead of commands
+
+- Use sha1 instead of md5 (rename all names with md5 to checksum)
+
+- Fix resource release in finally block in create_extension
+
+- Implement in-memory cache for already imported modules
+  based on signature object protocol:
+    signature: string or hashable object with signature() method
+  I.e. a global dict on the form
+    _module_cache = { signature_object: previously_compiled_module }
+
+- Rename create_extension to build_extension
+  and let it return modulename instead:
+    modulename = build_extension(...)
+
+- Rename find_extension to is_extension_in_cache
+  and let it take a modulename, signature_object or checksum
+  instead of only signature string or checksum.
+    modulename = build_extension(...)
+
+- Let import_extension take a modulename, signature_object or checksum
+  like is_extension_in_cache. Return None or throw exception if not found?
+
