@@ -5,3 +5,5 @@ TODO:
 
 - Add more arguments to cache_checksum and compile_checksum
 
+- Fix in-memory cache: doesn't work properly (FIXME in build_module)
+

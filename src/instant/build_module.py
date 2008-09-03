@@ -166,6 +166,7 @@ def build_module(modulename=None, source_directory=".",
         # Module not found in memory cache, make signature a string if it isn't
         if not isinstance(signature, str):
             signature = signature.signature()
+            # FIXME: Must use signature_object as the key to place a module in the memory cache after compilation.
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = []
@@ -238,6 +239,7 @@ def build_module(modulename=None, source_directory=".",
             instant_assert(not os.path.exists(module_path), "")
         
         # --- Copy files to module path
+        module_path = os.path.abspath(module_path)
         if os.path.exists(module_path):
             instant_warning("Path '%s' already exists, may overwrite existing files." % module_path)
         else:
@@ -257,6 +259,7 @@ def build_module(modulename=None, source_directory=".",
                 a = os.path.join(source_directory, f)
                 b = os.path.join(module_path, f)
                 if a == b:
+                    instant_debug("If this prints, I'd like to know how it happened!")
                     continue
                 instant_assert(os.path.isfile(a), "Missing file '%s'." % a)
                 if os.path.isfile(b):
