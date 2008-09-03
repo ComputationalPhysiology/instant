@@ -27,15 +27,15 @@ def get_status_output(cmd, input=None, cwd=None, env=None):
 
 
 def build_module(modulename=None, source_directory=".",
-                     code="", init_code="",
-                     additional_definitions="", additional_declarations="",
-                     sources=[], wrap_headers=[],
-                     local_headers=[], system_headers=[],
-                     include_dirs=['.'], library_dirs=[], libraries=[],
-                     swigargs=['-c++', '-fcompact', '-O', '-I.', '-small'], cppargs=['-O2'], lddargs=[],
-                     object_files=[], arrays=[],
-                     generate_interface=True, generate_setup=True, generate_makefile=False,
-                     signature=None, cache_dir=None):
+                 code="", init_code="",
+                 additional_definitions="", additional_declarations="",
+                 sources=[], wrap_headers=[],
+                 local_headers=[], system_headers=[],
+                 include_dirs=['.'], library_dirs=[], libraries=[],
+                 swigargs=['-c++', '-fcompact', '-O', '-I.', '-small'], cppargs=['-O2'], lddargs=[],
+                 object_files=[], arrays=[],
+                 generate_interface=True, generate_setup=True, generate_makefile=False,
+                 signature=None, cache_dir=None):
     """Generate and compile a module from C/C++ code using SWIG.
     
     Arguments: 
@@ -258,9 +258,7 @@ def build_module(modulename=None, source_directory=".",
             for f in files_to_copy:
                 a = os.path.join(source_directory, f)
                 b = os.path.join(module_path, f)
-                if a == b:
-                    instant_debug("If this prints, I'd like to know how it happened!")
-                    continue
+                instant_assert(a != b, "Seems like the input files are absolute paths, should be relative to source_directory. (%r, %r)" % (a, b))
                 instant_assert(os.path.isfile(a), "Missing file '%s'." % a)
                 if os.path.isfile(b):
                     instant_warning("Overwriting file '%s' with '%s'." % (b, a))
