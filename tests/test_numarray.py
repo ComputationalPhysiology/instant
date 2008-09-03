@@ -14,7 +14,7 @@ double sum (int n1, double* array1){
 }
 """
 
-sum_func = inline_with_numarray(c_code, arrays = [['n1', 'array1']], cache_dir="test_cache")
+sum_func = inline_with_numarray(c_code, arrays = [['n1', 'array1']], cache_dir="test_array_cache")
 
 a = numarray.arange(10000000)
 a = numarray.sin(a)

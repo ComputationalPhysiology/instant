@@ -13,7 +13,9 @@ for file in test*.py; do
    fi
 done
 
-echo
-echo The following tests failed:
-cat failed_tests
+if [ -f failed_tests ]; then  
+  echo
+  echo The following tests failed:
+  cat failed_tests
+fi
 
