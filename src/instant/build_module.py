@@ -241,8 +241,11 @@ def build_module(modulename=None, source_directory=".",
                 cache_checksum = compute_checksum(text, [])
             # Lookup cache_checksum in cache
             cached_module = import_module(cache_checksum, cache_dir)
-            if cached_module is not None:
+            if cached_module:
                 instant_debug("In instant.build_module: Found module '%s' in cache." % cached_module.__name__)
+                place_module_in_memory_cache(cache_checksum, cached_module)
+                place_module_in_memory_cache(signature, cached_module)
+                place_module_in_memory_cache(signature_object, cached_module)
                 return cached_module
             # Define modulename and path automatically
             modulename = modulename_from_checksum(cache_checksum)
@@ -400,7 +403,12 @@ def build_module(modulename=None, source_directory=".",
         
         # Import module and place in memory cache
         compiled_module = import_module_directly(module_path, modulename)
-        place_module_in_memory_cache(signature_object, compiled_module)
+        if compiled_module:
+            place_module_in_memory_cache(cache_checksum, compiled_module)
+            place_module_in_memory_cache(signature, compiled_module)
+            place_module_in_memory_cache(signature_object, compiled_module)
+        else:
+            instant_error("Failed to import newly compiled module!")
         
         instant_debug("In instant.build_module: Returning %s from build_module." % compiled_module)
         return compiled_module

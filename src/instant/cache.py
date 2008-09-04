@@ -101,12 +101,13 @@ def import_module(moduleid, cache_dir=None):
     
     # Check memory cache first
     module = memory_cached_module(moduleid)
-    if module is not None:
+    if module:
         return module
     
     # Didn't find module in memory cache, getting
     # signature from moduleid if it isn't a string
-    if not isinstance(moduleid, str):
+    original_moduleid = moduleid
+    if hasattr(moduleid, "signature"):
         moduleid = moduleid.signature()
         # Code copied from find_module_location (optimization since we know we have the signature)
         checksum = compute_checksum(moduleid)
@@ -114,23 +115,30 @@ def import_module(moduleid, cache_dir=None):
         # Check in current directory
         if os.path.isdir(modulename):
             module = import_module_directly(os.getcwd(), modulename)
-            place_module_in_memory_cache(moduleid, module)
-            return module
+            if module:
+                place_module_in_memory_cache(moduleid, module)
+                place_module_in_memory_cache(original_moduleid, module)
+                return module
         # Check in cache directory
         if os.path.isdir(os.path.join(cache_dir, modulename)):
             module = import_module_directly(cache_dir, modulename)
-            place_module_in_memory_cache(moduleid, module)
-            return module
+            if module:
+                place_module_in_memory_cache(moduleid, module)
+                place_module_in_memory_cache(original_moduleid, module)
+                return module
     
     # Check possible disk locations
     path, modulename = find_module_location(moduleid, cache_dir)
     if modulename is not None:
         module = import_module_directly(path, modulename)
-        place_module_in_memory_cache(moduleid, module)
-        return module
+        if module:
+            place_module_in_memory_cache(moduleid, module)
+            place_module_in_memory_cache(original_moduleid, module)
+            return module
     
     # All attempts failed
-    instant_debug("In instant.import_module: Can't import module with moduleid %r using cache directory %r." % (moduleid, cache_dir))
+    instant_debug("In instant.import_module: Can't import module with moduleid %r using cache directory %r." \
+                  % (moduleid, cache_dir))
     return None
 
 
