@@ -107,9 +107,9 @@ def import_module(moduleid, cache_dir=None):
     # Didn't find module in memory cache, getting
     # signature from moduleid if it isn't a string
     if not isinstance(moduleid, str):
-        signature = moduleid.signature()
+        moduleid = moduleid.signature()
         # Code copied from find_module_location (optimization since we know we have the signature)
-        checksum = compute_checksum(signature)
+        checksum = compute_checksum(moduleid)
         modulename = modulename_from_checksum(checksum)
         # Check in current directory
         if os.path.isdir(modulename):
