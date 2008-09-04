@@ -404,9 +404,10 @@ def build_module(modulename=None, source_directory=".",
         # Import module and place in memory cache
         compiled_module = import_module_directly(module_path, modulename)
         if compiled_module:
-            place_module_in_memory_cache(cache_checksum, compiled_module)
-            place_module_in_memory_cache(signature, compiled_module)
-            place_module_in_memory_cache(signature_object, compiled_module)
+            if use_cache:
+                place_module_in_memory_cache(cache_checksum, compiled_module)
+                place_module_in_memory_cache(signature, compiled_module)
+                place_module_in_memory_cache(signature_object, compiled_module)
         else:
             instant_error("Failed to import newly compiled module!")
         
