@@ -14,16 +14,16 @@ def header_and_libs_from_pkgconfig(*packages):
     for pack in packages:
         result, output = get_status_output("pkg-config --exists %s " % pack)
         if result == 0: 
-            tmp = get_status_output("pkg-config --cflags-only-I %s " % pack).split()
+            tmp = get_status_output("pkg-config --cflags-only-I %s " % pack)[1].split()
             includes.extend(i[2:] for i in tmp)
             
-            tmp = get_status_output("pkg-config --cflags-only-other %s " % pack).split()
+            tmp = get_status_output("pkg-config --cflags-only-other %s " % pack)[1].split()
             flags.extend(tmp)
             
-            tmp = get_status_output("pkg-config --libs-only-l  %s " % pack).split()
+            tmp = get_status_output("pkg-config --libs-only-l  %s " % pack)[1].split()
             libs.extend(i[2:] for i in tmp)
             
-            tmp = get_status_output("pkg-config --libs-only-L  %s " % pack).split()
+            tmp = get_status_output("pkg-config --libs-only-L  %s " % pack)[1].split()
             libdirs.extend(i[2:] for i in tmp)
         else: 
             raise OSError("The pkg-config file %s does not exist" % pack)
