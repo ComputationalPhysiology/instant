@@ -63,3 +63,16 @@ def write_file(filename, text):
     except IOError, e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
+
+# Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
+from subprocess import Popen, PIPE, STDOUT
+def get_status_output(cmd, input=None, cwd=None, env=None):
+    pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+
+    (output, errout) = pipe.communicate(input=input)
+    assert not errout
+
+    status = pipe.returncode
+
+    return (status, output)
+

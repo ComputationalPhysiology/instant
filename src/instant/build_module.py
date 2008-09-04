@@ -3,7 +3,6 @@ import os
 import sys
 import shutil
 from itertools import chain
-from subprocess import Popen, PIPE, STDOUT
 
 # FIXME: Import only the official interface
 from output import *
@@ -13,17 +12,6 @@ from signatures import *
 from cache import *
 from codegeneration import *
 
-
-# Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
-def get_status_output(cmd, input=None, cwd=None, env=None):
-    pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
-
-    (output, errout) = pipe.communicate(input=input)
-    assert not errout
-
-    status = pipe.returncode
-
-    return (status, output)
 
 
 def build_module(modulename=None, source_directory=".",
