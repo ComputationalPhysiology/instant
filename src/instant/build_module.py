@@ -211,13 +211,40 @@ def build_module(modulename=None, source_directory=".",
             use_cache = True
             # Compute cache_checksum (this is _before_ interface files are generated!)
             if signature is None:
-                # TODO: Add all files and arguments we want here!
+                # Collect arguments used for checksum creation,
+                # including everything that affects the interface
+                # file generation and module compilation.
+                checksum_args = ( \
+                                 # We don't care about the modulename, that's what we're trying to construct!
+                                 #modulename,
+                                 # We don't care where the user code resides:
+                                 #source_directory,
+                                 code, init_code,
+                                 additional_definitions, additional_declarations,
+                                 # Skipping filenames, since we use the file contents:
+                                 #sources, wrap_headers,
+                                 #local_headers,
+                                 system_headers,
+                                 include_dirs, library_dirs, libraries,
+                                 swigargs, cppargs, lddargs,
+                                 object_files, arrays,
+                                 generate_interface, generate_setup, generate_makefile,
+                                 # The signature isn't defined, and the cache dir doesn't affect the module:
+                                 #signature, cache_dir)
+                                 )
                 allfiles = sources + wrap_headers + local_headers
-                text = code + init_code + additional_definitions + additional_declarations
+                text = "\n".join((str(a) for a in checksum_args))
                 cache_checksum = compute_checksum(text, allfiles)
             else:
-                # If given a user-provided signature, we don't look at anything else.
-                cache_checksum = compute_checksum(signature, [])
+                # If given a user-provided signature, we don't look at 
+                # anything related to the code, but do worry about
+                # different compilation flags.
+                # Collect arguments used for checksum creation,
+                # including everything that affects configuration
+                # and compilation, but not the code.
+                checksum_args = (include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs, )
+                text = signature + "\n".join((str(a) for a in checksum_args))
+                cache_checksum = compute_checksum(text, [])
             # Lookup cache_checksum in cache
             cached_module = import_module(cache_checksum, cache_dir)
             if cached_module is not None:
@@ -284,7 +311,29 @@ def build_module(modulename=None, source_directory=".",
         
         # Compute new_compilation_checksum
         allfiles = sources + wrap_headers + local_headers + [ifile_name]
-        text = "" # TODO: Maybe append *args here? (all sourcecode text is embedded in above files)
+        # Collect arguments used for checksum creation,
+        # including everything that affects the module compilation.
+        # Since the interface file is included in allfiles, 
+        # we don't need stuff that modifies it here.
+        checksum_args = ( \
+                         # We don't care about the modulename, that's what we're trying to construct!
+                         #modulename,
+                         # We don't care where the user code resides:
+                         #source_directory,
+                         #code, init_code,
+                         #additional_definitions, additional_declarations,
+                         # Skipping filenames, since we use the file contents:
+                         #sources, wrap_headers,
+                         #local_headers,
+                         system_headers,
+                         include_dirs, library_dirs, libraries,
+                         swigargs, cppargs, lddargs,
+                         object_files, #arrays,
+                         #generate_interface, generate_setup, generate_makefile,
+                         # The signature isn't defined, and the cache dir doesn't affect the module:
+                         #signature, cache_dir)
+                         )
+        text = "\n".join((str(a) for a in checksum_args))
         new_compilation_checksum = compute_checksum(text, allfiles)
         
         compilation_checksum_filename = "%s.checksum" % modulename
