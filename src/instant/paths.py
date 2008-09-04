@@ -24,9 +24,9 @@ def get_temp_dir():
 def delete_temp_dir():
     """Delete the temporary directory created by get_temp_dir()."""
     global _tmp_dir
-    if _tmp_dir is not None and os.path.isdir(_tmp_dir):
-        shutil.rmtree(_tmp_dir)
-        _tmp_dir = None
+    if _tmp_dir and os.path.isdir(_tmp_dir):
+        shutil.rmtree(_tmp_dir, ignore_errors=True)
+    _tmp_dir = None
 
 def get_instant_dir():
     "Return a temporary directory for the duration of this process."
