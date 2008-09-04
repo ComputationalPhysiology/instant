@@ -383,7 +383,7 @@ def build_module(modulename=None, source_directory=".",
             if os.path.exists(cache_module_path):
                 # TODO: Error instead? Indicates race condition on disk or bug in Instant.
                 instant_warning("In instant.build_module: Path '%s' already exists, but module wasn't found in cache previously. Overwriting." % cache_module_path)
-                shutil.rmtree(cache_module_path)
+                shutil.rmtree(cache_module_path, ignore_errors=True)
             instant_info("In instant.build_module: Copying built module from %r to cache at %r" % (module_path, cache_module_path))
             instant_assert(os.path.isdir(module_path), "In instant.build_module: Cannot copy non-existing directory %r!" % module_path)
             instant_assert(not os.path.isdir(cache_module_path), "In instant.build_module: Cache directory %r shouldn't exist at this point!" % cache_module_path)

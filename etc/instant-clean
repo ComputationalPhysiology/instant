@@ -25,7 +25,7 @@ tmp_dirs = glob.glob(os.path.join(tmp_dir_prefix, '*instant'))
 for d in tmp_dirs:
     if os.path.isdir(d):
         print "Deleting temp directory", d
-        shutil.rmtree(d)
+        shutil.rmtree(d, ignore_errors=True)
 
 # Get default cache dir (won't and can't touch userdefined cache dirs in this script)
 cache_dir = instant.get_default_cache_dir()
@@ -43,5 +43,5 @@ if len(modules) == 0:
 print "Removing %d modules from Instant cache..." % len(modules)
 for module in modules:
     directory = os.path.join(cache_dir, module)
-    shutil.rmtree(directory)
+    shutil.rmtree(directory, ignore_errors=True)
 
