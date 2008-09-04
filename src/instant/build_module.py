@@ -289,13 +289,20 @@ def build_module(modulename=None, source_directory=".",
         # Generate SWIG interface and setup.py if wanted
         ifile_name = "%s.i" % modulename
         if generate_interface:
-            ifile_name2 = write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
-            instant_assert(ifile_name == ifile_name2, "In instant.build_module: Logic breach in build_module, %r != %r." % (ifile_name, ifile_name2))
+            ifile_name2 = write_interfacefile(modulename, code, init_code,
+                additional_definitions, additional_declarations, system_headers,
+                local_headers, wrap_headers, arrays)
+            instant_assert(ifile_name == ifile_name2,
+                "In instant.build_module: Logic breach in build_module, %r != %r." \
+                % (ifile_name, ifile_name2))
         
         setup_name = "setup.py"
         if generate_setup:
-            setup_name2 = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
-            instant_assert(setup_name == setup_name2, "In instant.build_module: Logic breach in build_module, %r != %r." % (setup_name, setup_name2))
+            setup_name2 = write_setup(modulename, csrcs, cppsrcs, local_headers,
+                include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+            instant_assert(setup_name == setup_name2,
+                "In instant.build_module: Logic breach in build_module, %r != %r." \
+                % (setup_name, setup_name2))
         
         # --- Build module
         # At this point we have all the files, and can make the
@@ -389,16 +396,14 @@ def build_module(modulename=None, source_directory=".",
             instant_assert(not os.path.isdir(cache_module_path), "In instant.build_module: Cache directory %r shouldn't exist at this point!" % cache_module_path)
             shutil.copytree(module_path, cache_module_path)
             delete_temp_dir()
-            # Verify that we can load the module from the cache now
-            cached_module = import_module(cache_checksum, cache_dir)
-            if cached_module is None:
-                instant_error("In instant.build_module: Failed to find module in cache from checksum after compiling! Checksum is '%s'" % cache_checksum)
-            instant_debug("In instant.build_module: Returning module '%s' from build_module." % cached_module.__name__)
-            return cached_module
-        else:
-            compiled_module = import_module_directly(module_path, modulename)
-            instant_debug("In instant.build_module: Returning %s from build_module." % compiled_module)
-            return compiled_module
+            module_path = cache_module_path
+        
+        # Import module and place in memory cache
+        compiled_module = import_module_directly(module_path, modulename)
+        place_module_in_memory_cache(signature_object, compiled_module)
+        
+        instant_debug("In instant.build_module: Returning %s from build_module." % compiled_module)
+        return compiled_module
         
         # The end!
     finally:
