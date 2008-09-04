@@ -96,6 +96,8 @@ def import_module(moduleid, cache_dir=None):
     The hashable object is used to look up in the memory cache before signature() is called.
     If the module is found on disk, it is placed in the memory cache.
     """
+    if cache_dir is None:
+        cache_dir = get_default_cache_dir()
     
     # Check memory cache first
     module = memory_cached_module(moduleid)
