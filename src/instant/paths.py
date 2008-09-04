@@ -4,6 +4,7 @@
 import os
 import shutil
 import tempfile
+import time
 from output import instant_debug
 
 _tmp_dir = None
@@ -14,7 +15,7 @@ def get_temp_dir():
     Remember to all delete_temp_dir() before exiting."""
     global _tmp_dir
     if _tmp_dir is None:
-        datestring = "" # TODO: Add date string to make it easier to inspect temp directories
+        datestring = "%d-%d-%d-%02d-%02d" % time.localtime()[:5]
         suffix = datestring + "_instant"
         _tmp_dir = tempfile.mkdtemp(suffix)
         instant_debug("Created temp directory '%s'." % _tmp_dir)

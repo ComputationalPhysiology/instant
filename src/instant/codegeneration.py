@@ -145,7 +145,7 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
     """Generate a setup.py file.
 
     The arguments are as follows:
-    FIXME
+    FIXME: document me!
     """
     instant_debug("Generating setup.py.")
     #instant_warning("FIXME: Not using csrcs in write_setupfile().")
@@ -201,7 +201,7 @@ def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, libr
     This makefile includes and uses SWIG's own Makefile to 
     create a module of the supplied C/C++ code.
     The arguments are as follows:
-    FIXME
+    FIXME: document me!
     """
     #instant_warning("FIXME: Not using local_headers in write_makefile().")
     #instant_warning("FIXME: Not using lddargs in write_makefile().")
