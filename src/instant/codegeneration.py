@@ -195,62 +195,6 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
     return filename
 
 
-def write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
-    """Generates a project dependent Makefile.
-    
-    This makefile includes and uses SWIG's own Makefile to 
-    create a module of the supplied C/C++ code.
-    The arguments are as follows:
-    FIXME: document me!
-    """
-    #instant_warning("FIXME: Not using local_headers in write_makefile().")
-    #instant_warning("FIXME: Not using lddargs in write_makefile().")
-    instant_debug("Generating makefile.")
-    swigfilename = "%s.i" % modulename
-    code = reindent("""
-        LIBS = %s
-        LDPATH = 
-
-        FLAGS = %s
-
-        SWIG       = swig 
-        SWIGOPT    = %s
-        INTERFACE  = %s
-        TARGET     = %s
-        INCLUDES   = 
-
-        SWIGMAKEFILE = $(SWIGSRC)/Examples/Makefile
-
-        python::
-            $(MAKE) -f '$(SWIGMAKEFILE)' INTERFACE='$(INTERFACE)' \\
-            SWIG='$(SWIG)' SWIGOPT='$(SWIGOPT)'  \\
-            SRCS='%s' \\
-            CPPSRCS='%s' \\
-            INCLUDES='$(INCLUDES) %s' \\
-            LIBS='$(LIBS) %s' \\
-            CFLAGS='$(CFLAGS) $(FLAGS)' \\
-            TARGET='$(TARGET)' \\
-            python_cpp
-
-        clean::
-            rm -f *_wrap* _%s.so *.o $(OBJ_FILES)  *~
-        """ % (" ".join(libraries),
-               " ".join(cppargs),
-               " ".join(swigargs),
-               swigfilename,
-               modulename,
-               " ".join(csrcs),
-               " ".join(cppsrcs),
-               " ".join(include_dirs),
-               " ".join(library_dirs),
-               modulename))
-    # end code
-    filename = "Makefile"
-    write_file(filename, code)
-    instant_debug("Done generating makefile, filename is '%s'." % filename)
-    return filename
-
-
 def _test_write_interfacefile():
     modulename = "testmodule"
     code = "void foo() {}"
@@ -282,27 +226,8 @@ def _test_write_setup():
     print "".join(open("setup.py").readlines())
 
 
-def _test_write_makefile():
-    modulename = "testmodule"
-    csrcs = ["csrc1.c", "csrc2.c"]
-    cppsrcs = ["cppsrc1.cpp", "cppsrc2.cpp"]
-    local_headers = ["local_header1.h", "local_header2.h"]
-    include_dirs = ["includedir1", "includedir2"]
-    library_dirs = ["librarydir1", "librarydir2"]
-    libraries = ["lib1", "lib2"]
-    swigargs = ["-Swigarg1", "-Swigarg2"]
-    cppargs = ["-cpparg1", "-cpparg2"]
-    lddargs = ["-Lddarg1", "-Lddarg2"]
-    
-    write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
-    print "".join(open("Makefile").readlines())
-
-
 if __name__ == "__main__":
     _test_write_interfacefile()
     print "\n"*3
     _test_write_setup()
-    print "\n"*3
-    _test_write_makefile()
-
 

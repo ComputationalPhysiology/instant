@@ -22,7 +22,7 @@ def build_module(modulename=None, source_directory=".",
                  include_dirs=['.'], library_dirs=[], libraries=[],
                  swigargs=['-c++', '-fcompact', '-O', '-I.', '-small'], cppargs=['-O2'], lddargs=[],
                  object_files=[], arrays=[],
-                 generate_interface=True, generate_setup=True, generate_makefile=False,
+                 generate_interface=True, generate_setup=True,
                  signature=None, cache_dir=None):
     """Generate and compile a module from C/C++ code using SWIG.
     
@@ -72,10 +72,6 @@ def build_module(modulename=None, source_directory=".",
           - A bool to indicate if you want to generate the interface files.
        - B{generate_setup}:
           - A bool to indicate if you want to generate the setup.py file.
-            By default, setup.py is used and not the Makefile.
-       - B{generate_makefile}:
-          - A bool to indicate if you want to generate the Makefile.
-            If this is True, the Makefile is used instead of setup.py.
        - B{signature}:
           - A signature string to identify the form instead of the source code.
        - B{cache_dir}:
@@ -128,7 +124,6 @@ def build_module(modulename=None, source_directory=".",
     arrays         = [strip_strings(a) for a in arrays]
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
-    assert_is_bool(generate_makefile)
     instant_assert(signature is None or isinstance(signature, str) or hasattr(signature, "signature"),
         "In instant.build_module: Expecting signature to be None, string, or a hashable object with a signature() function.")
     instant_assert(cache_dir is None or isinstance(cache_dir, str),
@@ -192,7 +187,6 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('    arrays: %r' % arrays)
     instant_debug('    generate_interface: %r' % generate_interface)
     instant_debug('    generate_setup: %r' % generate_setup)
-    instant_debug('    generate_makefile: %r' % generate_makefile)
     instant_debug('    signature: %r' % signature)
     instant_debug('    cache_dir: %r' % cache_dir)
     instant_debug('::: End Arguments :::')
@@ -228,7 +222,7 @@ def build_module(modulename=None, source_directory=".",
                                  include_dirs, library_dirs, libraries,
                                  swigargs, cppargs, lddargs,
                                  object_files, arrays,
-                                 generate_interface, generate_setup, generate_makefile,
+                                 generate_interface, generate_setup,
                                  # The signature isn't defined, and the cache dir doesn't affect the module:
                                  #signature, cache_dir)
                                  )
@@ -292,17 +286,16 @@ def build_module(modulename=None, source_directory=".",
         # Generate __init__.py which imports compiled module contents
         write_file("__init__.py", "from %s import *" % modulename)
         
-        # Generate SWIG interface, setup.py, and Makefile if wanted
+        # Generate SWIG interface and setup.py if wanted
         ifile_name = "%s.i" % modulename
         if generate_interface:
             ifile_name2 = write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
             instant_assert(ifile_name == ifile_name2, "In instant.build_module: Logic breach in build_module, %r != %r." % (ifile_name, ifile_name2))
         
+        setup_name = "setup.py"
         if generate_setup:
-            setup_name = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
-        
-        if generate_makefile:
-            makefile_name = write_makefile(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+            setup_name2 = write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+            instant_assert(setup_name == setup_name2, "In instant.build_module: Logic breach in build_module, %r != %r." % (setup_name, setup_name2))
         
         # --- Build module
         # At this point we have all the files, and can make the
@@ -329,7 +322,7 @@ def build_module(modulename=None, source_directory=".",
                          include_dirs, library_dirs, libraries,
                          swigargs, cppargs, lddargs,
                          object_files, #arrays,
-                         #generate_interface, generate_setup, generate_makefile,
+                         #generate_interface, generate_setup,
                          # The signature isn't defined, and the cache dir doesn't affect the module:
                          #signature, cache_dir)
                          )
@@ -357,54 +350,28 @@ def build_module(modulename=None, source_directory=".",
             compile_log_filename = os.path.join(module_path, "compile.log")
             compile_log_file = open(compile_log_filename, "w")
             
-            # Run makefile or setup.py.
-            # The default is setup.py, so if the user
-            # told us to make a makefile, we use that.
-            if generate_makefile:
-                # clean module
-                cmd = "make -f %s clean" %  makefile_name
-                instant_info("--- Instant: compiling ---")
-                instant_info(cmd)
-                ret, output = get_status_output(cmd)
-                compile_log_file.write(output)
-                compile_log_file.flush()
-                if ret != 0:
-                    if os.path.exists(compilation_checksum_filename):
-                        os.remove(compilation_checksum_filename)
-                    instant_error("In instant.build_module: Failed cleaning the module directory, see '%s'" % compile_log_filename)
-                
-                # build module
-                cmd = "make -f %s python" % makefile_name
-                instant_info(cmd)
-                ret, output = get_status_output(cmd)
-                compile_log_file.write(output)
-                compile_log_file.flush()
-                if ret != 0:
+            # Build module
+            cmd = "python %s build_ext" % setup_name
+            instant_info("--- Instant: compiling ---")
+            instant_info(cmd)
+            ret, output = get_status_output(cmd)
+            compile_log_file.write(output)
+            compile_log_file.flush()
+            if ret != 0:
+                if os.path.exists(compilation_checksum_filename):
                     os.remove(compilation_checksum_filename)
-                    instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
-            else:
-                # build module
-                cmd = "python %s build_ext" % setup_name
-                instant_info("--- Instant: compiling ---")
-                instant_info(cmd)
-                ret, output = get_status_output(cmd)
-                compile_log_file.write(output)
-                compile_log_file.flush()
-                if ret != 0:
-                    if os.path.exists(compilation_checksum_filename):
-                        os.remove(compilation_checksum_filename)
-                    instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
-                
-                # 'install' module
-                cmd = "python %s install --install-platlib=." % setup_name
-                instant_info(cmd)
-                ret, output = get_status_output(cmd)
-                compile_log_file.write(output)
-                compile_log_file.flush()
-                if ret != 0:
-                    if os.path.exists(compilation_checksum_filename):
-                        os.remove(compilation_checksum_filename)
-                    instant_error("In instant.build_module: Could not 'install' the module, see '%s'" % compile_log_filename)
+                instant_error("In instant.build_module: The module did not compile, see '%s'" % compile_log_filename)
+            
+            # 'Install' module
+            cmd = "python %s install --install-platlib=." % setup_name
+            instant_info(cmd)
+            ret, output = get_status_output(cmd)
+            compile_log_file.write(output)
+            compile_log_file.flush()
+            if ret != 0:
+                if os.path.exists(compilation_checksum_filename):
+                    os.remove(compilation_checksum_filename)
+                instant_error("In instant.build_module: Could not 'install' the module, see '%s'" % compile_log_filename)
             
             # Compilation succeeded, write new_compilation_checksum to checksum_file
             write_file(compilation_checksum_filename, new_compilation_checksum)
