@@ -36,7 +36,7 @@ def reindent(code):
     return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
 
 
-def write_interfacefile(modulename, code, init_code,
+def write_interfacefile(filename, modulename, code, init_code,
         additional_definitions, additional_declarations,
         system_headers, local_headers, wrap_headers, arrays):
     """
@@ -56,7 +56,6 @@ def write_interfacefile(modulename, code, init_code,
     The result of this function is that a SWIG interface with
     the name modulename.i is written to the current directory.
     """
-    filename = "%s.i" % modulename
     instant_debug("Generating SWIG interface file '%s'." % filename)
     
     # create typemaps 
@@ -138,16 +137,15 @@ def write_interfacefile(modulename, code, init_code,
     
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
-    return filename
 
 
-def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
+def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
     """Generate a setup.py file.
 
     The arguments are as follows:
     FIXME: document me!
     """
-    instant_debug("Generating setup.py.")
+    instant_debug("Generating %s." % filename)
     #instant_warning("FIXME: Not using csrcs in write_setupfile().")
     
     # Handle arguments
@@ -189,10 +187,8 @@ def write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library
         """ % (modulename, inc_dir, swig_args, swigfilename, cppsrcs, 
                modulename, modulename, include_dirs, library_dirs, libraries, compile_args, link_args))
     
-    filename = "setup.py"
     write_file(filename, code)
     instant_debug("Done writing setup.py file.")
-    return filename
 
 
 def _test_write_interfacefile():

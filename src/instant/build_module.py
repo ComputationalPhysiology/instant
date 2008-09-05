@@ -13,6 +13,108 @@ from cache import *
 from codegeneration import *
 
 
+    
+def assert_is_str(x):
+    instant_assert(isinstance(x, str),
+        "In instant.build_module: Expecting string.")
+
+def assert_is_bool(x):
+    instant_assert(isinstance(x, bool),
+        "In instant.build_module: Expecting bool.")
+
+def assert_is_str_list(x):
+    instant_assert(isinstance(x, (list, tuple)),
+        "In instant.build_module: Expecting sequence.")
+    instant_assert(all(isinstance(i, str) for i in x),
+        "In instant.build_module: Expecting sequence of strings.")
+
+def strip_strings(x):
+    assert_is_str_list(x)
+    return [s.strip() for s in x]
+
+def arg_strings(x):
+    if isinstance(x, str):
+        x = x.split()
+    return strip_strings(x)
+
+
+def copy_files(source, dest, files):
+    if os.path.exists(dest):
+        overwriting = set(files) & set(glob.glob(os.path.join(dest, "*")))
+        if overwriting:
+            instant_warning("In instant.build_module: Path '%s' already exists, "\
+                "overwriting existing files: %r." % (dest, list(overwriting)))
+    else:
+        os.mkdir(dest)
+    
+    if source != dest:
+        instant_debug("In instant.build_module: Copying files %r from %r to %r"\
+            % (files, source, dest))
+        
+        for f in files:
+            a = os.path.join(source, f)
+            b = os.path.join(dest, f)
+            instant_assert(a != b, "In instant.build_module: Seems like the "\
+                "input files are absolute paths, should be relative to "\
+                "source. (%r, %r)" % (a, b))
+            instant_assert(os.path.isfile(a), "In instant.build_module: "\
+                "Missing source file '%s'." % a)
+            if os.path.isfile(b):
+                os.remove(b)
+            shutil.copyfile(a, b)
+
+
+def recompile(modulename, module_path, setup_name, new_compilation_checksum):
+    # Check if the old checksum matches the new one
+    need_recompilation = True
+    compilation_checksum_filename = "%s.checksum" % modulename
+    if os.path.exists(compilation_checksum_filename):
+        checksum_file = open(compilation_checksum_filename)
+        old_compilation_checksum = checksum_file.readline()
+        checksum_file.close()
+        if old_compilation_checksum == new_compilation_checksum:
+            return
+    
+    # Verify that SWIG is on the system
+    (swig_stat, swig_out) = get_status_output("swig -version")
+    if swig_stat != 0:
+        instant_error("In instant.build_module: Could not find swig!"\
+            " You can download swig from http://www.swig.org")
+    
+    # Create log file for logging of compilation errors
+    compile_log_filename = os.path.join(module_path, "compile.log")
+    compile_log_file = open(compile_log_filename, "w")
+    try:
+        # Build module
+        cmd = "python %s build_ext" % setup_name
+        instant_info("--- Instant: compiling ---")
+        instant_info(cmd)
+        ret, output = get_status_output(cmd)
+        compile_log_file.write(output)
+        compile_log_file.flush()
+        if ret != 0:
+            if os.path.exists(compilation_checksum_filename):
+                os.remove(compilation_checksum_filename)
+            instant_error("In instant.build_module: The module did not "\
+                "compile, see '%s'" % compile_log_filename)
+        
+        # 'Install' module
+        cmd = "python %s install --install-platlib=." % setup_name
+        instant_info(cmd)
+        ret, output = get_status_output(cmd)
+        compile_log_file.write(output)
+        compile_log_file.flush()
+        if ret != 0:
+            if os.path.exists(compilation_checksum_filename):
+                os.remove(compilation_checksum_filename)
+            instant_error("In instant.build_module: Could not 'install' "\
+                "the module, see '%s'" % compile_log_filename)
+    finally:
+        compile_log_file.close()
+    
+    # Compilation succeeded, write new_compilation_checksum to checksum_file
+    write_file(compilation_checksum_filename, new_compilation_checksum)
+
 
 def build_module(modulename=None, source_directory=".",
                  code="", init_code="",
@@ -100,33 +202,11 @@ def build_module(modulename=None, source_directory=".",
     original_path = os.getcwd()
     
     # --- Validate arguments 
-    
-    def assert_is_str(x):
-        instant_assert(isinstance(x, str),
-            "In instant.build_module: Expecting string.")
-    
-    def assert_is_bool(x):
-        instant_assert(isinstance(x, bool),
-            "In instant.build_module: Expecting bool.")
-    
-    def assert_is_str_list(x):
-        instant_assert(isinstance(x, (list, tuple)),
-            "In instant.build_module: Expecting sequence.")
-        instant_assert(all(isinstance(i, str) for i in x),
-            "In instant.build_module: Expecting sequence of strings.")
-    
-    def strip_strings(x):
-        assert_is_str_list(x)
-        return [s.strip() for s in x]
-    
-    def arg_strings(x):
-        if isinstance(x, str):
-            x = x.split()
-        return strip_strings(x)
 
     instant_assert(modulename is None or isinstance(modulename, str),
         "In instant.build_module: Expecting modulename to be string or None.")
     assert_is_str(source_directory)
+    source_directory = os.path.abspath(source_directory)
     assert_is_str(code)
     assert_is_str(init_code)
     assert_is_str(additional_definitions)
@@ -145,16 +225,9 @@ def build_module(modulename=None, source_directory=".",
     arrays         = [strip_strings(a) for a in arrays]
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
-    instant_assert(signature is None or isinstance(signature, str) \
-        or hasattr(signature, "signature"),
-        "In instant.build_module: Expecting signature to be None, string, "\
-        "or a hashable object with a signature() function.")
-    instant_assert(cache_dir is None or isinstance(cache_dir, str),
-        "In instant.build_module: Expecting cache_dir to be string or None.")
     
     # --- Replace arguments with defaults if necessary
     
-    source_directory = os.path.abspath(source_directory)
     
     if cache_dir is None:
         cache_dir = get_default_cache_dir()
@@ -172,6 +245,7 @@ def build_module(modulename=None, source_directory=".",
             cppsrcs.append(f)
         elif f.endswith('.c') or f.endswith('.C'):
             csrcs.append(f)
+            instant_error("FIXME: setup.py doesn't use the C sources.")
         else:
             instant_error("In instant.build_module: Source files must have "\
                 "'.c' or '.cpp' suffix, this is not the case for '%s'." % f)
@@ -204,137 +278,103 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('    cache_dir: %r' % cache_dir)
     instant_debug('::: End Arguments :::')
 
-    # --- Wrapping rest of code in try-block to clean
-    #     up at the end if something fails.
-    try:  
-        # --- Setup module directory, making it and copying
-        #     files to it if necessary
-        
-        # Create module path where the module is to be built,
-        # either in a local directory if a module name is given,
-        # or in a temporary directory for later copying to cache.
-        if modulename:
-            use_cache = False
-            module_path = os.path.join(original_path, modulename)
+    # --- Setup module directory, making it and copying
+    #     files to it if necessary
+    
+    # Create module path where the module is to be built,
+    # either in a local directory if a module name is given,
+    # or in a temporary directory for later copying to cache.
+    if modulename:
+        use_cache = False
+        module_path = os.path.join(original_path, modulename)
+        instant_assert(signature is None,
+            "Not expecting signature and modulename at the same time.")
+    else:
+        use_cache = True
+        # Compute cache_checksum (this is _before_ interface files are generated!)
+        if signature is None:
+            # Collect arguments used for checksum creation,
+            # including everything that affects the interface
+            # file generation and module compilation.
+            checksum_args = ( \
+                # We don't care about the modulename, that's what we're trying to construct!
+                #modulename,
+                # We don't care where the user code resides:
+                #source_directory,
+                code, init_code,
+                additional_definitions,
+                additional_declarations,
+                # Skipping filenames, since we use the file contents:
+                #sources, wrap_headers,
+                #local_headers,
+                system_headers,
+                include_dirs, library_dirs, libraries,
+                swigargs, cppargs, lddargs,
+                object_files, arrays,
+                generate_interface, generate_setup,
+                # The signature isn't defined, and the cache_dir doesn't affect the module:
+                #signature, cache_dir)
+                )
+            allfiles = sources + wrap_headers + local_headers
+            text = "\n".join((str(a) for a in checksum_args))
+            cache_checksum = compute_checksum(text, allfiles)
         else:
-            use_cache = True
-            # Compute cache_checksum (this is _before_ interface files
-            # are generated!)
-            if signature is None:
-                # Collect arguments used for checksum creation,
-                # including everything that affects the interface
-                # file generation and module compilation.
-                checksum_args = ( \
-                                 # We don't care about the modulename, that's
-                                 # what we're trying to construct!
-                                 #modulename,
-                                 # We don't care where the user code resides:
-                                 #source_directory,
-                                 code, init_code,
-                                 additional_definitions,
-                                 additional_declarations,
-                                 # Skipping filenames, since we use
-                                 # the file contents:
-                                 #sources, wrap_headers,
-                                 #local_headers,
-                                 system_headers,
-                                 include_dirs, library_dirs, libraries,
-                                 swigargs, cppargs, lddargs,
-                                 object_files, arrays,
-                                 generate_interface, generate_setup,
-                                 # The signature isn't defined, and the
-                                 # cache_dir doesn't affect the module:
-                                 #signature, cache_dir)
-                                 )
-                allfiles = sources + wrap_headers + local_headers
-                text = "\n".join((str(a) for a in checksum_args))
-                cache_checksum = compute_checksum(text, allfiles)
-            else:
-                # If given a user-provided signature, we don't look at 
-                # anything related to the code, but do worry about
-                # different compilation flags.
-                # Collect arguments used for checksum creation,
-                # including everything that affects configuration
-                # and compilation, but not the code.
-                checksum_args = (include_dirs, library_dirs, libraries,
-                                 swigargs, cppargs, lddargs, )
-                text = signature + "\n".join((str(a) for a in checksum_args))
-                cache_checksum = compute_checksum(text, [])
-            # Lookup cache_checksum in cache
-            cached_module = import_module(cache_checksum, cache_dir)
-            if cached_module:
-                instant_debug("In instant.build_module: Found module '%s' in cache."\
-                    % cached_module.__name__)
-                place_module_in_memory_cache(cache_checksum, cached_module)
-                place_module_in_memory_cache(signature, cached_module)
+            # If given a user-provided signature, we don't look at 
+            # anything related to the code, but do worry about
+            # different compilation flags.
+            # Collect arguments used for checksum creation,
+            # including everything that affects configuration
+            # and compilation, but not the code.
+            checksum_args = (include_dirs, library_dirs, libraries,
+                             swigargs, cppargs, lddargs, )
+            text = signature + "\n".join((str(a) for a in checksum_args))
+            cache_checksum = compute_checksum(text, [])
+        
+        # Lookup cache_checksum in cache
+        cached_module = import_module(cache_checksum, cache_dir)
+        if cached_module:
+            instant_debug("In instant.build_module: Found module '%s' in cache."\
+                % cached_module.__name__)
+            place_module_in_memory_cache(cache_checksum, cached_module)
+            place_module_in_memory_cache(signature, cached_module)
+            if signature_object is not signature:
                 place_module_in_memory_cache(signature_object, cached_module)
-                return cached_module
-            # Define modulename and path automatically
-            modulename = modulename_from_checksum(cache_checksum)
-            module_path = os.path.join(get_temp_dir(), modulename)
-            instant_assert(not os.path.exists(module_path),
-                "In instant.build_module: Not expecting module_path to exist: '%s'"\
-                % module_path)
+            return cached_module
         
-        # --- Copy files to module path
+        # Define modulename and path automatically
+        modulename = modulename_from_checksum(cache_checksum)
+        module_path = os.path.join(get_temp_dir(), modulename)
+        instant_assert(not os.path.exists(module_path),
+            "In instant.build_module: Not expecting module_path to exist: '%s'"\
+            % module_path)
+    
+    # Wrapping rest of code in try-block to 
+    # clean up at the end if something fails.
+    try:  
+        # --- Copy user-supplied files to module path
         module_path = os.path.abspath(module_path)
-        if os.path.exists(module_path):
-            instant_warning("In instant.build_module: Path '%s' already exists, "\
-                            "may overwrite existing files." % module_path)
-        else:
-            os.mkdir(module_path)
-        
-        # Copy source files to module_path if necessary
-        if source_directory != module_path:
-            # Create list of files that should be copied
-            files_to_copy = []
-            files_to_copy.extend(sources) 
-            files_to_copy.extend(wrap_headers)
-            files_to_copy.extend(local_headers)
-            files_to_copy.extend(object_files)
-            
-            instant_debug("In instant.build_module: Copying files %r from %r to %r"\
-                % (files_to_copy, source_directory, module_path))
-            for f in files_to_copy:
-                a = os.path.join(source_directory, f)
-                b = os.path.join(module_path, f)
-                instant_assert(a != b, "In instant.build_module: Seems like the "\
-                    "input files are absolute paths, should be relative to "\
-                    "source_directory. (%r, %r)" % (a, b))
-                instant_assert(os.path.isfile(a), "In instant.build_module: "\
-                    "Missing file '%s'." % a)
-                if os.path.isfile(b):
-                    instant_warning("In instant.build_module: Overwriting file "\
-                        "'%s' with '%s'." % (b, a))
-                    os.remove(b)
-                shutil.copyfile(a, b)
-        
+        files_to_copy = sources + wrap_headers + local_headers + object_files
+        copy_files(source_directory, module_path, files_to_copy)
         # At this point, all user input files should reside in module_path.
         
-        # --- Generate files in module directory
-        
+        # --- Generate additional files in module directory
         os.chdir(module_path)
         
         # Generate __init__.py which imports compiled module contents
         write_file("__init__.py", "from %s import *" % modulename)
         
-        # Generate SWIG interface and setup.py if wanted
+        # Generate SWIG interface if wanted
         ifile_name = "%s.i" % modulename
         if generate_interface:
-            ifile_name2 = write_interfacefile(modulename, code, init_code,
+            write_interfacefile(ifile_name, modulename, code, init_code,
                 additional_definitions, additional_declarations, system_headers,
                 local_headers, wrap_headers, arrays)
-            instant_assert(ifile_name == ifile_name2,
-                "In instant.build_module: Logic breach in build_module, %r != %r." \
-                % (ifile_name, ifile_name2))
         
+        # Generate setup.py if wanted
         setup_name = "setup.py"
         if generate_setup:
-            setup_name2 = write_setup(modulename, csrcs, cppsrcs, local_headers,
+            write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers,
                 include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
-            instant_assert(setup_name == setup_name2,
-                "In instant.build_module: Logic breach in build_module, %r != %r." \
-                % (setup_name, setup_name2))
         
         # --- Build module
         # At this point we have all the files, and can make the
@@ -370,55 +410,8 @@ def build_module(modulename=None, source_directory=".",
         text = "\n".join((str(a) for a in checksum_args))
         new_compilation_checksum = compute_checksum(text, allfiles)
         
-        compilation_checksum_filename = "%s.checksum" % modulename
-        
-        # Check if the old checksum matches the new one
-        need_recompilation = True
-        if os.path.exists(compilation_checksum_filename):
-            checksum_file = open(compilation_checksum_filename)
-            old_compilation_checksum = checksum_file.readline()
-            checksum_file.close()
-            if old_compilation_checksum == new_compilation_checksum:
-                need_recompilation = False
-        
-        if need_recompilation:
-            # Verify that SWIG is on the system
-            (swig_stat, swig_out) = get_status_output("swig -version")
-            if swig_stat != 0:
-                instant_error("In instant.build_module: Could not find swig!"\
-                              " You can download swig from http://www.swig.org")
-            
-            # Create log file for logging of compilation errors
-            compile_log_filename = os.path.join(module_path, "compile.log")
-            compile_log_file = open(compile_log_filename, "w")
-            
-            # Build module
-            cmd = "python %s build_ext" % setup_name
-            instant_info("--- Instant: compiling ---")
-            instant_info(cmd)
-            ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
-            if ret != 0:
-                if os.path.exists(compilation_checksum_filename):
-                    os.remove(compilation_checksum_filename)
-                instant_error("In instant.build_module: The module did not "\
-                    "compile, see '%s'" % compile_log_filename)
-            
-            # 'Install' module
-            cmd = "python %s install --install-platlib=." % setup_name
-            instant_info(cmd)
-            ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
-            if ret != 0:
-                if os.path.exists(compilation_checksum_filename):
-                    os.remove(compilation_checksum_filename)
-                instant_error("In instant.build_module: Could not 'install' "\
-                    "the module, see '%s'" % compile_log_filename)
-            
-            # Compilation succeeded, write new_compilation_checksum to checksum_file
-            write_file(compilation_checksum_filename, new_compilation_checksum)
+        # Recompile if necessary
+        recompile(modulename, module_path, setup_name, new_compilation_checksum)
         
         # --- Load module and return it
         if use_cache:
@@ -431,17 +424,19 @@ def build_module(modulename=None, source_directory=".",
                     " but module wasn't found in cache previously. Overwriting."\
                     % cache_module_path)
                 shutil.rmtree(cache_module_path, ignore_errors=True)
-            instant_info("In instant.build_module: Copying built module from %r"\
-                " to cache at %r" % (module_path, cache_module_path))
+            
             instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
                 " Cannot copy non-existing directory %r!" % module_path)
             instant_assert(not os.path.isdir(cache_module_path),
                 "In instant.build_module: Cache directory %r shouldn't exist "\
                 "at this point!" % cache_module_path)
+            instant_info("In instant.build_module: Copying built module from %r"\
+                " to cache at %r" % (module_path, cache_module_path))
+            
             shutil.copytree(module_path, cache_module_path)
             delete_temp_dir()
             module_path = cache_module_path
-        
+
         # Import module and place in memory cache
         compiled_module = import_module_directly(module_path, modulename)
         if compiled_module:
@@ -455,16 +450,11 @@ def build_module(modulename=None, source_directory=".",
         instant_debug("In instant.build_module: Returning %s from build_module."\
             % compiled_module)
         return compiled_module
-        
         # The end!
+        
     finally:
         # Always get back to original directory.
         os.chdir(original_path)
-        
-        # Close the log file in case we were aborted.
-        compile_log_file = locals().get("compile_log_file", None)
-        if compile_log_file:
-            compile_log_file.close()
     
     instant_error("In instant.build_module: Should never reach this point!")
     # end build_module
