@@ -1,7 +1,5 @@
 
-import os
-import sys
-import shutil
+import os, sys, shutil, glob
 from itertools import chain
 
 # FIXME: Import only the official interface
