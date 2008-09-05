@@ -21,10 +21,23 @@ double sum(double a, double b)
 """
 
 class Sig:
+    def __init__(self, sig):
+        self.sig = sig
+    
     def signature(self):
-        time.sleep(1)
-        return "((test18.py signature))"
-sig = Sig()
+        time.sleep(1.0)
+        return self.sig
+    
+    def __hash__(self):
+        time.sleep(0.5)
+        return hash(self.sig)
+    
+    def __cmp__(self, other):
+        if isinstance(other, Sig):
+            return cmp(self.sig, other.sig)
+        return -1
+
+sig = Sig("((test18.py signature))")
 cache_dir = "test_cache"
 
 # Time a few builds
@@ -50,8 +63,8 @@ module = import_module(sig, cache_dir)
 t5 = toc("second import")
 
 assert t1 > 1
-assert t2 < 1
-assert t3 < 1
-assert t4 < 1
-assert t5 < 1
+assert t2 < 1 and t2 > 0.4
+assert t3 < 1 and t3 > 0.4
+assert t4 < 1 and t4 > 0.4
+assert t5 < 1 and t5 > 0.4
 
