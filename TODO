@@ -3,13 +3,11 @@ TODO:
 
 - Add tests for all variants of cache mechanisms available now
 
-- Fix in-memory cache: doesn't work properly (FIXME in build_module)
-
 - Clean up imports, don't use import *
 
 - Add module docstrings and metadata
 
-- Fix inconsistencies in use of arguments in setup.py and Makefile generation
+- Fix arguments not used in setup.py
 
 - Use object files argument.
 
