@@ -80,6 +80,18 @@ def build_module(modulename=None, source_directory=".",
             will not be cached if C{modulename} is specified.
             The cache directory should not be used for anything else.
     """
+    # Check memory cache as the first step for max speed!
+    signature_object = signature
+    if signature is not None:
+        module = memory_cached_module(signature)
+        if module:
+            return module
+        # Module not found in memory cache, make signature a string if it isn't
+        if hasattr(signature, "signature"):
+            signature = signature.signature()
+        instant_assert(isinstance(signature, str),
+            "Signature must be a string or have a function .signature() that returns a string.")
+
     # Store original directory to be able to restore later
     original_path = os.getcwd()
     
@@ -92,8 +104,10 @@ def build_module(modulename=None, source_directory=".",
         instant_assert(isinstance(x, bool), "In instant.build_module: Expecting bool.")
     
     def assert_is_str_list(x):
-        instant_assert(isinstance(x, (list, tuple)), "In instant.build_module: Expecting sequence.")
-        instant_assert(all(isinstance(i, str) for i in x), "In instant.build_module: Expecting sequence of strings.")
+        instant_assert(isinstance(x, (list, tuple)),
+            "In instant.build_module: Expecting sequence.")
+        instant_assert(all(isinstance(i, str) for i in x),
+            "In instant.build_module: Expecting sequence of strings.")
     
     def strip_strings(x):
         assert_is_str_list(x)
@@ -104,7 +118,8 @@ def build_module(modulename=None, source_directory=".",
             x = x.split()
         return strip_strings(x)
 
-    instant_assert(modulename is None or isinstance(modulename, str), "In instant.build_module: Expecting modulename to be string or None.")
+    instant_assert(modulename is None or isinstance(modulename, str),
+        "In instant.build_module: Expecting modulename to be string or None.")
     assert_is_str(source_directory)
     assert_is_str(code)
     assert_is_str(init_code)
@@ -140,17 +155,6 @@ def build_module(modulename=None, source_directory=".",
         cache_dir = os.path.abspath(cache_dir)
         if not os.path.isdir(cache_dir):
             os.mkdir(cache_dir)
-    
-    signature_object = signature
-    if signature is not None:
-        # Check if module is in memory cache
-        module = memory_cached_module(signature)
-        if module is not None:
-            return module
-        # Module not found in memory cache, make signature a string if it isn't
-        if not isinstance(signature, str):
-            signature = signature.signature()
-            # FIXME: Must use signature_object as the key to place a module in the memory cache after compilation.
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = []
@@ -191,9 +195,11 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('    cache_dir: %r' % cache_dir)
     instant_debug('::: End Arguments :::')
 
-    # --- Wrapping rest of code in try-block to clean up at the end if something fails.
+    # --- Wrapping rest of code in try-block to clean
+    #     up at the end if something fails.
     try:  
-        # --- Setup module directory, making it and copying files to it if necessary
+        # --- Setup module directory, making it and copying
+        #     files to it if necessary
         
         # Create module path where the module is to be built,
         # either in a local directory if a module name is given,
@@ -203,19 +209,23 @@ def build_module(modulename=None, source_directory=".",
             module_path = os.path.join(original_path, modulename)
         else:
             use_cache = True
-            # Compute cache_checksum (this is _before_ interface files are generated!)
+            # Compute cache_checksum (this is _before_ interface files
+            # are generated!)
             if signature is None:
                 # Collect arguments used for checksum creation,
                 # including everything that affects the interface
                 # file generation and module compilation.
                 checksum_args = ( \
-                                 # We don't care about the modulename, that's what we're trying to construct!
+                                 # We don't care about the modulename, that's
+                                 # what we're trying to construct!
                                  #modulename,
                                  # We don't care where the user code resides:
                                  #source_directory,
                                  code, init_code,
-                                 additional_definitions, additional_declarations,
-                                 # Skipping filenames, since we use the file contents:
+                                 additional_definitions,
+                                 additional_declarations,
+                                 # Skipping filenames, since we use
+                                 # the file contents:
                                  #sources, wrap_headers,
                                  #local_headers,
                                  system_headers,
