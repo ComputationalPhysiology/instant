@@ -85,6 +85,15 @@ def find_module_location(moduleid, cache_dir=None):
     return (None, None)
 
 
+def import_and_cache_module(cache_dir, modulename, moduleid, original_moduleid):
+    module = import_module_directly(cache_dir, modulename)
+    if module:
+        place_module_in_memory_cache(moduleid, module)
+        if original_moduleid is not moduleid:
+            place_module_in_memory_cache(original_moduleid, module)
+        return module
+
+
 def import_module(moduleid, cache_dir=None):
     """Import module from cache given its moduleid and an optional cache directory.
     
@@ -114,27 +123,15 @@ def import_module(moduleid, cache_dir=None):
         modulename = modulename_from_checksum(checksum)
         # Check in current directory
         if os.path.isdir(modulename):
-            module = import_module_directly(os.getcwd(), modulename)
-            if module:
-                place_module_in_memory_cache(moduleid, module)
-                place_module_in_memory_cache(original_moduleid, module)
-                return module
+            return import_and_cache_module(os.getcwd(), modulename, moduleid, original_moduleid)
         # Check in cache directory
         if os.path.isdir(os.path.join(cache_dir, modulename)):
-            module = import_module_directly(cache_dir, modulename)
-            if module:
-                place_module_in_memory_cache(moduleid, module)
-                place_module_in_memory_cache(original_moduleid, module)
-                return module
+            return import_and_cache_module(cache_dir, modulename, moduleid, original_moduleid)
     
     # Check possible disk locations
     path, modulename = find_module_location(moduleid, cache_dir)
     if modulename is not None:
-        module = import_module_directly(path, modulename)
-        if module:
-            place_module_in_memory_cache(moduleid, module)
-            place_module_in_memory_cache(original_moduleid, module)
-            return module
+        return import_and_cache_module(path, modulename, moduleid, original_moduleid)
     
     # All attempts failed
     instant_debug("In instant.import_module: Can't import module with moduleid %r using cache directory %r." \

@@ -43,23 +43,28 @@ cache_dir = "test_cache"
 # Time a few builds
 tic()
 module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
+assert module is not None
 t1 = toc("first build")
 
 tic()
 module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
+assert module is not None
 t2 = toc("second build")
 
 tic()
 module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
+assert module is not None
 t3 = toc("third build")
 
 # Time importing
 tic()
 module = import_module(sig, cache_dir)
+assert module is not None
 t4 = toc("first import")
 
 tic()
 module = import_module(sig, cache_dir)
+assert module is not None
 t5 = toc("second import")
 
 assert t1 > 1
