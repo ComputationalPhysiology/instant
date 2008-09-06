@@ -333,7 +333,6 @@ def build_module(modulename=None, source_directory=".",
         if cached_module:
             instant_debug("In instant.build_module: Found module '%s' in cache."\
                 % cached_module.__name__)
-            place_module_in_memory_cache(cache_checksum, cached_module)
             place_module_in_memory_cache(signature, cached_module)
             if signature_object is not signature:
                 place_module_in_memory_cache(signature_object, cached_module)
@@ -441,7 +440,8 @@ def build_module(modulename=None, source_directory=".",
             if use_cache:
                 place_module_in_memory_cache(cache_checksum, compiled_module)
                 place_module_in_memory_cache(signature, compiled_module)
-                place_module_in_memory_cache(signature_object, compiled_module)
+                if signature_object is not signature:
+                    place_module_in_memory_cache(signature_object, compiled_module)
         else:
             instant_error("Failed to import newly compiled module!")
         
