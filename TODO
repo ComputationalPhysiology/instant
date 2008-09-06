@@ -1,4 +1,6 @@
 TODO:
+- Make instant avoid taking the checksum of a signature string if the string is a valid filename and short enough.
+
 - Improve documentation
 
 - Add tests for all variants of cache mechanisms available now
