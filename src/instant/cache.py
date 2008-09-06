@@ -47,12 +47,15 @@ def import_module_directly(path, modulename):
 _memory_cache = {}
 def memory_cached_module(moduleid):
     "Returns the cached module if found."
-    return _memory_cache.get(moduleid, None)
+    module = _memory_cache.get(moduleid, None)
+    instant_debug("Returning '%s' from memory_cached_module(%r)." % (module, moduleid))
+    return module
 
 
 def place_module_in_memory_cache(moduleid, module):
     "Place a compiled module in cache with given id."
     _memory_cache[moduleid] = module
+    instant_debug("Putting module '%s' in cache with key %r." % (module, moduleid))
 
 
 def moduleid_interpretations(moduleid):
@@ -85,13 +88,13 @@ def find_module_location(moduleid, cache_dir=None):
     return (None, None)
 
 
-def import_and_cache_module(cache_dir, modulename, moduleid, original_moduleid):
-    module = import_module_directly(cache_dir, modulename)
-    if module:
-        place_module_in_memory_cache(moduleid, module)
-        if original_moduleid is not moduleid:
-            place_module_in_memory_cache(original_moduleid, module)
-        return module
+def import_and_cache_module(path, modulename, moduleid, original_moduleid):
+    module = import_module_directly(path, modulename)
+    instant_assert(module is not None, "Failed to import module found in cache. Modulename: '%s'; Path: '%s'." % (modulename, path))
+    place_module_in_memory_cache(moduleid, module)
+    if original_moduleid is not moduleid:
+        place_module_in_memory_cache(original_moduleid, module)
+    return module
 
 
 def import_module(moduleid, cache_dir=None):
@@ -118,15 +121,18 @@ def import_module(moduleid, cache_dir=None):
     original_moduleid = moduleid
     if hasattr(moduleid, "signature"):
         moduleid = moduleid.signature()
+        instant_debug("Got signature '%s' from moduleid." % moduleid)
         # Code copied from find_module_location (optimization since we know we have the signature)
         checksum = compute_checksum(moduleid)
         modulename = modulename_from_checksum(checksum)
         # Check in current directory
         if os.path.isdir(modulename):
+            path = os.getcwd()
             return import_and_cache_module(os.getcwd(), modulename, moduleid, original_moduleid)
         # Check in cache directory
         if os.path.isdir(os.path.join(cache_dir, modulename)):
-            return import_and_cache_module(cache_dir, modulename, moduleid, original_moduleid)
+            path = cache_dir
+            return import_and_cache_module(path, modulename, moduleid, original_moduleid)
     
     # Check possible disk locations
     path, modulename = find_module_location(moduleid, cache_dir)
