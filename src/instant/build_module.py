@@ -183,9 +183,15 @@ def build_module(modulename=None, source_directory=".",
             will not be cached if C{modulename} is specified.
             The cache directory should not be used for anything else.
     """
+
     # Check memory cache as the first step for max speed!
     signature_object = signature
     if signature is not None:
+        # Look for module in memory cache # FIXME: Enable using this code.
+        #module, moduleids = check_memory_cache(moduleid)
+        #if module: return module
+        #modulename = moduleids[-1]
+
         module = memory_cached_module(signature)
         if module:
             return module
