@@ -46,6 +46,15 @@ def get_default_cache_dir():
         os.mkdir(cache_dir)
     return cache_dir
 
+def validate_cache_dir(cache_dir):
+    if cache_dir is None:
+        return get_default_cache_dir()
+    assert_is_str(cache_dir)
+    cache_dir = os.path.abspath(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
+    return cache_dir
+
 def _test():
     print "Temp dir:", get_temp_dir()
     print "Instant dir:", get_instant_dir()

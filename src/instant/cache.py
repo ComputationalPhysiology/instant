@@ -101,6 +101,29 @@ def check_memory_cache(moduleid):
     return None, moduleids
 
 
+def check_disk_cache(modulename, cache_dir, moduleids):
+    # Ensure a valid cache_dir
+    cache_dir = validate_cache_dir(cache_dir)
+    
+    # Check on disk, in current directory and cache directory
+    for path in (os.getcwd(), cache_dir):
+        if os.path.isdir(os.path.join(path, modulename)):
+            # Found existing directory, try to import and place in memory cache
+            module = import_and_cache_module(path, modulename, moduleids)
+            if module:
+                instant_debug("In instant.check_disk_cache: Imported module "\
+                              "'%s' from '%s'." % (modulename, path))
+                return module
+            else:
+                instant_debug("In instant.check_disk_cache: Failed to imported "\
+                              "module '%s' from '%s'." % (modulename, path))
+    
+    # All attempts failed
+    instant_debug("In instant.check_disk_cache: Can't import module with modulename "\
+                  "%r using cache directory %r." % (modulename, cache_dir))
+    return None
+
+
 def import_module(moduleid, cache_dir=None):
     """Import module from cache given its moduleid and an optional cache directory.
     
@@ -115,38 +138,14 @@ def import_module(moduleid, cache_dir=None):
     # Look for module in memory cache
     module, moduleids = check_memory_cache(moduleid)
     if module: return module
+    
+    # Look for module in disk cache
     modulename = moduleids[-1]
-    
-    # Ensure a valid cache_dir
-    if cache_dir is None:
-        cache_dir = get_default_cache_dir()
-    else:
-        cache_dir = os.path.abspath(cache_dir)
-        if not os.path.isdir(cache_dir):
-            os.mkdir(cache_dir)
-    
-    # Check on disk, in current directory and cache directory
-    for path in (os.getcwd(), cache_dir):
-        if os.path.isdir(os.path.join(path, modulename)):
-            # Found existing directory, try to import and place in memory cache
-            module = import_and_cache_module(path, modulename, moduleids)
-            if module:
-                instant_debug("In instant.import_module: Imported module "\
-                              "'%s' from '%s'." % (modulename, path))
-                return module
-            else:
-                instant_debug("In instant.import_module: Failed to imported "\
-                              "module '%s' from '%s'." % (modulename, path))
-    
-    # All attempts failed
-    instant_debug("In instant.import_module: Can't import module with modulename "\
-                  "%r using cache directory %r." % (modulename, cache_dir))
-    return None
+    return check_disk_cache(modulename, cache_dir)
 
 
 def cached_modules(cache_dir=None):
     "Return a list with the names of all cached modules."
-    if cache_dir is None:
-        cache_dir = get_default_cache_dir()
+    cache_dir = validate_cache_dir(cache_dir)
     return os.listdir(cache_dir)
 

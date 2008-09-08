@@ -40,22 +40,22 @@ def copy_files(source, dest, files):
     if os.path.exists(dest):
         overwriting = set(files) & set(glob.glob(os.path.join(dest, "*")))
         if overwriting:
-            instant_warning("In instant.build_module: Path '%s' already exists, "\
+            instant_warning("In instant.copy_files: Path '%s' already exists, "\
                 "overwriting existing files: %r." % (dest, list(overwriting)))
     else:
         os.mkdir(dest)
     
     if source != dest:
-        instant_debug("In instant.build_module: Copying files %r from %r to %r"\
+        instant_debug("In instant.copy_files: Copying files %r from %r to %r"\
             % (files, source, dest))
         
         for f in files:
             a = os.path.join(source, f)
             b = os.path.join(dest, f)
-            instant_assert(a != b, "In instant.build_module: Seems like the "\
+            instant_assert(a != b, "In instant.copy_files: Seems like the "\
                 "input files are absolute paths, should be relative to "\
                 "source. (%r, %r)" % (a, b))
-            instant_assert(os.path.isfile(a), "In instant.build_module: "\
+            instant_assert(os.path.isfile(a), "In instant.copy_files: "\
                 "Missing source file '%s'." % a)
             if os.path.isfile(b):
                 os.remove(b)
@@ -76,7 +76,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     # Verify that SWIG is on the system
     (swig_stat, swig_out) = get_status_output("swig -version")
     if swig_stat != 0:
-        instant_error("In instant.build_module: Could not find swig!"\
+        instant_error("In instant.recompile: Could not find swig!"\
             " You can download swig from http://www.swig.org")
     
     # Create log file for logging of compilation errors
@@ -93,7 +93,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         if ret != 0:
             if os.path.exists(compilation_checksum_filename):
                 os.remove(compilation_checksum_filename)
-            instant_error("In instant.build_module: The module did not "\
+            instant_error("In instant.recompile: The module did not "\
                 "compile, see '%s'" % compile_log_filename)
         
         # 'Install' module
@@ -105,7 +105,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         if ret != 0:
             if os.path.exists(compilation_checksum_filename):
                 os.remove(compilation_checksum_filename)
-            instant_error("In instant.build_module: Could not 'install' "\
+            instant_error("In instant.recompile: Could not 'install' "\
                 "the module, see '%s'" % compile_log_filename)
     finally:
         compile_log_file.close()
@@ -184,24 +184,48 @@ def build_module(modulename=None, source_directory=".",
             The cache directory should not be used for anything else.
     """
 
-    # Check memory cache as the first step for max speed!
-    signature_object = signature
-    if signature is not None:
-        # Look for module in memory cache # FIXME: Enable using this code.
-        #module, moduleids = check_memory_cache(moduleid)
-        #if module: return module
-        #modulename = moduleids[-1]
+    # FIXME FIXME FIXME
+    # TODO: Maybe signature and modulename should be combined to a single argument moduleid, and enable_cache be a bool argument?
+    moduleids = []
+    if modulename:
+        instant_assert(signature is None, "Cannot have both signature and modulename.")
+        moduleid = modulename
+        enable_cache = False
+    else:
+        if signature is not None:
+            moduleid = signature
+            enable_cache = True
+            
+            # Look for module in memory cache
+            module, moduleids = check_memory_cache(moduleid)
+            if module: return module
+            
+            # Look for module in disk cache
+            modulename = moduleids[-1]
+            module = check_disk_cache(modulename, cache_dir, moduleids)
+            if module: return module
+        else:
+            moduleid = None
+            enable_cache = True
 
-        module = memory_cached_module(signature)
-        if module:
-            return module
-        # Module not found in memory cache, make signature a string if it isn't
-        if hasattr(signature, "signature"):
-            signature = signature.signature()
-        instant_assert(isinstance(signature, str),
-            "Signature must be a string or have a function "\
-            ".signature() that returns a string.")
+    # FIXME FIXME FIXME
 
+    # Look for module in memory cache
+    moduleids = []
+    compute_checksum = False
+    module = None
+    if modulename:
+        instant_assert(signature is None, "Cannot have both signature and modulename.")
+        module, moduleids = check_memory_cache(modulename)
+        instant_assert(moduleids == [modulename], "Logic breach in build_module.")
+    elif signature is not None:
+        module, moduleids = check_memory_cache(signature)
+        modulename = moduleids[-1]
+        # signature is None: will compute checksum from files later
+    else:
+        compute_checksum = True
+    if module: return module
+    
     # Store original directory to be able to restore later
     original_path = os.getcwd()
     
@@ -232,14 +256,7 @@ def build_module(modulename=None, source_directory=".",
     
     # --- Replace arguments with defaults if necessary
     
-    
-    if cache_dir is None:
-        cache_dir = get_default_cache_dir()
-    else:
-        assert_is_str(cache_dir)
-        cache_dir = os.path.abspath(cache_dir)
-        if not os.path.isdir(cache_dir):
-            os.mkdir(cache_dir)
+    cache_dir = validate_cache_dir(cache_dir)
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = []
@@ -294,9 +311,12 @@ def build_module(modulename=None, source_directory=".",
         instant_assert(signature is None,
             "Not expecting signature and modulename at the same time.")
     else:
+        #if compute_checksum: FIXME
         use_cache = True
         # Compute cache_checksum (this is _before_ interface files are generated!)
         if signature is None:
+        instant_assert(signature is None,
+            "Not expecting signature and modulename at the same time.")
             # Collect arguments used for checksum creation,
             # including everything that affects the interface
             # file generation and module compilation.
