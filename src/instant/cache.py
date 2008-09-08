@@ -10,9 +10,9 @@ Example operations:
 - modules = cached_modules(cache_dir)
 """
 
-import os, sys
+import os, sys, re
 from output import instant_warning, instant_assert, instant_debug
-from paths import get_default_cache_dir
+from paths import get_default_cache_dir, validate_cache_dir
 from signatures import compute_checksum
 
 
@@ -141,7 +141,7 @@ def import_module(moduleid, cache_dir=None):
     
     # Look for module in disk cache
     modulename = moduleids[-1]
-    return check_disk_cache(modulename, cache_dir)
+    return check_disk_cache(modulename, cache_dir, moduleids)
 
 
 def cached_modules(cache_dir=None):

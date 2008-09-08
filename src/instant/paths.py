@@ -5,7 +5,7 @@ import os
 import shutil
 import tempfile
 import time
-from output import instant_debug
+from output import instant_debug, instant_assert
 
 _tmp_dir = None
 def get_temp_dir():
@@ -49,7 +49,7 @@ def get_default_cache_dir():
 def validate_cache_dir(cache_dir):
     if cache_dir is None:
         return get_default_cache_dir()
-    assert_is_str(cache_dir)
+    instant_assert(isinstance(cache_dir, str), "Expecting cache_dir to be a string.")
     cache_dir = os.path.abspath(cache_dir)
     if not os.path.isdir(cache_dir):
         os.mkdir(cache_dir)

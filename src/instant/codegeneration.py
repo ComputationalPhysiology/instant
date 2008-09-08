@@ -202,7 +202,7 @@ def _test_write_interfacefile():
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
     arrays = [] # FIXME: Example input here
     
-    write_interfacefile(modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
+    write_interfacefile("%s.i" % modulename, modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
     print "".join(open("%s.i" % modulename).readlines())
 
 
@@ -218,7 +218,7 @@ def _test_write_setup():
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
     
-    write_setup(modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+    write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
     print "".join(open("setup.py").readlines())
 
 
