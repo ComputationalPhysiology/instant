@@ -90,7 +90,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         # Build module
         cmd = "python %s build_ext" % setup_name
         instant_info("--- Instant: compiling ---")
-        instant_info(cmd)
+        instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
         compile_log_file.write(output)
         compile_log_file.flush()
@@ -102,7 +102,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         
         # 'Install' module
         cmd = "python %s install --install-platlib=." % setup_name
-        instant_info(cmd)
+        instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
         compile_log_file.write(output)
         compile_log_file.flush()
@@ -136,7 +136,7 @@ def copy_to_cache(module_path, cache_dir, modulename):
     instant_assert(not os.path.isdir(cache_module_path),
         "In instant.build_module: Cache directory %r shouldn't exist "\
         "at this point!" % cache_module_path)
-    instant_info("In instant.build_module: Copying built module from %r"\
+    instant_debug("In instant.build_module: Copying built module from %r"\
         " to cache at %r" % (module_path, cache_module_path))
     
     # Do the copying
