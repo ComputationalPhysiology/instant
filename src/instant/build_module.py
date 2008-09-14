@@ -90,7 +90,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         # Build module
         cmd = "python %s build_ext" % setup_name
         instant_info("--- Instant: compiling ---")
-        instant_debug(cmd)
+        instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
         compile_log_file.write(output)
         compile_log_file.flush()
@@ -102,7 +102,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         
         # 'Install' module
         cmd = "python %s install --install-platlib=." % setup_name
-        instant_debug(cmd)
+        instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
         compile_log_file.write(output)
         compile_log_file.flush()

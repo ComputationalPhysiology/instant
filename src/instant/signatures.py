@@ -10,7 +10,7 @@ def compute_checksum(text="", filenames=[]):
     instant_assert(isinstance(text, str), "Expecting string.")
     instant_assert(isinstance(filenames, (list,tuple)), "Expecting sequence.")
     
-    m = hashlib.new("sha1")
+    m = hashlib.new('sha1')
     if text:
         m.update(text)
     
@@ -32,7 +32,7 @@ def compute_checksum(text="", filenames=[]):
         
         fp.close() 
     
-    return m.hexdigest().upper()
+    return m.hexdigest().lower()
 
 
 def _test():
