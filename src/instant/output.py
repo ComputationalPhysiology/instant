@@ -6,6 +6,7 @@ import logging
 _log = logging.getLogger("instant")
 _loghandler = logging.StreamHandler()
 _log.addHandler(_loghandler)
+_log.setLevel(logging.WARNING)
 _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
 
