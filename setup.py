@@ -40,5 +40,9 @@ setup(name = "instant", version = '0.9.5',
       url = "http://www.fenics.org/instant", 
       packages = ['instant'],
       package_dir = {'instant': 'src/instant'}, 
-      scripts = scripts)
+      scripts = scripts,
+      data_files = [(join("share", "man", "man1"),
+                     [join("doc", "man", "man1", "instant-clean.1.gz"),
+                      join("doc", "man", "man1", "instant-showcache.1.gz")])]
+      )
 
