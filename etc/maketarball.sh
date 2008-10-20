@@ -7,7 +7,10 @@ rm instant-0.9.5.tar.gz
 cd ../tests 
 sh clean.sh 
 
-cd ../etc
+cd ../..
+cp -r instant instant-0.9.5
+cd instant-0.9.5/etc
+
 files=`find  ../../instant -type f| grep -v hg` 
 echo $files 
 tar -cf instant-0.9.5.tar $files  
