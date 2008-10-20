@@ -8,6 +8,10 @@ def header_and_libs_from_pkgconfig(*packages):
     The usage is: 
     (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(*list_of_packages)
     """
+    result, output = get_status_output("pkg-config --version ")
+    if result != 0: 
+        raise OSError("The pkg-config package is not installed on the system.")
+
     includes = []
     flags = []
     libs = []
