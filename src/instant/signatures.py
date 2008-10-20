@@ -1,3 +1,4 @@
+"""This module contains helper functions for working with checksums."""
 
 import hashlib
 from output import instant_assert, instant_debug, instant_error

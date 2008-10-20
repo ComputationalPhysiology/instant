@@ -8,18 +8,25 @@ A simple example:
 >>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
 >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
+The main functions are C{build_module}, C{write_code}, and
+C{inline*} see their documentation for more details.
+
 For more examples, see the tests/ directory in the Instant distribution.
+
+Questions, bugs and patches should be sent to instant-dev@fenics.org.
 """
 
-# FIXME: Metadata here and in other files.
+__authors__ = "Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Magne Westlie"
+__date__ = "2008-10-20"
+__version__ = "0.9.5"
 
-# FIXME: Import only the official interface
+# TODO: Import only the official interface
 from output import *
 from config import *
 from paths import *
 from signatures import *
 from cache import *
 from codegeneration import *
-from build_module import *
-from inline import *
+from build import *
+from inlining import *
 

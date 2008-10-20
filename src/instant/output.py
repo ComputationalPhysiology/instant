@@ -1,3 +1,4 @@
+"""This module contains internal logging utilities."""
 
 import logging
 

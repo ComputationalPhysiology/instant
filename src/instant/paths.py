@@ -1,3 +1,4 @@
+"""This module contains helper functions for working with temp and cache directories."""
 
 # Utilities for directory handling:
 

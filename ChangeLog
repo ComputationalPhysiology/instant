@@ -1,4 +1,9 @@
 
+Release 0.9.5
+Restructured and rewritten much of the code.
+Improved multilevel cache functionality.
+Added instant-clean and instant-showcache scripts.
+
 Release 0.9.4 
 Various new examples with swiginac and sympy implemented.
 Bug fix on 64bit. Removed director flag by default.  
@@ -9,12 +14,10 @@ Implemented caching
 Release 0.9.2 
 Bug fix for the JIT in FFC
 
-
 Release 0.9.1 
 Added test example which demonstrate use of external C code. 
 Added flag to turn of regeneration of the interface file 
 (useful during debugging)
-
 
 Release 0.9 
 Port to Windows with mingw by laserjungle, some updates
@@ -43,5 +46,4 @@ Fixed bug in setup script
 
 0.1
 Initial release of Instant
-
 

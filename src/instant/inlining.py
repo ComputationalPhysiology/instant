@@ -1,7 +1,8 @@
+"""This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
 import sys
 from output import instant_assert, instant_warning, instant_error
-from build_module import build_module
+from build import build_module
 
 
 def get_func_name(c_code):
@@ -15,7 +16,7 @@ def get_func_name(c_code):
 
 
 def inline(c_code, **kwargs):
-    """This is a short wrapper around the create_extention function in instant. 
+    """This is a short wrapper around the build_module function in instant. 
     
     It creates a module given that
     the input is a valid C function. It is only possible
@@ -39,7 +40,7 @@ def inline(c_code, **kwargs):
 
 
 def inline_with_numpy(c_code, **kwargs):
-    '''This is a short wrapper around the create_extention function in instant. 
+    '''This is a short wrapper around the build_module function in instant. 
        
     It creates a module given that
     the input is a valid C function. It is only possible
@@ -81,7 +82,7 @@ def inline_with_numpy(c_code, **kwargs):
 
 
 def inline_with_numeric(c_code, **kwargs):
-    '''This is a short wrapper around the create_extention function in instant.
+    '''This is a short wrapper around the build_module function in instant.
        
     It creates a module given that
     the input is a valid C function. It is only possible
@@ -130,7 +131,7 @@ def inline_with_numeric(c_code, **kwargs):
 
 
 def inline_with_numarray(c_code, **kwargs):
-    """This is a short wrapper around the create_extention function in instant. 
+    """This is a short wrapper around the build_module function in instant. 
        
     It creates a module given that
     the input is a valid C function. It is only possible

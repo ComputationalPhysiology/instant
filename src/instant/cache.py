@@ -1,13 +1,14 @@
-"""
+"""This module contains helper functions for working with the module cache.
+
 Example operations:
-- modulename = modulename_from_checksum(checksum)
-- modulename = modulename_from_checksum(compute_checksum(signature))
-- module = import_module_directly(path, modulename)
-- module = import_module(modulename)
-- module = import_module(checksum)
-- module = import_module(compute_checksum(signature))
-- modules = cached_modules()
-- modules = cached_modules(cache_dir)
+  - modulename = modulename_from_checksum(checksum)
+  - modulename = modulename_from_checksum(compute_checksum(signature))
+  - module = import_module_directly(path, modulename)
+  - module = import_module(modulename)
+  - module = import_module(checksum)
+  - module = import_module(compute_checksum(signature))
+  - modules = cached_modules()
+  - modules = cached_modules(cache_dir)
 """
 
 import os, sys, re
@@ -128,10 +129,10 @@ def import_module(moduleid, cache_dir=None):
     """Import module from cache given its moduleid and an optional cache directory.
     
     The moduleid can be either
-    - the module name
-    - a signature string, of which a checksum is taken to look up in the cache
-    - a checksum string, which is used directly to look up in the cache
-    - a hashable non-string object with a function moduleid.signature() which is used to get a signature string
+      - the module name
+      - a signature string, of which a checksum is taken to look up in the cache
+      - a checksum string, which is used directly to look up in the cache
+      - a hashable non-string object with a function moduleid.signature() which is used to get a signature string
     The hashable object is used to look up in the memory cache before signature() is called.
     If the module is found on disk, it is placed in the memory cache.
     """

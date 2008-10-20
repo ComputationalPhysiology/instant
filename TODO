@@ -1,5 +1,11 @@
 TODO:
-- Make instant avoid taking the checksum of a signature string if the string is a valid filename and short enough.
+- Fix arguments not used in setup.py
+
+- Remove unused csrcs stuff.
+
+- Explain arrays argument.
+
+- Use object files argument.
 
 - Improve documentation
 
@@ -7,9 +13,57 @@ TODO:
 
 - Clean up imports, don't use import *
 
-- Add module docstrings and metadata
 
-- Fix arguments not used in setup.py
+Explain this in manual:
 
-- Use object files argument.
+    Use cases: (M - modulename, S - signature, C - enable_cache == True)
+    - 'MS'  - Invalid
+    
+    - 'M'   - Use given M and no cache, simply compile in current directory.
+              import_module(M) will work in the current directory, but always
+              using the version compiled first in this python process, because
+              of limitations in the Python extension module system.
+              The user can't change flags during the current python process lifetime!
 
+                use_cache = False
+                moduleids = []
+                
+                module_path = cwd
+                modulename = modulename
+                 
+                module = None # Depend on code checking checksum-file to avoid recompilation
+    
+    - 'S'   - Construct modulename from S, lookup in cache, place in cache after building.
+              Three options for this implementation:
+              Compiler args must be part of S for import_module(S) to work consistently.
+    
+                use_cache = True
+                moduleids = [signature, signature.signature(), compute_checksum(signature.signature())]
+                
+                module_path = temp_dir (copied after building)
+                modulename = modulename_from_checksum(compute_checksum(S)) # Or just S if valid filename?
+                
+                module = None # Depend on code checking checksum-file to avoid recompilation
+    
+    - ''    - Construct S from user file contents and compiler args, see 'S'.
+
+                signature = compute_signature_from_user_files(...)
+
+                use_cache = True
+                moduleids = [signature, signature.signature(), compute_checksum(signature.signature())]
+                
+                module_path = temp_dir (copied after building)
+                modulename = modulename_from_checksum(compute_checksum(S)) # Or just S if valid filename?
+                
+                module = None # Depend on code checking checksum-file to avoid recompilation
+    
+    I want to do:
+        b = jit(a, options)
+        b = jit(a, options)
+        -> signature = repr(a) + repr(options)
+        -> m = import_module(signature)
+        -> if not m: m = build_module(..., signature)
+        -> return m.myform()
+    and:
+        b = build_module(modulename, ...)
+        b = build_module(modulename, ...)

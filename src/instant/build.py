@@ -1,15 +1,15 @@
+"""This module contains the main part of Instant, the build_module function."""
 
 import os, sys, shutil, glob
 from itertools import chain
 
-# FIXME: Import only the official interface
+# TODO: Import only the official interface
 from output import *
 from config import header_and_libs_from_pkgconfig
 from paths import *
 from signatures import *
 from cache import *
 from codegeneration import *
-
 
     
 def assert_is_str(x):
@@ -160,111 +160,60 @@ def build_module(modulename=None, source_directory=".",
     
     Arguments: 
     ==========
-       - B{modulename}:
-          - The name you want for the module.
-            If specified, the module will not be cached.
-            If missing, a name will be constructed based on
-            a checksum of the other arguments, and the module
-            will be placed in the global cache. String.
-       - B{source_directory}:
-          - The directory where used supplied files reside.
-       - B{code}:
-          - A string containing C or C++ code to be compiled and wrapped.
-       - B{init_code}:
-          - Code that should be executed when the instant module is imported.
-       - B{additional_definitions}:
-          - A list of additional definitions (typically needed for inheritance).
-       - B{additional_declarations}:
-          - A list of additional declarations (typically needed for inheritance). 
-       - B{sources}:
-          - A list of source files to compile and link with the module.
-       - B{wrap_headers}:
-          - A list of local header files that should be wrapped by SWIG.
-       - B{local_headers}:
-          - A list of local header files required to compile the wrapped code.
-       - B{system_headers}:
-          - A list of system header files required to compile the wrapped code.
-       - B{include_dirs}:
-          - A list of directories to search for header files.
-       - B{library_dirs}:
-          - A list of directories to search for libraries (C{-l}).
-       - B{libraries}:
-          - A list of libraries needed by the instant module.
-       - B{swigargs}:
-          - List of arguments to swig, e.g. C{["-lpointers.i"]}
-            to include the SWIG pointers.i library.
-       - B{cppargs}:
-          - List of arguments to the compiler, e.g. C{["-D", "-U"]}.
-       - B{lddargs}:
-          - List of arguments to the linker, e.g. C{["-D", "-U"]}.
-       - B{object_files}:
-          - If you want to compile the files yourself. NOT YET SUPPORTED. # TODO
-       - B{arrays}:
-          - A list of the C arrays to be made from NumPy arrays.
-            FIXME: Describe this correctly. Tests pass arrays of arrays of strings.
-       - B{generate_interface}:
-          - A bool to indicate if you want to generate the interface files.
-       - B{generate_setup}:
-          - A bool to indicate if you want to generate the setup.py file.
-       - B{signature}:
-          - A signature string to identify the form instead of the source code.
-       - B{cache_dir}:
-          - A directory to look for cached modules and place new ones.
-            If missing, a default directory is used. Note that the module
-            will not be cached if C{modulename} is specified.
-            The cache directory should not be used for anything else.
-    
-    Use cases: (M - modulename, S - signature, C - enable_cache == True)
-    - 'MS'  - Invalid
-    
-    - 'M'   - Use given M and no cache, simply compile in current directory.
-              import_module(M) will work in the current directory, but always
-              using the version compiled first in this python process, because
-              of limitations in the Python extension module system.
-              The user can't change flags during the current python process lifetime!
-
-                use_cache = False
-                moduleids = []
-                
-                module_path = cwd
-                modulename = modulename
-                 
-                module = None # Depend on code checking checksum-file to avoid recompilation
-    
-    - 'S'   - Construct modulename from S, lookup in cache, place in cache after building.
-              Three options for this implementation:
-              Compiler args must be part of S for import_module(S) to work consistently.
-    
-                use_cache = True
-                moduleids = [signature, signature.signature(), compute_checksum(signature.signature())]
-                
-                module_path = temp_dir (copied after building)
-                modulename = modulename_from_checksum(compute_checksum(S)) # Or just S if valid filename?
-                
-                module = None # Depend on code checking checksum-file to avoid recompilation
-    
-    - ''    - Construct S from user file contents and compiler args, see 'S'.
-
-                signature = compute_signature_from_user_files(...)
-
-                use_cache = True
-                moduleids = [signature, signature.signature(), compute_checksum(signature.signature())]
-                
-                module_path = temp_dir (copied after building)
-                modulename = modulename_from_checksum(compute_checksum(S)) # Or just S if valid filename?
-                
-                module = None # Depend on code checking checksum-file to avoid recompilation
-    
-    I want to do:
-        b = jit(a, options)
-        b = jit(a, options)
-        -> signature = repr(a) + repr(options)
-        -> m = import_module(signature)
-        -> if not m: m = build_module(..., signature)
-        -> return m.myform()
-    and:
-        b = build_module(modulename, ...)
-        b = build_module(modulename, ...)
+    The keyword arguments are as follows:
+      - B{modulename}:
+        - The name you want for the module.
+          If specified, the module will not be cached.
+          If missing, a name will be constructed based on
+          a checksum of the other arguments, and the module
+          will be placed in the global cache. String.
+      - B{source_directory}:
+        - The directory where used supplied files reside.
+      - B{code}:
+        - A string containing C or C++ code to be compiled and wrapped.
+      - B{init_code}:
+        - Code that should be executed when the instant module is imported.
+      - B{additional_definitions}:
+        - A list of additional definitions (typically needed for inheritance).
+      - B{additional_declarations}:
+        - A list of additional declarations (typically needed for inheritance). 
+      - B{sources}:
+        - A list of source files to compile and link with the module.
+      - B{wrap_headers}:
+        - A list of local header files that should be wrapped by SWIG.
+      - B{local_headers}:
+        - A list of local header files required to compile the wrapped code.
+      - B{system_headers}:
+        - A list of system header files required to compile the wrapped code.
+      - B{include_dirs}:
+        - A list of directories to search for header files.
+      - B{library_dirs}:
+        - A list of directories to search for libraries (C{-l}).
+      - B{libraries}:
+        - A list of libraries needed by the instant module.
+      - B{swigargs}:
+        - List of arguments to swig, e.g. C{["-lpointers.i"]}
+          to include the SWIG pointers.i library.
+      - B{cppargs}:
+        - List of arguments to the compiler, e.g. C{["-D", "-U"]}.
+      - B{lddargs}:
+        - List of arguments to the linker, e.g. C{["-D", "-U"]}.
+      - B{object_files}:
+        - If you want to compile the files yourself. TODO: Not yet supported.
+      - B{arrays}:
+        - A list of the C arrays to be made from NumPy arrays.
+          FIXME: Describe this correctly. Tests pass arrays of arrays of strings.
+      - B{generate_interface}:
+        - A bool to indicate if you want to generate the interface files.
+      - B{generate_setup}:
+        - A bool to indicate if you want to generate the setup.py file.
+      - B{signature}:
+        - A signature string to identify the form instead of the source code.
+      - B{cache_dir}:
+        - A directory to look for cached modules and place new ones.
+          If missing, a default directory is used. Note that the module
+          will not be cached if C{modulename} is specified.
+          The cache directory should not be used for anything else.
     """
     
     # Store original directory to be able to restore later
@@ -496,13 +445,3 @@ def build_module(modulename=None, source_directory=".",
     instant_error("In instant.build_module: Should never reach this point!")
     # end build_module
 
-
-#def _unused_compute_checksum_thing():
-#    # Collect arguments used for checksum creation,
-#    # including everything that affects configuration
-#    # and compilation, but not the code.
-#    checksum_args = (include_dirs, library_dirs, libraries,
-#                     swigargs, cppargs, lddargs, )
-#    text = signature + "\n".join((str(a) for a in checksum_args))
-#    cache_checksum = compute_checksum(text, [])
-#

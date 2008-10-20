@@ -1,3 +1,4 @@
+"""This module contains helper functions for configuration using pkg-config."""
 
 from output import get_status_output
 

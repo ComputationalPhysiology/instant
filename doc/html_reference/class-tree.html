@@ -60,7 +60,126 @@
 </b></center><br />
 <h1 class="epydoc">Class Hierarchy</h1>
 <ul class="nomargin-top">
-    <li> <strong class="uidlink"><a href="instant.instant-class.html">instant.instant</a></strong>
+    <li> <strong class="uidlink">UserDict.UserDict</strong>
+    <ul>
+    <li> <strong class="uidlink">UserDict.IterableUserDict</strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="os._Environ-class.html">os._Environ</a></strong>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.BufferingFormatter-class.html">logging.BufferingFormatter</a></strong>:
+      <em class="summary">A formatter suitable for formatting a number of records.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.Filter-class.html">logging.Filter</a></strong>:
+      <em class="summary">Filter instances are used to perform arbitrary filtering of 
+        LogRecords.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.Filterer-class.html">logging.Filterer</a></strong>:
+      <em class="summary">A base class for loggers and handlers which allows them to share
+        common code.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="logging.Logger-class.html">logging.Logger</a></strong>:
+      <em class="summary">Instances of the Logger class represent a single logging 
+        channel.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="logging.RootLogger-class.html">logging.RootLogger</a></strong>:
+      <em class="summary">A root logger is not that different to any other logger, except 
+        that it must have a logging level and there is only one instance of
+        it in the hierarchy.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.Handler-class.html">logging.Handler</a></strong>:
+      <em class="summary">Handler instances dispatch logging events to specific 
+        destinations.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="logging.StreamHandler-class.html">logging.StreamHandler</a></strong>:
+      <em class="summary">A handler class which writes logging records, appropriately 
+        formatted, to a stream.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="logging.FileHandler-class.html">logging.FileHandler</a></strong>:
+      <em class="summary">A handler class which writes formatted logging records to disk 
+        files.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.Formatter-class.html">logging.Formatter</a></strong>:
+      <em class="summary">Formatter instances are used to convert a LogRecord to text.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.LogRecord-class.html">logging.LogRecord</a></strong>:
+      <em class="summary">A LogRecord instance represents an event being logged.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.Manager-class.html">logging.Manager</a></strong>:
+      <em class="summary">There is [under normal circumstances] just one Manager instance,
+        which holds the hierarchy of loggers.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="logging.PlaceHolder-class.html">logging.PlaceHolder</a></strong>:
+      <em class="summary">PlaceHolder instances are used in the Manager logger hierarchy 
+        to take the place of nodes for which no loggers have been 
+        defined.</em>
+    </li>
+    <li> <strong class="uidlink">object</strong>:
+      <em class="summary">The most base type</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.BaseException</strong>:
+      <em class="summary">Common base class for all exceptions</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.Exception</strong>:
+      <em class="summary">Common base class for all non-exit exceptions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="sre_constants.error-class.html">sre_constants.error</a></strong>
+    </li>
+    <li> <strong class="uidlink">exceptions.StandardError</strong>:
+      <em class="summary">Base class for all standard Python exceptions that do not 
+        represent interpreter exiting.</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.EnvironmentError</strong>:
+      <em class="summary">Base class for I/O related errors.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="exceptions.OSError-class.html">exceptions.OSError</a></strong>:
+      <em class="summary">OS system call failed.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="shutil.Error-class.html">shutil.Error</a></strong>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="posix.statvfs_result-class.html">posix.statvfs_result</a></strong>:
+      <em class="summary">statvfs_result: Result from statvfs or fstatvfs.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="itertools.chain-class.html">itertools.chain</a></strong>:
+      <em class="summary">chain(*iterables) --&gt; chain object</em>
+    </li>
+    <li> <strong class="uidlink"><a href="subprocess.Popen-class.html">subprocess.Popen</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="time.struct_time-class.html">time.struct_time</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="posix.stat_result-class.html">posix.stat_result</a></strong>:
+      <em class="summary">stat_result: Result from stat or lstat.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="re.Scanner-class.html">re.Scanner</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="tempfile._RandomNameSequence-class.html">tempfile._RandomNameSequence</a></strong>:
+      <em class="summary">An instance of _RandomNameSequence generates an endless sequence
+        of unpredictable strings which can safely be incorporated into file
+        names.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="tempfile._TemporaryFileWrapper-class.html">tempfile._TemporaryFileWrapper</a></strong>:
+      <em class="summary">Temporary file wrapper</em>
     </li>
 </ul>
 <!-- ==================== NAVIGATION BAR ==================== -->
@@ -94,7 +213,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0beta1 on Fri Aug  8 15:09:14 2008
+    Generated by Epydoc 3.0beta1 on Mon Oct 20 14:04:25 2008
     </td>
     <td align="right" class="footer">
       <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>

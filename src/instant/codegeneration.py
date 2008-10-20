@@ -1,3 +1,4 @@
+"""This module contains helper functions for code generation."""
 
 import re
 from output import instant_assert, instant_warning, instant_debug, write_file
@@ -11,13 +12,15 @@ def reindent(code):
     '''Reindent a multiline string to allow easier to read syntax.
     
     Each line will be indented relative to the first non-empty line.
-    Start the first line without text like shown in this example:
+    Start the first line without text like shown in this example::
+    
         code = reindent("""
             Foo
             Bar
                 Blatti
             Ping
             """)
+    
     makes all indentation relative to Foo.
     '''
     lines = code.split("\n")
@@ -39,19 +42,18 @@ def reindent(code):
 def write_interfacefile(filename, modulename, code, init_code,
         additional_definitions, additional_declarations,
         system_headers, local_headers, wrap_headers, arrays):
-    """
-    Generate a SWIG interface file.
+    """Generate a SWIG interface file. Intended for internal library use.
     
     The input arguments are as follows:
-    - modulename (Name of the module)
-    - code (Code to be wrapped)
-    - init_code (Code to put in the init section of the interface file)
-    - additional_definitions (FIXME: comment)
-    - additional_declarations (FIXME: comment)
-    - system_headers (A list of system headers with declarations needed by the wrapped code)
-    - local_headers (A list of local headers with declarations needed by the wrapped code)
-    - wrap_headers (A list of local headers that will be included in the code and wrapped by SWIG)
-    - arrays (FIXME: comment)
+      - modulename (Name of the module)
+      - code (Code to be wrapped)
+      - init_code (Code to put in the init section of the interface file)
+      - additional_definitions (FIXME: comment)
+      - additional_declarations (FIXME: comment)
+      - system_headers (A list of system headers with declarations needed by the wrapped code)
+      - local_headers (A list of local headers with declarations needed by the wrapped code)
+      - wrap_headers (A list of local headers that will be included in the code and wrapped by SWIG)
+      - arrays (FIXME: comment)
     
     The result of this function is that a SWIG interface with
     the name modulename.i is written to the current directory.
@@ -140,11 +142,7 @@ def write_interfacefile(filename, modulename, code, init_code,
 
 
 def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
-    """Generate a setup.py file.
-
-    The arguments are as follows:
-    FIXME: document me!
-    """
+    """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
     #instant_warning("FIXME: Not using csrcs in write_setupfile().")
     
