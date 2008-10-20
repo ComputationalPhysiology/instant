@@ -39,8 +39,8 @@ class Sig:
             return cmp(self.sig, other.sig)
         return -1
 
-modulename = "test_19_module"
-cache_dir = "test_19_cache"
+modulename = "test_19_module_ext"
+cache_dir = "test_19_cache_ext"
 shutil.rmtree(cache_dir, ignore_errors=True)
 shutil.rmtree(modulename, ignore_errors=True)
 
