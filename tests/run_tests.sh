@@ -17,5 +17,6 @@ if [ -f failed_tests ]; then
   echo
   echo The following tests failed:
   cat failed_tests
+  exit 1
 fi
-
+exit 0
