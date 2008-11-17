@@ -2,12 +2,13 @@
 
 from output import get_status_output
 
-def header_and_libs_from_pkgconfig(*packages):
+def header_and_libs_from_pkgconfig(*packages, **kwargs):
     """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
     
     The usage is: 
     (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(*list_of_packages)
     """
+    returnLinkFlags = kwargs.get("returnLinkFlags", False)
     result, output = get_status_output("pkg-config --version ")
     if result != 0: 
         raise OSError("The pkg-config package is not installed on the system.")
@@ -16,6 +17,7 @@ def header_and_libs_from_pkgconfig(*packages):
     flags = []
     libs = []
     libdirs = []
+    linkflags = []
     for pack in packages:
         result, output = get_status_output("pkg-config --exists %s " % pack)
         if result == 0: 
@@ -30,8 +32,13 @@ def header_and_libs_from_pkgconfig(*packages):
             
             tmp = get_status_output("pkg-config --libs-only-L  %s " % pack)[1].split()
             libdirs.extend(i[2:] for i in tmp)
+
+            tmp = get_status_output("pkg-config --libs-only-other  %s " % pack)[1].split()
+            linkflags.extend(tmp)
+
         else: 
             raise OSError("The pkg-config file %s does not exist" % pack)
 
+    if returnLinkFlags: return (includes,flags,libs, libdirs, linkflags) 
     return (includes,flags,libs, libdirs) 
 
