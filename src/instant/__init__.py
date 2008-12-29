@@ -4,9 +4,9 @@ at runtime in your Python application, using SWIG to wrap the
 C/C++ code.
 
 A simple example:
->>> from instant import inline
->>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
->>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
+    >>> from instant import inline
+    >>> add_func = inline(\"double add(double a, double b){ return a+b; }\")
+    >>> print "The sum of 3 and 4.5 is ", add_func(3, 4.5)
 
 The main functions are C{build_module}, C{write_code}, and
 C{inline*} see their documentation for more details.
