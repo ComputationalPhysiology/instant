@@ -15,4 +15,4 @@ if failed_tests:
     print "\nThe following tests failed:"
     for f in failed_tests:
         print f
-    sys.exit(len(failed_tests1))
+    sys.exit(len(failed_tests))
