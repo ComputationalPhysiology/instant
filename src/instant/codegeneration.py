@@ -141,7 +141,7 @@ def write_interfacefile(filename, modulename, code, init_code,
     instant_debug("Done generating interface file.")
 
 
-def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs):
+def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
     #instant_warning("FIXME: Not using csrcs in write_setupfile().")
@@ -155,7 +155,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
     swig_args = ""
     if swigargs:
         swig_args = " ".join(swigargs)
-    
+
     compile_args = ""
     if cppargs:  
         compile_args = ", extra_compile_args=%r" % cppargs 
@@ -164,9 +164,9 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
     if lddargs:  
         link_args = ", extra_link_args=%r" % lddargs 
 
-    inc_dir = ""
+    swig_include_dirs = " ".join("-I%s"%d for d in swig_include_dirs)
     if len(local_headers) > 0:
-        inc_dir = "-I.."
+        swig_include_dirs += " -I.."
     
     # Generate code
     code = reindent("""
@@ -182,7 +182,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
                              include_dirs=%s,
                              library_dirs=%s,
                              libraries=%s %s %s)])  
-        """ % (modulename, inc_dir, swig_args, swigfilename, cppsrcs, 
+        """ % (modulename, swig_include_dirs, swig_args, swigfilename, cppsrcs, 
                modulename, modulename, include_dirs, library_dirs, libraries, compile_args, link_args))
     
     write_file(filename, code)

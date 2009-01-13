@@ -152,6 +152,7 @@ def build_module(modulename=None, source_directory=".",
                  local_headers=[], system_headers=[],
                  include_dirs=['.'], library_dirs=[], libraries=[],
                  swigargs=['-c++', '-fcompact', '-O', '-I.', '-small'],
+                 swig_include_dirs = [],
                  cppargs=['-O2'], lddargs=[],
                  object_files=[], arrays=[],
                  generate_interface=True, generate_setup=True,
@@ -194,6 +195,8 @@ def build_module(modulename=None, source_directory=".",
       - B{swigargs}:
         - List of arguments to swig, e.g. C{["-lpointers.i"]}
           to include the SWIG pointers.i library.
+      - B{swig_include_dirs}:
+        - A list of directories to include in the 'swig' command.
       - B{cppargs}:
         - List of arguments to the compiler, e.g. C{["-D", "-U"]}.
       - B{lddargs}:
@@ -229,18 +232,19 @@ def build_module(modulename=None, source_directory=".",
     assert_is_str(init_code)
     assert_is_str(additional_definitions)
     assert_is_str(additional_declarations)
-    sources        = strip_strings(sources)
-    wrap_headers   = strip_strings(wrap_headers)
-    local_headers  = strip_strings(local_headers)
-    system_headers = strip_strings(system_headers)
-    include_dirs   = strip_strings(include_dirs)
-    library_dirs   = strip_strings(library_dirs)
-    libraries      = strip_strings(libraries)
-    swigargs       = arg_strings(swigargs)
-    cppargs        = arg_strings(cppargs)
-    lddargs        = arg_strings(lddargs)
-    object_files   = strip_strings(object_files)
-    arrays         = [strip_strings(a) for a in arrays]
+    sources           = strip_strings(sources)
+    wrap_headers      = strip_strings(wrap_headers)
+    local_headers     = strip_strings(local_headers)
+    system_headers    = strip_strings(system_headers)
+    include_dirs      = strip_strings(include_dirs)
+    library_dirs      = strip_strings(library_dirs)
+    libraries         = strip_strings(libraries)
+    swigargs          = arg_strings(swigargs)
+    swig_include_dirs = strip_strings(swig_include_dirs)
+    cppargs           = arg_strings(cppargs)
+    lddargs           = arg_strings(lddargs)
+    object_files      = strip_strings(object_files)
+    arrays            = [strip_strings(a) for a in arrays]
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
     instant_assert(   signature is None \
@@ -280,6 +284,7 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('    library_dirs: %r' % library_dirs)
     instant_debug('    libraries: %r' % libraries)
     instant_debug('    swigargs: %r' % swigargs)
+    instant_debug('    swig_include_dirs: %r' % swig_include_dirs)
     instant_debug('    cppargs: %r' % cppargs)
     instant_debug('    lddargs: %r' % lddargs)
     instant_debug('    object_files: %r' % object_files)
@@ -313,7 +318,7 @@ def build_module(modulename=None, source_directory=".",
                 #local_headers,
                 system_headers,
                 include_dirs, library_dirs, libraries,
-                swigargs, cppargs, lddargs,
+                swig_include_dirs, swigargs, cppargs, lddargs,
                 object_files, arrays,
                 generate_interface, generate_setup,
                 # The signature isn't defined, and the cache_dir doesn't affect the module:
@@ -381,8 +386,9 @@ def build_module(modulename=None, source_directory=".",
         # Generate setup.py if wanted
         setup_name = "setup.py"
         if generate_setup:
-            write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers,
-                include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+            write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers, \
+                        include_dirs, library_dirs, libraries, swig_include_dirs, \
+                        swigargs, cppargs, lddargs)
         
         # --- Build module
         
@@ -408,7 +414,7 @@ def build_module(modulename=None, source_directory=".",
                          #local_headers,
                          system_headers,
                          include_dirs, library_dirs, libraries,
-                         swigargs, cppargs, lddargs,
+                         swigargs, swig_include_dirs, cppargs, lddargs,
                          object_files, #arrays,
                          #generate_interface, generate_setup,
                          # The signature isn't defined, and the
