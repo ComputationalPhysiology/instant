@@ -1,4 +1,42 @@
 TODO:
+
+- Keep a most recently used list
+  add a max cache size option to ~/.instant/intantrc
+  clean up the oldest modules whenever we exceed this quota
+
+- Add argument to provide a cache subfolder name.
+  Then instant-clean can take an argument to clean only the "ffc" cache subfolder etc.
+
+- Add file locking for the cache system, to avoid problems
+  when multiple processes work with the same module.
+
+  On UNIX, something like this:
+
+import os.path
+import fcntl
+def get_lock(cache_dir, module_name):
+    lock = open(os.path.join(cache_dir, module_name + ".lock"), "w")
+    fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    return lock
+
+def release_lock(lock):
+    fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+    lock.close()
+  
+  windows support (no fcntl) can be restricted to "do nothing", e.g. def get_lock(*args): pass; def release_lock(*args): pass
+
+  The lock must be held during two operations:
+  1) Get lock, check if the module exists, release lock, eventually start compilation in /tmp
+  2) Get lock, check if the module exists, _otherwise_ copy the finished compiled module from /tmp/foo to the cache directory, release lock
+  Note that this way, two processes may both
+  start compiling in different tmp dirs, and
+  the one that finishes first gets to copy
+  into the cache. If one is interrupted during
+  compilation, the other doesn't care.
+  If one is interrupted while holding the lock,
+  we have a problem. But at least the lock is
+  only held for very short periods of time.
+
 - Fix arguments not used in setup.py
 
 - Remove unused csrcs stuff.

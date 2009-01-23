@@ -28,7 +28,7 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
 
     env = os.environ.copy()
     try:
-        assert env("PKG_CONFIG_ALLOW_SYSTEM_CFLAGS") == "0"
+        assert env["PKG_CONFIG_ALLOW_SYSTEM_CFLAGS"] == "0"
     except:
         env["PKG_CONFIG_ALLOW_SYSTEM_CFLAGS"] = "1"
 
