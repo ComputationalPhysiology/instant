@@ -2,6 +2,18 @@
 
 import os
 from output import get_status_output
+import re
+
+def get_swig_version(): 
+    result, output = get_status_output("swig -version")
+    if result != 0: 
+        raise OSError("SWIG is not installed on the system.")
+    pattern = "SWIG Version (.*)"
+    r = re.search(pattern, output)
+    return r.groups(0)[0]
+
+
+
 
 def header_and_libs_from_pkgconfig(*packages, **kwargs):
     """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
