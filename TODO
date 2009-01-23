@@ -1,4 +1,12 @@
 TODO:
+
+- Keep a most recently used list
+  add a max cache size option to ~/.instant/intantrc
+  clean up the oldest modules whenever we exceed this quota
+
+- Add argument to provide a cache subfolder name.
+  Then instant-clean can take an argument to clean only the "ffc" cache subfolder etc.
+
 - Add file locking for the cache system, to avoid problems
   when multiple processes work with the same module.
 
