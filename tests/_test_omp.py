@@ -27,16 +27,9 @@ void compute(int n, double* x,
 
 
 N = 20000000
-#compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-fopenmp'], system_headers=["omp.h"], cache_dir="test_cache")  
-compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-lgomp'], system_headers=["omp.h"], cache_dir="test_cache")  
 
-# It is not possible to change the environment variable while
-# running the script, that is, the change is not seen when
-# calling compute_func. It needs to be set before running 
-# this test.
-# time.time is wall time, time.clock is process(es?) time.
-os.environ['OMP_NUM_THREADS'] = '2'
-#print os.environ['OMP_NUM_THREADS']
+compute_func = inline_with_numpy(c_code, arrays = [['n', 'x'], ['m', 'y']], cppargs = ['-fopenmp'], lddargs=['-lgomp'], system_headers=["omp.h"])  
+
 x = arange(0, 1, 1.0/N) 
 y = arange(0, 1, 1.0/N) 
 t1 = time.time()
@@ -46,14 +39,6 @@ t2 = time.time()
 t4 = time.clock()
 print 'With instant and OpenMP', t4-t3, 'seconds process time'
 print 'With instant and OpenMP', t2-t1, 'seconds wall time'
-
-#os.environ['OMP_NUM_THREADS'] = '1'
-#x = arange(0, 1, 1.0/N) 
-#y = arange(0, 1, 1.0/N) 
-#t1 = time.time()
-#compute_func(x,y)
-#t2 = time.time()
-#print 'With instant and OpenMP (1 thread)',t2-t1,'seconds'
 
 
 
