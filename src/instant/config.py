@@ -5,6 +5,8 @@ from output import get_status_output
 import re
 
 def get_swig_version(): 
+    """ Return the current swig version in a 'str'"""
+    # Check for swig installation
     result, output = get_status_output("swig -version")
     if result != 0: 
         raise OSError("SWIG is not installed on the system.")
@@ -12,8 +14,42 @@ def get_swig_version():
     r = re.search(pattern, output)
     return r.groups(0)[0]
 
+def check_swig_version(version, same=False):
+    """ Check the swig version
 
+    Returns True if the version of the installed swig is equal or greater than the
+    version passed to the function.
 
+    If same is True, the function returns True if and only if the two versions
+    are the same.
+    
+    Usage:
+    if instant.check_swig_version('1.3.36'):
+        print "Swig version is greater than or equal to 1.3.36"
+    else:
+        print "Swig version is lower than 1.3.36"
+    """
+    assert isinstance(version,str), "Provide the first version number as a 'str'"
+    assert len(version.split("."))==3, "Provide the version number as three numbers seperated by '.'"
+
+    installed_version = map(int, get_swig_version().split('.'))
+    handed_version    = map(int, version.split('.'))
+    
+    # If same is True then just check that all numbers are equal
+    if same:
+        return all(i == h for i, h in zip(installed_version,handed_version))
+    
+    swig_enough = True
+    for i, v in enumerate([v for v in installed_version]):
+        if handed_version[i] < v:
+            break
+        elif handed_version[i] == v:
+            continue
+        else:
+            swig_enough = False
+        break
+    
+    return swig_enough
 
 def header_and_libs_from_pkgconfig(*packages, **kwargs):
     """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
