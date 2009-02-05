@@ -1,5 +1,10 @@
 TODO:
 
+- Print error when /tmp directory can't be deleted.
+  Maybe add username to tmp dir name suffix?
+  /tmp on cluster contains instant directories 
+  of many users.
+
 - Keep a most recently used list
   add a max cache size option to ~/.instant/intantrc
   clean up the oldest modules whenever we exceed this quota
