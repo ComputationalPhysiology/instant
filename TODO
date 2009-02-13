@@ -1,6 +1,6 @@
 TODO:
 
-- Print error when /tmp directory can't be deleted.
+- Print error when tmp directory can't be deleted (in instant-clean).
   Maybe add username to tmp dir name suffix?
   /tmp on cluster contains instant directories 
   of many users.
@@ -12,11 +12,10 @@ TODO:
 - Add argument to provide a cache subfolder name.
   Then instant-clean can take an argument to clean only the "ffc" cache subfolder etc.
 
+- Does instant handle full disk properly? (Does any software? Define properly!)
+
 - Add file locking for the cache system, to avoid problems
   when multiple processes work with the same module.
-
-- Does instant hand full disk properly ? 
-
   On UNIX, something like this:
 
 import os.path
