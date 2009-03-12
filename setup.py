@@ -33,7 +33,7 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
         f.close()
         scripts.append(batch_file)
 
-setup(name = "instant", version = '0.9.5', 
+setup(name = "instant", version = '0.9.6', 
       description = "Instant Inlining of C/C++ in Python", 
       author = "Magne Westlie and Kent-Andre Mardal and Martin Sandve Alnes", 
       author_email = "magnew@simula.no, kent-and@simula.no, martinal@simula.no", 

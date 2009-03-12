@@ -173,7 +173,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
         import os
         from distutils.core import setup, Extension
         name = '%s'
-        swig_cmd ='swig -python %s %s %s'
+        swig_cmd =r'swig -python %s %s %s'
         os.system(swig_cmd)
         sources = %s
         setup(name = '%s',

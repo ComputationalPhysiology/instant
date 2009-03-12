@@ -1,4 +1,7 @@
 
+Release 0.9.6
+Minor update with some new utility functions required by FFC. 
+
 Release 0.9.5
 Restructured and rewritten much of the code.
 Improved multilevel cache functionality.
