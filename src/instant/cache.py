@@ -103,6 +103,9 @@ def check_memory_cache(moduleid):
 
 
 def check_disk_cache(modulename, cache_dir, moduleids):
+    # Get file lock to avoid race conditions in cache
+    lock = get_lock(cache_dir, modulename)
+    
     # Ensure a valid cache_dir
     cache_dir = validate_cache_dir(cache_dir)
     
@@ -114,6 +117,7 @@ def check_disk_cache(modulename, cache_dir, moduleids):
             if module:
                 instant_debug("In instant.check_disk_cache: Imported module "\
                               "'%s' from '%s'." % (modulename, path))
+                release_lock(lock)
                 return module
             else:
                 instant_debug("In instant.check_disk_cache: Failed to imported "\
@@ -122,6 +126,7 @@ def check_disk_cache(modulename, cache_dir, moduleids):
     # All attempts failed
     instant_debug("In instant.check_disk_cache: Can't import module with modulename "\
                   "%r using cache directory %r." % (modulename, cache_dir))
+    release_lock(lock)
     return None
 
 

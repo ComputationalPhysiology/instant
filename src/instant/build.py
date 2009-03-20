@@ -120,15 +120,24 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
 
 def copy_to_cache(module_path, cache_dir, modulename):
     "Copy module directory to cache."
+    # Get lock, check if the module exists, _otherwise_ copy the
+    # finished compiled module from /tmp/foo to the cache directory,
+    # and then release lock
+    lock = get_lock(cache_dir, modulename)
+
     # Validate the path
     cache_module_path = os.path.join(cache_dir, modulename)
     if os.path.exists(cache_module_path):
-        # TODO: Error instead? Indicates race condition
-        # on disk or bug in Instant.
+        # This indicates a race condition has happened (and is being avoided!).
         instant_warning("In instant.build_module: Path '%s' already exists,"\
-            " but module wasn't found in cache previously. Overwriting."\
-            % cache_module_path)
-        shutil.rmtree(cache_module_path, ignore_errors=True)
+            " but module wasn't found in cache previously. Not overwriting,"\
+            " assuming this module is valid." % cache_module_path)
+        
+        release_lock(lock)
+        return cache_module_path
+        
+        # Not deleting anymore, relying on locking system
+        #shutil.rmtree(cache_module_path, ignore_errors=True)
     
     # Error checks
     instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
@@ -142,6 +151,7 @@ def copy_to_cache(module_path, cache_dir, modulename):
     # Do the copying
     shutil.copytree(module_path, cache_module_path)
     delete_temp_dir()
+    release_lock(lock)
     return cache_module_path
 
 
@@ -333,8 +343,27 @@ def build_module(modulename=None, source_directory=".",
             module, moduleids = check_memory_cache(signature)
             if module: return module
             modulename = moduleids[-1]
+
+"""
+The lock must be held during two operations:
+1) Get lock, check if the module exists, release lock, eventually start compilation in /tmp
+2) Get lock, check if the module exists, _otherwise_ copy the finished compiled module from /tmp/foo to the cache directory, release lock
+
+Note that this way, two processes may both
+start compiling in different tmp dirs, and
+the one that finishes first gets to copy
+into the cache. If one is interrupted during
+compilation, the other doesn't care.
+If one is interrupted while holding the lock,
+we have a problem. But at least the lock is
+only held for very short periods of time.
+
+    lock = get_lock(cache_dir, module_name)
+    release_lock(lock)
+
+"""
         
-        # Look for module in disk cache
+        # Look for module in disk cache 
         module = check_disk_cache(modulename, cache_dir, moduleids)
         if module: return module
         
@@ -429,13 +458,15 @@ def build_module(modulename=None, source_directory=".",
         recompile(modulename, module_path, setup_name, new_compilation_checksum)
         
         # --- Load, cache, and return module
-        
+
         # Copy compiled module to cache
         if use_cache:
             module_path = copy_to_cache(module_path, cache_dir, modulename)
         
         # Import module and place in memory cache
+        lock = get_lock(cache_dir, modulename)
         module = import_and_cache_module(module_path, modulename, moduleids)
+        release_lock(lock)
         if not module:
             instant_error("Failed to import newly compiled module!")
         
