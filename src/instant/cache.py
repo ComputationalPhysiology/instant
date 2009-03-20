@@ -15,7 +15,7 @@ import os, sys, re
 from output import instant_warning, instant_assert, instant_debug
 from paths import get_default_cache_dir, validate_cache_dir
 from signatures import compute_checksum
-
+from locking import get_lock, release_lock
 
 # TODO: We could make this an argument, but it's used indirectly several places so take care.
 _modulename_prefix = "instant_module_"

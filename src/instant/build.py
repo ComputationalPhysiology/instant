@@ -10,7 +10,7 @@ from paths import *
 from signatures import *
 from cache import *
 from codegeneration import *
-
+from locking import get_lock, release_lock
     
 def assert_is_str(x):
     instant_assert(isinstance(x, str),
@@ -344,25 +344,6 @@ def build_module(modulename=None, source_directory=".",
             if module: return module
             modulename = moduleids[-1]
 
-"""
-The lock must be held during two operations:
-1) Get lock, check if the module exists, release lock, eventually start compilation in /tmp
-2) Get lock, check if the module exists, _otherwise_ copy the finished compiled module from /tmp/foo to the cache directory, release lock
-
-Note that this way, two processes may both
-start compiling in different tmp dirs, and
-the one that finishes first gets to copy
-into the cache. If one is interrupted during
-compilation, the other doesn't care.
-If one is interrupted while holding the lock,
-we have a problem. But at least the lock is
-only held for very short periods of time.
-
-    lock = get_lock(cache_dir, module_name)
-    release_lock(lock)
-
-"""
-        
         # Look for module in disk cache 
         module = check_disk_cache(modulename, cache_dir, moduleids)
         if module: return module
