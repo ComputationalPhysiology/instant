@@ -4,6 +4,7 @@ Only works on UNIX systems."""
 
 import os.path
 from output import instant_error, instant_assert, instant_debug
+from paths import validate_cache_dir
 
 try:
     import fcntl
@@ -23,10 +24,11 @@ if fcntl:
         
         lockname = module_name + ".lock"
         count = _lock_count.get(lockname, 0)
-
+        
         instant_debug("Acquiring lock %s, count is %d." % (lockname, count))
-
+        
         if count == 0:
+            cache_dir = validate_cache_dir(cache_dir)
             lock = open(os.path.join(cache_dir, lockname), "w")
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
             _lock_names[lock.fileno()] = lockname
