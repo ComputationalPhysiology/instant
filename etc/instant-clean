@@ -40,8 +40,14 @@ if len(modules) == 0:
     sys.exit(0)
 
 # Remove cached forms
+lockfiles = [m for m in modules if     m.endswith(".lock")]
+modules   = [m for m in modules if not m.endswith(".lock")]
 print "Removing %d modules from Instant cache..." % len(modules)
 for module in modules:
     directory = os.path.join(cache_dir, module)
     shutil.rmtree(directory, ignore_errors=True)
 
+print "Removing %d lock files from Instant cache..." % len(lockfiles)
+for lf in lockfiles:
+    f = os.path.join(cache_dir, lf)
+    os.remove(f)
