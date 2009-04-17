@@ -280,6 +280,7 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('In instant.build_module:')
     instant_debug('::: Begin Arguments :::')
     instant_debug('    modulename: %r' % modulename)
+    instant_debug('    source_directory: %r' % source_directory)
     instant_debug('    code: %r' % code)
     instant_debug('    init_code: %r' % init_code)
     instant_debug('    additional_definitions: %r' % additional_definitions)
