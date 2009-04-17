@@ -336,6 +336,7 @@ def build_module(modulename=None, source_directory=".",
                 #signature, cache_dir)
                 )
             allfiles = sources + wrap_headers + local_headers
+            allfiles = [os.path.join(source_directory, file) for file in allfiles]
             text = "\n".join((str(a) for a in checksum_args))
             signature = modulename_from_checksum(compute_checksum(text, allfiles))
             modulename = signature
