@@ -214,8 +214,12 @@ def build_module(modulename=None, source_directory=".",
       - B{object_files}:
         - If you want to compile the files yourself. TODO: Not yet supported.
       - B{arrays}:
-        - A list of the C arrays to be made from NumPy arrays.
-          FIXME: Describe this correctly. Tests pass arrays of arrays of strings.
+        - A nested list describing the C arrays to be made from NumPy arrays.
+          If the NumPy array is 1D, the inner list should contain strings with
+          the variable names for length of the array and the array itself.
+          If the NumPy array is a matrix or a tensor, the inner list should
+          contain strings with variable names for the number of dimensions,
+          the length in each dimension, and the array itself, respectively.
       - B{generate_interface}:
         - A bool to indicate if you want to generate the interface files.
       - B{generate_setup}:
@@ -271,8 +275,6 @@ def build_module(modulename=None, source_directory=".",
     # Split sources by file-suffix (.c or .cpp)
     csrcs = [f for f in sources if f.endswith('.c') or f.endswith('.C')]
     cppsrcs = [f for f in sources if f.endswith('.cpp') or f.endswith('.cxx')]
-    if csrcs:
-        instant_error("FIXME: setup.py doesn't use the C sources.")
     instant_assert(len(csrcs) + len(cppsrcs) == len(sources),
         "In instant.build_module: Source files must have '.c' or '.cpp' suffix")
     

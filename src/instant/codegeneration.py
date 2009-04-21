@@ -48,12 +48,14 @@ def write_interfacefile(filename, modulename, code, init_code,
       - modulename (Name of the module)
       - code (Code to be wrapped)
       - init_code (Code to put in the init section of the interface file)
-      - additional_definitions (FIXME: comment)
-      - additional_declarations (FIXME: comment)
+      - additional_definitions (Definitions to be placed in initial block with
+        C code as well as in the main section of the SWIG interface file)
+      - additional_declarations (Declarations to be placed in the main section
+        of the SWIG interface file)
       - system_headers (A list of system headers with declarations needed by the wrapped code)
       - local_headers (A list of local headers with declarations needed by the wrapped code)
       - wrap_headers (A list of local headers that will be included in the code and wrapped by SWIG)
-      - arrays (FIXME: comment)
+      - arrays (A nested list, the inner lists describing the different arrays)
     
     The result of this function is that a SWIG interface with
     the name modulename.i is written to the current directory.
@@ -63,7 +65,7 @@ def write_interfacefile(filename, modulename, code, init_code,
     # create typemaps 
     typemaps = ""
     for a in arrays:  
-        # 1 dimentional arrays, ie. vectors
+        # 1 dimensional arrays, ie. vectors
         if (len(a) == 2):  
             typemaps += reindent("""
                 %%typemap(in) (int %(n)s,double* %(array)s){
@@ -77,7 +79,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                   $2 = (double*)pyarray->data;
                 }
                 """ % { 'n' : a[0] , 'array' : a[1] })
-        # n dimentional arrays, ie. matrices and tensors  
+        # n dimensional arrays, ie. matrices and tensors  
         elif (len(a) == 3):  
             typemaps += reindent("""
                 %%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
@@ -144,13 +146,13 @@ def write_interfacefile(filename, modulename, code, init_code,
 def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
-    #instant_warning("FIXME: Not using csrcs in write_setupfile().")
     
     # Handle arguments
     swigfilename = "%s.i" % modulename
     wrapperfilename = "%s_wrap.cxx" % modulename
     
-    cppsrcs = cppsrcs + [wrapperfilename]
+    # Treat C and C++ files in the same way for now
+    cppsrcs = cppsrcs + csrcs + [wrapperfilename]
     
     swig_args = ""
     if swigargs:
@@ -198,7 +200,7 @@ def _test_write_interfacefile():
     system_headers = ["system_header1.h", "system_header2.h"]
     local_headers = ["local_header1.h", "local_header2.h"]
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
-    arrays = [] # FIXME: Example input here
+    arrays = [["length1", "array1"], ["dims", "lengths", "array2"]]
     
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
     print "".join(open("%s.i" % modulename).readlines())
