@@ -214,11 +214,12 @@ def _test_write_setup():
     include_dirs = ["includedir1", "includedir2"]
     library_dirs = ["librarydir1", "librarydir2"]
     libraries = ["lib1", "lib2"]
+    swig_include_dirs = ["swigdir1", "swigdir2"],
     swigargs = ["-Swigarg1", "-Swigarg2"]
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
     
-    write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swigargs, cppargs, lddargs)
+    write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs)
     print "".join(open("setup.py").readlines())
 
 

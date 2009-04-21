@@ -16,10 +16,6 @@ TODO:
 
 - Fix arguments not used in setup.py
 
-- Remove unused csrcs stuff.
-
-- Explain arrays argument.
-
 - Use object files argument.
 
 - Improve documentation
@@ -27,7 +23,6 @@ TODO:
 - Add tests for all variants of cache mechanisms available now
 
 - Clean up imports, don't use import *
-
 
 Explain this in manual:
 
