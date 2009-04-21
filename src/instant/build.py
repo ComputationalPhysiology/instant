@@ -68,7 +68,6 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     """Recompile module if the new checksum is different from
     the one in the checksum file in the module directory."""
     # Check if the old checksum matches the new one
-    need_recompilation = True
     compilation_checksum_filename = "%s.checksum" % modulename
     if os.path.exists(compilation_checksum_filename):
         checksum_file = open(compilation_checksum_filename)
