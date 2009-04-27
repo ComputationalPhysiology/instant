@@ -178,38 +178,66 @@ def build_module(modulename=None, source_directory=".",
           a checksum of the other arguments, and the module
           will be placed in the global cache. String.
       - B{source_directory}:
-        - The directory where used supplied files reside.
+        - The directory where user supplied files reside. The files
+        given in B{sources}, B{wrap_headers}, and B{local_headers}
+        are expected to exist in this directory. String.
       - B{code}:
-        - A string containing C or C++ code to be compiled and wrapped.
+        - A string containing C or C++ code to be compiled and wrapped. String.
       - B{init_code}:
-        - Code that should be executed when the instant module is imported.
+        - Code that should be executed when the Instant module is
+        imported. This code is inserted in the SWIG interface file, and is
+        used for instance for calling C{import_array()} used for the
+        initialization of NumPy arrays. String.
       - B{additional_definitions}:
-        - A list of additional definitions (typically needed for inheritance).
+        - Additional definitions (typically needed for inheritance)
+        for interface file. These definitions should be given as triple-quoted
+        strings in the case they span multiple lines, and are placed both in the
+        initial block for C/C++ code (C{%{,%}}-block), and the main section
+        of the interface file. String.
       - B{additional_declarations}:
-        - A list of additional declarations (typically needed for inheritance). 
+        - Additional declarations (typically needed for inheritance)
+        for interface file. These declarations should be given as triple-quoted
+        strings in the case they span multiple lines, and are plaves in the main
+        section of the interface file. String.
       - B{sources}:
-        - A list of source files to compile and link with the module.
+        - Source files to compile and link with the module. These
+        files are compiled togehter with the SWIG-generated wrapper file into
+        the final library file. Should reside in directory specified in
+        B{source_directory}. List of strings.
       - B{wrap_headers}:
-        - A list of local header files that should be wrapped by SWIG.
+        - Local header files that should be wrapped by SWIG. The
+        files specified will be included both in the initial block for C/C++ code
+        (with a C directive) and in the main section of the interface file (with
+        a SWIG directive). Should reside in directory specified in
+        B{source_directory}. List of strings.
       - B{local_headers}:
-        - A list of local header files required to compile the wrapped code.
+        - Local header files required to compile the wrapped
+        code. The files specified will be included in the initial block for
+        C/C++ code (with a C directive). Should reside in directory specified in
+        B{source_directory}. List of strings.
       - B{system_headers}:
-        - A list of system header files required to compile the wrapped code.
+        - System header files required to compile the wrapped
+        code. The files specified will be included in the initial block for C/C++
+        code (with a C directive). List of strings.
       - B{include_dirs}:
-        - A list of directories to search for header files.
+        - Directories to search for header files for building the
+        extension module. Needs to be absolute path names. List of strings.
       - B{library_dirs}:
-        - A list of directories to search for libraries (C{-l}).
+        - Directories to search for libraries (C{-l}) for building
+        the extension module. Needs to be absolute paths. List of strings.
       - B{libraries}:
-        - A list of libraries needed by the instant module.
+        -  Libraries needed by the Instant module. The libraries will
+        be linked in from the shared object file. The initial C{-l} is added
+        automatically. List of strings.
       - B{swigargs}:
         - List of arguments to swig, e.g. C{["-lpointers.i"]}
           to include the SWIG pointers.i library.
       - B{swig_include_dirs}:
         - A list of directories to include in the 'swig' command.
       - B{cppargs}:
-        - List of arguments to the compiler, e.g. C{["-D", "-U"]}.
+        - List of arguments to the compiler, e.g. C{["-Wall", "-fopenmp"]}.
       - B{lddargs}:
-        - List of arguments to the linker, e.g. C{["-D", "-U"]}.
+        - List of arguments to the linker, e.g. C{["-E", "-U"]}.
       - B{object_files}:
         - If you want to compile the files yourself. TODO: Not yet supported.
       - B{arrays}:
@@ -228,7 +256,7 @@ def build_module(modulename=None, source_directory=".",
       - B{cache_dir}:
         - A directory to look for cached modules and place new ones.
           If missing, a default directory is used. Note that the module
-          will not be cached if C{modulename} is specified.
+          will not be cached if B{modulename} is specified.
           The cache directory should not be used for anything else.
     """
     
