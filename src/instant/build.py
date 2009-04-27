@@ -448,9 +448,12 @@ def build_module(modulename=None, source_directory=".",
             module_path = copy_to_cache(module_path, cache_dir, modulename)
         
         # Import module and place in memory cache
-        lock = get_lock(cache_dir, modulename)
+        # Do not use locks if use_cache is False:
+        if use_cache:
+            lock = get_lock(cache_dir, modulename)
         module = import_and_cache_module(module_path, modulename, moduleids)
-        release_lock(lock)
+        if use_cache:
+            release_lock(lock)
         if not module:
             instant_error("Failed to import newly compiled module!")
         
