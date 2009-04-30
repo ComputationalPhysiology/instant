@@ -19,7 +19,11 @@ if files:
     print "Showing contents of files: ", files
 
 modules = instant.cached_modules()
+lockfiles = [m for m in modules if     m.endswith(".lock")]
+modules   = [m for m in modules if not m.endswith(".lock")]
+
 print "Found %d modules in Instant cache:" % len(modules)
+
 for module in modules:
     print module
     
@@ -37,3 +41,7 @@ for module in modules:
             print
         print
 
+print "Found %d lock files in Instant cache:" % len(lockfiles)
+
+for lockfile in lockfiles:
+    print lockfile
