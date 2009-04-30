@@ -9,7 +9,8 @@ double sum(double a, double b){
 }
 """
 
-build_module(code=c_code, modulename='test3_ext', cppargs=['-pg', '-O3', '-g'])
+build_module(code=c_code, modulename='test3_ext',
+             cppargs=['-pg', '-O3', '-g'], lddargs=['-pg'])
 
 from test3_ext import sum 
 a = 3.7

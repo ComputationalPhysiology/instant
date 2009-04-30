@@ -22,7 +22,8 @@ void add(int n1, double* array1, int n2, double* array2, int n3, double* array3)
 """
 
 
-test5_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs=['-pg'],
+test5_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"],
+          cppargs=['-pg'], lddargs=['-pg'],
           include_dirs=[numpy.get_include()],
           init_code='import_array();', modulename='test5_ext', 
           arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])

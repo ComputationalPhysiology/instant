@@ -56,7 +56,7 @@ t2 = toc("(2) With modulename")
 assert t1 > t2
 
 # Try importing module in a separate python process
-cmd = "python -c 'import %s'" % modulename
+cmd = 'python -c "import %s"' % modulename
 print cmd
 stat = os.system(cmd)
 assert stat == 0 # a
@@ -79,7 +79,7 @@ t3 = toc("(3) import_module")
 assert t1 > t3
 
 # Try importing module in a separate python process
-cmd = "python -c 'import instant; assert instant.import_module(\"%s\", \"%s\") is not None'" % (sig, cache_dir)
+cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
 print cmd
 stat = os.system(cmd)
 assert stat == 0 # b
@@ -102,7 +102,7 @@ t3 = toc("(3) import_module")
 assert t1 > t3
 
 # Try importing module in a separate python process
-cmd = "python -c 'import instant; assert instant.import_module(\"%s\", \"%s\") is not None'" % (sig, cache_dir)
+cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
 print cmd
 stat = os.system(cmd)
 assert stat == 0 # c
