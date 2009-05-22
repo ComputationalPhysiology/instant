@@ -20,10 +20,10 @@ PyObject* add(PyObject* a_, PyObject* b_){
 
   int n = a->dimensions[0];
 
-  int dims[1];
+  npy_intp dims[1];
   dims[0] = n; 
   PyArrayObject* ret;
-  ret = (PyArrayObject*) PyArray_FromDims(1, dims, PyArray_DOUBLE); 
+  ret = (PyArrayObject*) PyArray_SimpleNew(1, dims, PyArray_DOUBLE); 
 
   int i;
   double aj;
