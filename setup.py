@@ -27,7 +27,9 @@ setup(name = "instant", version = '0.9.6',
       packages = ['instant'],
       package_dir = {'instant': 'src/instant'}, 
       scripts = scripts,
-      data_files = [(join("share", "man", "man1"),
+      data_files = [(join("include", "instant", "swig"),
+                     [join("src", "swig", "numpy.i")]),
+                    (join("share", "man", "man1"),
                      [join("doc", "man", "man1", "instant-clean.1.gz"),
                       join("doc", "man", "man1", "instant-showcache.1.gz")])]
       )

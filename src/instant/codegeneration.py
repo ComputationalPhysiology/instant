@@ -1,6 +1,6 @@
 """This module contains helper functions for code generation."""
 
-import re
+import re, os
 from output import instant_assert, instant_warning, instant_debug, write_file
 
 
@@ -64,24 +64,41 @@ def write_interfacefile(filename, modulename, code, init_code,
     
     # create typemaps 
     typemaps = ""
-    for a in arrays:  
-        # 1 dimensional arrays, ie. vectors
-        if (len(a) == 2):  
+    for a in arrays:
+        if 'in' in a:
+            # input arrays
+            a.remove('in')
+            instant_assert(len(a) > 1 and len(a) < 5, "Wrong number of elements in input array")
+            if len(a) == 2:
+                # 1-dimensional arrays, i.e. vectors
+                typemaps += reindent("""
+                %%apply (int DIM1, double* IN_ARRAY1) {(int %(n1)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'array' : a[1] })
+            elif len(a) == 3:
+                # 2-dimensional arrays, i.e. matrices
+                typemaps += reindent("""
+                %%apply (int DIM1, int DIM2, double* IN_ARRAY2) {(int %(n1)s, int %(n2)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2] })
+            else:
+                # 3-dimensional arrays, i.e. tensors
+                typemaps += reindent("""
+                %%apply (int DIM1, int DIM2, int DIM3, double* IN_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3] })
+        elif 'out' in a:
+            # output arrays
+            a.remove('out')
+            instant_assert(len(a) > 1 and len(a) < 3, "Output array must be 1-dimensional")
+            # 1-dimensional arrays, i.e. vectors
             typemaps += reindent("""
-                %%typemap(in) (int %(n)s,double* %(array)s){
-                  if (!PyArray_Check($input)) { 
-                    PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
-                    return NULL; ;
-                  }
-                  PyArrayObject* pyarray;
-                  pyarray = (PyArrayObject*)$input; 
-                  $1 = int(pyarray->dimensions[0]);
-                  $2 = (double*)pyarray->data;
-                }
-                """ % { 'n' : a[0] , 'array' : a[1] })
-        # n dimensional arrays, ie. matrices and tensors  
-        elif (len(a) == 3):  
-            typemaps += reindent("""
+            %%apply (int DIM1, double* ARGOUT_ARRAY1) {(int %(n1)s, double* %(array)s)};
+            """ % { 'n1' : a[0], 'array' : a[1] })
+        else:
+            # in-place arrays
+            instant_assert(len(a) > 1 and len(a) < 5, "Wrong number of elements in output array")
+            if 'multi' in a:
+                # n-dimensional arrays, i.e. tensors > 3-dimensional
+                a.remove('multi')
+                typemaps += reindent("""
                 %%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
                   if (!PyArray_Check($input)) { 
                     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
@@ -92,9 +109,9 @@ def write_interfacefile(filename, modulename, code, init_code,
                   $1 = int(pyarray->nd);
                   int* dims = new int($1); 
                   for (int d=0; d<$1; d++) {
-                      dims[d] = int(pyarray->dimensions[d]);
+                     dims[d] = int(pyarray->dimensions[d]);
                   }
-
+            
                   $2 = dims;  
                   $3 = (double*)pyarray->data;
                 }
@@ -103,6 +120,22 @@ def write_interfacefile(filename, modulename, code, init_code,
                     delete $2; 
                 }
                 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] })
+            elif len(a) == 2:
+                # 1-dimensional arrays, i.e. vectors
+                typemaps += reindent("""
+                %%apply (int DIM1, double* INPLACE_ARRAY1) {(int %(n1)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'array' : a[1] })
+            elif len(a) == 3:
+                # 2-dimensional arrays, i.e. matrices
+                typemaps += reindent("""
+                %%apply (int DIM1, int DIM2, double* INPLACE_ARRAY2) {(int %(n1)s, int %(n2)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2] })
+            else:
+                # 3-dimensional arrays, i.e. tensors
+                typemaps += reindent("""
+                %%apply (int DIM1, int DIM2, int DIM3, double* INPLACE_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, double* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3] })
+            # end
         # end if
     # end for
     
@@ -127,6 +160,8 @@ def write_interfacefile(filename, modulename, code, init_code,
         %%}
 
         //%%feature("autodoc", "1");
+        %%include "numpy.i"
+        
         %%init%%{
         %(init_code)s
         %%}
@@ -146,6 +181,11 @@ def write_interfacefile(filename, modulename, code, init_code,
 def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
+
+    # FIXME: This must be considered a hack, fix later:
+    import instant
+    prefix = os.path.sep.join(instant.__file__.split(os.path.sep)[:-5])
+    swig_include_dirs.append(os.path.join(prefix, "include", "instant", "swig"))
     
     # Handle arguments
     swigfilename = "%s.i" % modulename
