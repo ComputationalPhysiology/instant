@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, platform
-from os.path import join, split
+from os.path import join, split, pardir
 from distutils.core import setup
 
 scripts = [join("etc", "instant-clean"), join("etc", "instant-showcache")]
@@ -25,11 +25,10 @@ setup(name = "instant", version = '0.9.6',
       author_email = "magnew@simula.no, kent-and@simula.no, martinal@simula.no", 
       url = "http://www.fenics.org/instant", 
       packages = ['instant'],
-      package_dir = {'instant': 'src/instant'}, 
+      package_dir = {'instant': join('src', 'instant')},
+      package_data = {'': [join('swig', 'numpy.i')]},
       scripts = scripts,
-      data_files = [(join("include", "instant", "swig"),
-                     [join("src", "swig", "numpy.i")]),
-                    (join("share", "man", "man1"),
+      data_files = [(join("share", "man", "man1"),
                      [join("doc", "man", "man1", "instant-clean.1.gz"),
                       join("doc", "man", "man1", "instant-showcache.1.gz")])]
       )

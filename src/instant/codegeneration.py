@@ -40,8 +40,8 @@ def reindent(code):
 
 
 def write_interfacefile(filename, modulename, code, init_code,
-        additional_definitions, additional_declarations,
-        system_headers, local_headers, wrap_headers, arrays):
+                        additional_definitions, additional_declarations,
+                        system_headers, local_headers, wrap_headers, arrays):
     """Generate a SWIG interface file. Intended for internal library use.
     
     The input arguments are as follows:
@@ -87,7 +87,7 @@ def write_interfacefile(filename, modulename, code, init_code,
         elif 'out' in a:
             # output arrays
             a.remove('out')
-            instant_assert(len(a) > 1 and len(a) < 3, "Output array must be 1-dimensional")
+            instant_assert(len(a) == 2, "Output array must be 1-dimensional")
             # 1-dimensional arrays, i.e. vectors
             typemaps += reindent("""
             %%apply (int DIM1, double* ARGOUT_ARRAY1) {(int %(n1)s, double* %(array)s)};
@@ -182,10 +182,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
 
-    # FIXME: This must be considered a hack, fix later:
-    import instant
-    prefix = os.path.sep.join(instant.__file__.split(os.path.sep)[:-5])
-    swig_include_dirs.append(os.path.join(prefix, "include", "instant", "swig"))
+    swig_include_dirs.append(os.path.join(os.path.dirname(__file__), 'swig'))
     
     # Handle arguments
     swigfilename = "%s.i" % modulename
