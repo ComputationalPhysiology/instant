@@ -6,8 +6,9 @@ from instant import inline_with_numpy
 
 func_str = "sin" 
 c_code = """
-void gridloop(int d, int* dims, double* a,
-              int n, double* x, int m, double* y) {
+void gridloop(int x1, int y1, double* a,
+              int n, double* x,
+              int m, double* y) {
   for (int i=0; i<n; i++) {  
       for (int j=0; j<m; j++) {  
           a[i*n +j] = %s(x[i] + y[j]);
@@ -22,7 +23,7 @@ a = N.zeros([n, n])
 x = N.arange(0.0, n, 1.0)
 y = N.arange(0.0, n, 1.0)
 
-arrays = [['d', 'dims', 'a'], ['n', 'x'], ['m', 'y']]
+arrays = [['x1', 'y1', 'a'], ['n', 'x'], ['m', 'y']]
 grid_func = inline_with_numpy(c_code, arrays=arrays )
 
 

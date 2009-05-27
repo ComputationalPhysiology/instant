@@ -9,12 +9,12 @@ import time
 
 c_code = """
 /* add function for matrices with all safety checks removed ..*/ 
-void add(int n1, int* p1, double* array1, 
-         int n2, int* p2, double* array2, 
-         int n3, int* p3, double* array3){
+void add(int x1, int y1, double* array1, 
+         int x2, int y2, double* array2, 
+         int x3, int y3, double* array3){
 
-  for (int i=0; i<p1[0]; i++) {
-    for (int j=0; j<p1[1]; j++) {
+  for (int i=0; i<x1; i++) {
+    for (int j=0; j<y1; j++) {
       *array3 = *array1 + *array2; 
       array3++; 
       array2++; 
@@ -29,9 +29,9 @@ void add(int n1, int* p1, double* array1,
 test6_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs=['-g'],
           include_dirs=[N.get_include()],
           init_code='import_array();', modulename='test6_ext', 
-          arrays = [['n1', 'p1', 'array1'],
-                    ['n2', 'p2', 'array2'],
-                    ['n3', 'p3', 'array3']])
+          arrays = [['x1', 'y1', 'array1'],
+                    ['x2', 'y2', 'array2'],
+                    ['x3', 'y3', 'array3']])
 
 from test6_ext import add 
 a = N.arange(4000000); a = N.sin(a); a.shape=(2000,2000)

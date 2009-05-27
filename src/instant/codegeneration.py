@@ -64,7 +64,16 @@ def write_interfacefile(filename, modulename, code, init_code,
     
     # create typemaps 
     typemaps = ""
+    valid_types = ['float', 'double', 'short', 'int', 'long',
+                   'unsigned short', 'unsigned int', 'unsigned long']
+    DATA_TYPE = 'double'
     for a in arrays:
+        if type(a) == tuple:
+            a = list(a)
+        for vt in valid_types:
+            if vt in a:
+                DATA_TYPE = vt
+                a.remove(vt)
         if 'in' in a:
             # input arrays
             a.remove('in')
@@ -72,26 +81,26 @@ def write_interfacefile(filename, modulename, code, init_code,
             if len(a) == 2:
                 # 1-dimensional arrays, i.e. vectors
                 typemaps += reindent("""
-                %%apply (int DIM1, double* IN_ARRAY1) {(int %(n1)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'array' : a[1] })
+                %%apply (int DIM1, %(dtype)s* IN_ARRAY1) {(int %(n1)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'array' : a[1], 'dtype' : DATA_TYPE })
             elif len(a) == 3:
                 # 2-dimensional arrays, i.e. matrices
                 typemaps += reindent("""
-                %%apply (int DIM1, int DIM2, double* IN_ARRAY2) {(int %(n1)s, int %(n2)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2] })
+                %%apply (int DIM1, int DIM2, %(dtype)s* IN_ARRAY2) {(int %(n1)s, int %(n2)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2], 'dtype' : DATA_TYPE })
             else:
                 # 3-dimensional arrays, i.e. tensors
                 typemaps += reindent("""
-                %%apply (int DIM1, int DIM2, int DIM3, double* IN_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3] })
+                %%apply (int DIM1, int DIM2, int DIM3, %(dtype)s* IN_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3], 'dtype' : DATA_TYPE })
         elif 'out' in a:
             # output arrays
             a.remove('out')
             instant_assert(len(a) == 2, "Output array must be 1-dimensional")
             # 1-dimensional arrays, i.e. vectors
             typemaps += reindent("""
-            %%apply (int DIM1, double* ARGOUT_ARRAY1) {(int %(n1)s, double* %(array)s)};
-            """ % { 'n1' : a[0], 'array' : a[1] })
+            %%apply (int DIM1, %(dtype)s* ARGOUT_ARRAY1) {(int %(n1)s, %(dtype)s* %(array)s)};
+            """ % { 'n1' : a[0], 'array' : a[1], 'dtype' : DATA_TYPE })
         else:
             # in-place arrays
             instant_assert(len(a) > 1 and len(a) < 5, "Wrong number of elements in output array")
@@ -99,7 +108,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                 # n-dimensional arrays, i.e. tensors > 3-dimensional
                 a.remove('multi')
                 typemaps += reindent("""
-                %%typemap(in) (int %(n)s,int* %(ptv)s,double* %(array)s){
+                %%typemap(in) (int %(n)s,int* %(ptv)s,%(dtype)s* %(array)s){
                   if (!PyArray_Check($input)) { 
                     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
                     return NULL; ;
@@ -113,28 +122,28 @@ def write_interfacefile(filename, modulename, code, init_code,
                   }
             
                   $2 = dims;  
-                  $3 = (double*)pyarray->data;
+                  $3 = (%(dtype)s*)pyarray->data;
                 }
-                %%typemap(freearg) (int %(n)s,int* %(ptv)s,double* %(array)s){
+                %%typemap(freearg) (int %(n)s,int* %(ptv)s,%(dtype)s* %(array)s){
                     // deleting dims
                     delete $2; 
                 }
-                """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2] })
+                """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2], 'dtype' : DATA_TYPE })
             elif len(a) == 2:
                 # 1-dimensional arrays, i.e. vectors
                 typemaps += reindent("""
-                %%apply (int DIM1, double* INPLACE_ARRAY1) {(int %(n1)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'array' : a[1] })
+                %%apply (int DIM1, %(dtype)s* INPLACE_ARRAY1) {(int %(n1)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'array' : a[1], 'dtype' : DATA_TYPE })
             elif len(a) == 3:
                 # 2-dimensional arrays, i.e. matrices
                 typemaps += reindent("""
-                %%apply (int DIM1, int DIM2, double* INPLACE_ARRAY2) {(int %(n1)s, int %(n2)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2] })
+                %%apply (int DIM1, int DIM2, %(dtype)s* INPLACE_ARRAY2) {(int %(n1)s, int %(n2)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'array' : a[2], 'dtype' : DATA_TYPE })
             else:
                 # 3-dimensional arrays, i.e. tensors
                 typemaps += reindent("""
-                %%apply (int DIM1, int DIM2, int DIM3, double* INPLACE_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, double* %(array)s)};
-                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3] })
+                %%apply (int DIM1, int DIM2, int DIM3, %(dtype)s* INPLACE_ARRAY3) {(int %(n1)s, int %(n2)s, int %(n3)s, %(dtype)s* %(array)s)};
+                """ % { 'n1' : a[0], 'n2' : a[1], 'n3' : a[2], 'array' : a[3], 'dtype' : DATA_TYPE})
             # end
         # end if
     # end for
