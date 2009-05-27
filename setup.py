@@ -21,8 +21,8 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
 
 setup(name = "instant", version = '0.9.6', 
       description = "Instant Inlining of C/C++ in Python", 
-      author = "Magne Westlie and Kent-Andre Mardal and Martin Sandve Alnes", 
-      author_email = "magnew@simula.no, kent-and@simula.no, martinal@simula.no", 
+      author = "Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers", 
+      author_email = "magnew@simula.no, kent-and@simula.no, martinal@simula.no, ilmarw@simula.no", 
       url = "http://www.fenics.org/instant", 
       packages = ['instant'],
       package_dir = {'instant': join('src', 'instant')},
