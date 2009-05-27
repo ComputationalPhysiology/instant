@@ -7,14 +7,6 @@ try:
     import numpy
 except:
     pass
-try:
-    import numarray
-except:
-    pass
-try:
-    import Numeric
-except:
-    pass
 
 import pychecker.checker
 import instant
