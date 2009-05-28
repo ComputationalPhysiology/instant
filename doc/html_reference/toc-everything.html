@@ -43,13 +43,18 @@
      >instant.codegeneration.mapstrings</a><br />    <a target="mainFrame" href="instant.codegeneration-module.html#reindent"
      >instant.codegeneration.reindent</a><br />    <a target="mainFrame" href="instant.codegeneration-module.html#write_interfacefile"
      >instant.codegeneration.write_interfacefile</a><br />    <a target="mainFrame" href="instant.codegeneration-module.html#write_setup"
-     >instant.codegeneration.write_setup</a><br />    <a target="mainFrame" href="instant.config-module.html#header_and_libs_from_pkgconfig"
+     >instant.codegeneration.write_setup</a><br />    <a target="mainFrame" href="instant.config-module.html#check_swig_version"
+     >instant.config.check_swig_version</a><br />    <a target="mainFrame" href="instant.config-module.html#get_swig_version"
+     >instant.config.get_swig_version</a><br />    <a target="mainFrame" href="instant.config-module.html#header_and_libs_from_pkgconfig"
      >instant.config.header_and_libs_from_pkgconfig</a><br />    <a target="mainFrame" href="instant.inlining-module.html#get_func_name"
      >instant.inlining.get_func_name</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline"
-     >instant.inlining.inline</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_with_numarray"
-     >instant.inlining.inline_with_numarray</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_with_numeric"
-     >instant.inlining.inline_with_numeric</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_with_numpy"
-     >instant.inlining.inline_with_numpy</a><br />    <a target="mainFrame" href="instant.output-module.html#get_log_handler"
+     >instant.inlining.inline</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_module"
+     >instant.inlining.inline_module</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_module_with_numpy"
+     >instant.inlining.inline_module_with_numpy</a><br />    <a target="mainFrame" href="instant.inlining-module.html#inline_with_numpy"
+     >instant.inlining.inline_with_numpy</a><br />    <a target="mainFrame" href="instant.locking-module.html#get_lock"
+     >instant.locking.get_lock</a><br />    <a target="mainFrame" href="instant.locking-module.html#release_all_locks"
+     >instant.locking.release_all_locks</a><br />    <a target="mainFrame" href="instant.locking-module.html#release_lock"
+     >instant.locking.release_lock</a><br />    <a target="mainFrame" href="instant.output-module.html#get_log_handler"
      >instant.output.get_log_handler</a><br />    <a target="mainFrame" href="instant.output-module.html#get_logger"
      >instant.output.get_logger</a><br />    <a target="mainFrame" href="instant.output-module.html#get_status_output"
      >instant.output.get_status_output</a><br />    <a target="mainFrame" href="instant.output-module.html#instant_assert"
@@ -73,22 +78,41 @@
      >instant.signatures._test</a><br />  </div>
     <a target="mainFrame" href="instant.signatures-module.html#compute_checksum"
      >instant.signatures.compute_checksum</a><br />  <h2 class="toc">All Variables</h2>
-  <div class="private">
+    <a target="mainFrame" href="instant-module.html#__package__"
+     >instant.__package__</a><br />    <a target="mainFrame" href="instant.build-module.html#__package__"
+     >instant.build.__package__</a><br />    <a target="mainFrame" href="instant.cache-module.html#__package__"
+     >instant.cache.__package__</a><br />  <div class="private">
     <a target="mainFrame" href="instant.cache-module.html#_memory_cache"
      >instant.cache._memory_cache</a><br />  </div>
   <div class="private">
     <a target="mainFrame" href="instant.cache-module.html#_modulename_prefix"
      >instant.cache._modulename_prefix</a><br />  </div>
+    <a target="mainFrame" href="instant.codegeneration-module.html#__package__"
+     >instant.codegeneration.__package__</a><br />    <a target="mainFrame" href="instant.config-module.html#__package__"
+     >instant.config.__package__</a><br />    <a target="mainFrame" href="instant.inlining-module.html#__package__"
+     >instant.inlining.__package__</a><br />    <a target="mainFrame" href="instant.locking-module.html#__package__"
+     >instant.locking.__package__</a><br />  <div class="private">
+    <a target="mainFrame" href="instant.locking-module.html#_lock_count"
+     >instant.locking._lock_count</a><br />  </div>
   <div class="private">
+    <a target="mainFrame" href="instant.locking-module.html#_lock_files"
+     >instant.locking._lock_files</a><br />  </div>
+  <div class="private">
+    <a target="mainFrame" href="instant.locking-module.html#_lock_names"
+     >instant.locking._lock_names</a><br />  </div>
+    <a target="mainFrame" href="instant.output-module.html#__package__"
+     >instant.output.__package__</a><br />  <div class="private">
     <a target="mainFrame" href="instant.output-module.html#_log"
      >instant.output._log</a><br />  </div>
   <div class="private">
     <a target="mainFrame" href="instant.output-module.html#_loghandler"
      >instant.output._loghandler</a><br />  </div>
-  <div class="private">
+    <a target="mainFrame" href="instant.paths-module.html#__package__"
+     >instant.paths.__package__</a><br />  <div class="private">
     <a target="mainFrame" href="instant.paths-module.html#_tmp_dir"
      >instant.paths._tmp_dir</a><br />  </div>
-<hr />
+    <a target="mainFrame" href="instant.signatures-module.html#__package__"
+     >instant.signatures.__package__</a><br /><hr />
 <span class="options">[<a href="javascript:void(0);" class="privatelink"
     onclick="toggle_private();">hide&nbsp;private</a>]</span>
 
@@ -98,9 +122,8 @@
   // javascript is turned off then we want them to be
   // visible); but by default, we want to hide them.  So hide
   // them unless we have a cookie that says to show them.
-  checkCookie()
+  checkCookie();
   // -->
 </script>
-  
 </body>
 </html>

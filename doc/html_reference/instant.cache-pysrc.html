@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>instant.cache</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.fenics.org/instant">Project Homepage</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="instant-module.html">Package&nbsp;instant</a> ::
+        Module&nbsp;cache
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="instant.cache-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="instant.cache-module.html">Module instant.cache</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""This module contains helper functions for working with the module cache.</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">Example operations:</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">  - modulename = modulename_from_checksum(checksum)</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">  - modulename = modulename_from_checksum(compute_checksum(signature))</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">  - module = import_module_directly(path, modulename)</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">  - module = import_module(modulename)</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">  - module = import_module(checksum)</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">  - module = import_module(compute_checksum(signature))</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring">  - modules = cached_modules()</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring">  - modules = cached_modules(cache_dir)</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">sys</tt><tt class="py-op">,</tt> <tt class="py-name">re</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module instant.output=instant.output-module.html"><a title="instant.output" class="py-name" href="#" onclick="return doclink('link-0', 'output', 'link-0');">output</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Function instant.output.instant_warning()=instant.output-module.html#instant_warning"><a title="instant.output.instant_warning" class="py-name" href="#" onclick="return doclink('link-1', 'instant_warning', 'link-1');">instant_warning</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Function instant.output.instant_assert()=instant.output-module.html#instant_assert"><a title="instant.output.instant_assert" class="py-name" href="#" onclick="return doclink('link-2', 'instant_assert', 'link-2');">instant_assert</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Function instant.output.instant_debug()=instant.output-module.html#instant_debug"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-3', 'instant_debug', 'link-3');">instant_debug</a></tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module instant.paths=instant.paths-module.html"><a title="instant.paths" class="py-name" href="#" onclick="return doclink('link-4', 'paths', 'link-4');">paths</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Function instant.paths.get_default_cache_dir()=instant.paths-module.html#get_default_cache_dir"><a title="instant.paths.get_default_cache_dir" class="py-name" href="#" onclick="return doclink('link-5', 'get_default_cache_dir', 'link-5');">get_default_cache_dir</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Function instant.paths.validate_cache_dir()=instant.paths-module.html#validate_cache_dir"><a title="instant.paths.validate_cache_dir" class="py-name" href="#" onclick="return doclink('link-6', 'validate_cache_dir', 'link-6');">validate_cache_dir</a></tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-7" class="py-name" targets="Module instant.signatures=instant.signatures-module.html"><a title="instant.signatures" class="py-name" href="#" onclick="return doclink('link-7', 'signatures', 'link-7');">signatures</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Function instant.signatures.compute_checksum()=instant.signatures-module.html#compute_checksum"><a title="instant.signatures.compute_checksum" class="py-name" href="#" onclick="return doclink('link-8', 'compute_checksum', 'link-8');">compute_checksum</a></tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-9" class="py-name" targets="Module instant.locking=instant.locking-module.html"><a title="instant.locking" class="py-name" href="#" onclick="return doclink('link-9', 'locking', 'link-9');">locking</a></tt> <tt class="py-keyword">import</tt> <tt id="link-10" class="py-name" targets="Function instant.locking.get_lock()=instant.locking-module.html#get_lock"><a title="instant.locking.get_lock" class="py-name" href="#" onclick="return doclink('link-10', 'get_lock', 'link-10');">get_lock</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name" targets="Function instant.locking.release_lock()=instant.locking-module.html#release_lock"><a title="instant.locking.release_lock" class="py-name" href="#" onclick="return doclink('link-11', 'release_lock', 'link-11');">release_lock</a></tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"># TODO: We could make this an argument, but it's used indirectly several places so take care.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt id="link-12" class="py-name" targets="Variable instant.cache._modulename_prefix=instant.cache-module.html#_modulename_prefix"><a title="instant.cache._modulename_prefix" class="py-name" href="#" onclick="return doclink('link-12', '_modulename_prefix', 'link-12');">_modulename_prefix</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"instant_module_"</tt> </tt>
+<a name="modulename_from_checksum"></a><div id="modulename_from_checksum-def"><a name="L22"></a><tt class="py-lineno"> 22</tt> <a class="py-toggle" href="#" id="modulename_from_checksum-toggle" onclick="return toggle('modulename_from_checksum');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#modulename_from_checksum">modulename_from_checksum</a><tt class="py-op">(</tt><tt class="py-param">checksum</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="modulename_from_checksum-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="modulename_from_checksum-expanded"><a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">    <tt class="py-docstring">"Construct a module name from a checksum for use in cache."</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-13" class="py-name"><a title="instant.cache._modulename_prefix" class="py-name" href="#" onclick="return doclink('link-13', '_modulename_prefix', 'link-12');">_modulename_prefix</a></tt> <tt class="py-op">+</tt> <tt class="py-name">checksum</tt> </tt>
+</div><a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="checksum_from_modulename"></a><div id="checksum_from_modulename-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="checksum_from_modulename-toggle" onclick="return toggle('checksum_from_modulename');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#checksum_from_modulename">checksum_from_modulename</a><tt class="py-op">(</tt><tt class="py-param">modulename</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="checksum_from_modulename-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="checksum_from_modulename-expanded"><a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt class="py-docstring">"Construct a module name from a checksum for use in cache."</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">modulename</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt id="link-14" class="py-name"><a title="instant.cache._modulename_prefix" class="py-name" href="#" onclick="return doclink('link-14', '_modulename_prefix', 'link-12');">_modulename_prefix</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="import_module_directly"></a><div id="import_module_directly-def"><a name="L32"></a><tt class="py-lineno"> 32</tt> <a class="py-toggle" href="#" id="import_module_directly-toggle" onclick="return toggle('import_module_directly');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#import_module_directly">import_module_directly</a><tt class="py-op">(</tt><tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">modulename</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="import_module_directly-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="import_module_directly-expanded"><a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-docstring">"Import a module with the given module name that resides in the given path."</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">    <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt class="py-name">__import__</tt><tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt id="link-15" class="py-name"><a title="instant.output.instant_warning" class="py-name" href="#" onclick="return doclink('link-15', 'instant_warning', 'link-1');">instant_warning</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.import_module_directly: Failed to import module '%s' from '%s'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">    <tt class="py-keyword">finally</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">module</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt id="link-16" class="py-name" targets="Variable instant.cache._memory_cache=instant.cache-module.html#_memory_cache"><a title="instant.cache._memory_cache" class="py-name" href="#" onclick="return doclink('link-16', '_memory_cache', 'link-16');">_memory_cache</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="memory_cached_module"></a><div id="memory_cached_module-def"><a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="memory_cached_module-toggle" onclick="return toggle('memory_cached_module');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#memory_cached_module">memory_cached_module</a><tt class="py-op">(</tt><tt class="py-param">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="memory_cached_module-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="memory_cached_module-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-docstring">"Returns the cached module if found."</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">    <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name"><a title="instant.cache._memory_cache" class="py-name" href="#" onclick="return doclink('link-17', '_memory_cache', 'link-16');">_memory_cache</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt id="link-18" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-18', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"Found '%s' in memory cache with key '%r'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">module</tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="place_module_in_memory_cache"></a><div id="place_module_in_memory_cache-def"><a name="L53"></a><tt class="py-lineno"> 53</tt> <a class="py-toggle" href="#" id="place_module_in_memory_cache-toggle" onclick="return toggle('place_module_in_memory_cache');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#place_module_in_memory_cache">place_module_in_memory_cache</a><tt class="py-op">(</tt><tt class="py-param">moduleid</tt><tt class="py-op">,</tt> <tt class="py-param">module</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="place_module_in_memory_cache-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="place_module_in_memory_cache-expanded"><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-docstring">"Place a compiled module in cache with given id."</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt id="link-19" class="py-name"><a title="instant.cache._memory_cache" class="py-name" href="#" onclick="return doclink('link-19', '_memory_cache', 'link-16');">_memory_cache</a></tt><tt class="py-op">[</tt><tt class="py-name">moduleid</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">module</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt id="link-20" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-20', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"Added module '%s' to cache with key '%r'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="is_valid_module_name"></a><div id="is_valid_module_name-def"><a name="L59"></a><tt class="py-lineno"> 59</tt> <a class="py-toggle" href="#" id="is_valid_module_name-toggle" onclick="return toggle('is_valid_module_name');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#is_valid_module_name">is_valid_module_name</a><tt class="py-op">(</tt><tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="is_valid_module_name-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="is_valid_module_name-expanded"><a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-name">NAMELENGTHLIMIT</tt> <tt class="py-op">=</tt> <tt class="py-number">100</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">NAMELENGTHLIMIT</tt> <tt class="py-keyword">and</tt> <tt class="py-name">bool</tt><tt class="py-op">(</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt class="py-string">r"^[a-zA-Z_][\w]*$"</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"> </tt>
+<a name="import_and_cache_module"></a><div id="import_and_cache_module-def"><a name="L64"></a><tt class="py-lineno"> 64</tt> <a class="py-toggle" href="#" id="import_and_cache_module-toggle" onclick="return toggle('import_and_cache_module');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#import_and_cache_module">import_and_cache_module</a><tt class="py-op">(</tt><tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">modulename</tt><tt class="py-op">,</tt> <tt class="py-param">moduleids</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="import_and_cache_module-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="import_and_cache_module-expanded"><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">    <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name" targets="Function instant.cache.import_module_directly()=instant.cache-module.html#import_module_directly"><a title="instant.cache.import_module_directly" class="py-name" href="#" onclick="return doclink('link-21', 'import_module_directly', 'link-21');">import_module_directly</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">modulename</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt id="link-22" class="py-name"><a title="instant.output.instant_assert" class="py-name" href="#" onclick="return doclink('link-22', 'instant_assert', 'link-2');">instant_assert</a></tt><tt class="py-op">(</tt><tt class="py-name">module</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-string">"Failed to import module found in cache. Modulename: '%s'; Path: '%s'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">moduleid</tt> <tt class="py-keyword">in</tt> <tt class="py-name">moduleids</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt id="link-23" class="py-name" targets="Function instant.cache.place_module_in_memory_cache()=instant.cache-module.html#place_module_in_memory_cache"><a title="instant.cache.place_module_in_memory_cache" class="py-name" href="#" onclick="return doclink('link-23', 'place_module_in_memory_cache', 'link-23');">place_module_in_memory_cache</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">,</tt> <tt class="py-name">module</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">module</tt> </tt>
+</div><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"> </tt>
+<a name="check_memory_cache"></a><div id="check_memory_cache-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="check_memory_cache-toggle" onclick="return toggle('check_memory_cache');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#check_memory_cache">check_memory_cache</a><tt class="py-op">(</tt><tt class="py-param">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="check_memory_cache-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="check_memory_cache-expanded"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt class="py-comment"># Check memory cache first with the given moduleid</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">    <tt class="py-name">moduleids</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">moduleid</tt><tt class="py-op">]</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">    <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-24" class="py-name" targets="Function instant.cache.memory_cached_module()=instant.cache-module.html#memory_cached_module"><a title="instant.cache.memory_cached_module" class="py-name" href="#" onclick="return doclink('link-24', 'memory_cached_module', 'link-24');">memory_cached_module</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">module</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">     </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">    <tt class="py-comment"># Get signature from moduleid if it isn't a string,</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">    <tt class="py-comment"># and check memory cache again</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">,</tt> <tt class="py-string">"signature"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-name">moduleid</tt> <tt class="py-op">=</tt> <tt class="py-name">moduleid</tt><tt class="py-op">.</tt><tt class="py-name">signature</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt id="link-25" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-25', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_memory_cache: Got signature "</tt>\ </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                      <tt class="py-string">"'%s' from moduleid.signature()."</tt> <tt class="py-op">%</tt> <tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-26" class="py-name"><a title="instant.cache.memory_cached_module" class="py-name" href="#" onclick="return doclink('link-26', 'memory_cached_module', 'link-24');">memory_cached_module</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">module</tt><tt class="py-op">:</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">moduleid</tt> <tt class="py-keyword">in</tt> <tt class="py-name">moduleids</tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                <tt id="link-27" class="py-name"><a title="instant.cache.place_module_in_memory_cache" class="py-name" href="#" onclick="return doclink('link-27', 'place_module_in_memory_cache', 'link-23');">place_module_in_memory_cache</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">,</tt> <tt class="py-name">module</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-name">moduleids</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">     </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">    <tt class="py-comment"># Construct a filename from the checksum of moduleid if it</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-comment"># isn't already a valid name, and check memory cache again</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-28" class="py-name" targets="Function instant.cache.is_valid_module_name()=instant.cache-module.html#is_valid_module_name"><a title="instant.cache.is_valid_module_name" class="py-name" href="#" onclick="return doclink('link-28', 'is_valid_module_name', 'link-28');">is_valid_module_name</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-name">moduleid</tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name" targets="Function instant.cache.modulename_from_checksum()=instant.cache-module.html#modulename_from_checksum"><a title="instant.cache.modulename_from_checksum" class="py-name" href="#" onclick="return doclink('link-29', 'modulename_from_checksum', 'link-29');">modulename_from_checksum</a></tt><tt class="py-op">(</tt><tt id="link-30" class="py-name"><a title="instant.signatures.compute_checksum" class="py-name" href="#" onclick="return doclink('link-30', 'compute_checksum', 'link-8');">compute_checksum</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt id="link-31" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-31', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_memory_cache: Constructed module name "</tt>\ </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                      <tt class="py-string">"'%s' from moduleid '%s'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="instant.cache.memory_cached_module" class="py-name" href="#" onclick="return doclink('link-32', 'memory_cached_module', 'link-24');">memory_cached_module</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">module</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">moduleids</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">     </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt id="link-33" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-33', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_memory_cache: Failed to find module."</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt> </tt>
+</div><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="check_disk_cache"></a><div id="check_disk_cache-def"><a name="L105"></a><tt class="py-lineno">105</tt> <a class="py-toggle" href="#" id="check_disk_cache-toggle" onclick="return toggle('check_disk_cache');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#check_disk_cache">check_disk_cache</a><tt class="py-op">(</tt><tt class="py-param">modulename</tt><tt class="py-op">,</tt> <tt class="py-param">cache_dir</tt><tt class="py-op">,</tt> <tt class="py-param">moduleids</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="check_disk_cache-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="check_disk_cache-expanded"><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-comment"># Get file lock to avoid race conditions in cache</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">    <tt class="py-name">lock</tt> <tt class="py-op">=</tt> <tt id="link-34" class="py-name"><a title="instant.locking.get_lock" class="py-name" href="#" onclick="return doclink('link-34', 'get_lock', 'link-10');">get_lock</a></tt><tt class="py-op">(</tt><tt class="py-name">cache_dir</tt><tt class="py-op">,</tt> <tt class="py-name">modulename</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">     </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">    <tt class="py-comment"># Ensure a valid cache_dir</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt class="py-name">cache_dir</tt> <tt class="py-op">=</tt> <tt id="link-35" class="py-name"><a title="instant.paths.validate_cache_dir" class="py-name" href="#" onclick="return doclink('link-35', 'validate_cache_dir', 'link-6');">validate_cache_dir</a></tt><tt class="py-op">(</tt><tt class="py-name">cache_dir</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">     </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt class="py-comment"># Check on disk, in current directory and cache directory</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">path</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">getcwd</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">cache_dir</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">isdir</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">modulename</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">            <tt class="py-comment"># Found existing directory, try to import and place in memory cache</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt class="py-name">module</tt> <tt class="py-op">=</tt> <tt id="link-36" class="py-name" targets="Function instant.cache.import_and_cache_module()=instant.cache-module.html#import_and_cache_module"><a title="instant.cache.import_and_cache_module" class="py-name" href="#" onclick="return doclink('link-36', 'import_and_cache_module', 'link-36');">import_and_cache_module</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">module</tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">                <tt id="link-37" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-37', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_disk_cache: Imported module "</tt>\ </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">                              <tt class="py-string">"'%s' from '%s'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                <tt id="link-38" class="py-name"><a title="instant.locking.release_lock" class="py-name" href="#" onclick="return doclink('link-38', 'release_lock', 'link-11');">release_lock</a></tt><tt class="py-op">(</tt><tt class="py-name">lock</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">module</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">                <tt id="link-39" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-39', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_disk_cache: Failed to imported "</tt>\ </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                              <tt class="py-string">"module '%s' from '%s'."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">     </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">    <tt class="py-comment"># All attempts failed</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">    <tt id="link-40" class="py-name"><a title="instant.output.instant_debug" class="py-name" href="#" onclick="return doclink('link-40', 'instant_debug', 'link-3');">instant_debug</a></tt><tt class="py-op">(</tt><tt class="py-string">"In instant.check_disk_cache: Can't import module with modulename "</tt>\ </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                  <tt class="py-string">"%r using cache directory %r."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">cache_dir</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">    <tt id="link-41" class="py-name"><a title="instant.locking.release_lock" class="py-name" href="#" onclick="return doclink('link-41', 'release_lock', 'link-11');">release_lock</a></tt><tt class="py-op">(</tt><tt class="py-name">lock</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="import_module"></a><div id="import_module-def"><a name="L133"></a><tt class="py-lineno">133</tt> <a class="py-toggle" href="#" id="import_module-toggle" onclick="return toggle('import_module');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#import_module">import_module</a><tt class="py-op">(</tt><tt class="py-param">moduleid</tt><tt class="py-op">,</tt> <tt class="py-param">cache_dir</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="import_module-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="import_module-expanded"><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">    <tt class="py-docstring">"""Import module from cache given its moduleid and an optional cache directory.</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">    The moduleid can be either</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">      - the module name</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring">      - a signature string, of which a checksum is taken to look up in the cache</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">      - a checksum string, which is used directly to look up in the cache</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">      - a hashable non-string object with a function moduleid.signature() which is used to get a signature string</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">    The hashable object is used to look up in the memory cache before signature() is called.</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">    If the module is found on disk, it is placed in the memory cache.</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-comment"># Look for module in memory cache</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">    <tt class="py-name">module</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name" targets="Function instant.cache.check_memory_cache()=instant.cache-module.html#check_memory_cache"><a title="instant.cache.check_memory_cache" class="py-name" href="#" onclick="return doclink('link-42', 'check_memory_cache', 'link-42');">check_memory_cache</a></tt><tt class="py-op">(</tt><tt class="py-name">moduleid</tt><tt class="py-op">)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">module</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">module</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">     </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">    <tt class="py-comment"># Look for module in disk cache</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">    <tt class="py-name">modulename</tt> <tt class="py-op">=</tt> <tt class="py-name">moduleids</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-43" class="py-name" targets="Function instant.cache.check_disk_cache()=instant.cache-module.html#check_disk_cache"><a title="instant.cache.check_disk_cache" class="py-name" href="#" onclick="return doclink('link-43', 'check_disk_cache', 'link-43');">check_disk_cache</a></tt><tt class="py-op">(</tt><tt class="py-name">modulename</tt><tt class="py-op">,</tt> <tt class="py-name">cache_dir</tt><tt class="py-op">,</tt> <tt class="py-name">moduleids</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="cached_modules"></a><div id="cached_modules-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="cached_modules-toggle" onclick="return toggle('cached_modules');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="instant.cache-module.html#cached_modules">cached_modules</a><tt class="py-op">(</tt><tt class="py-param">cache_dir</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="cached_modules-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="cached_modules-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">    <tt class="py-docstring">"Return a list with the names of all cached modules."</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">    <tt class="py-name">cache_dir</tt> <tt class="py-op">=</tt> <tt id="link-44" class="py-name"><a title="instant.paths.validate_cache_dir" class="py-name" href="#" onclick="return doclink('link-44', 'validate_cache_dir', 'link-6');">validate_cache_dir</a></tt><tt class="py-op">(</tt><tt class="py-name">cache_dir</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">listdir</tt><tt class="py-op">(</tt><tt class="py-name">cache_dir</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.fenics.org/instant">Project Homepage</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu May 28 15:08:07 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

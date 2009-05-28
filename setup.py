@@ -19,10 +19,10 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
         batch_files.append(batch_file)
     scripts.extend(batch_files)
 
-setup(name = "instant", version = '0.9.6', 
+setup(name = "instant", version = '0.9.7', 
       description = "Instant Inlining of C/C++ in Python", 
       author = "Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers", 
-      author_email = "magnew@simula.no, kent-and@simula.no, martinal@simula.no, ilmarw@simula.no", 
+      author_email = "kent-and@simula.no, martinal@simula.no, ilmarw@simula.no", 
       url = "http://www.fenics.org/instant", 
       packages = ['instant'],
       package_dir = {'instant': join('src', 'instant')},

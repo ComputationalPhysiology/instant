@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>instant</title>
+  <title>instant.locking</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -15,8 +15,8 @@
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -42,7 +42,8 @@
   <tr valign="top">
     <td width="100%">
       <span class="breadcrumbs">
-        Package&nbsp;instant
+        <a href="instant-module.html">Package&nbsp;instant</a> ::
+        Module&nbsp;locking
       </span>
     </td>
     <td>
@@ -52,79 +53,87 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="instant-module.html"
+            >]&nbsp;|&nbsp;<a href="instant.locking-module.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
-<!-- ==================== PACKAGE DESCRIPTION ==================== -->
-<h1 class="epydoc">Package instant</h1><p class="nomargin-top"><span class="codelink"><a href="instant-pysrc.html">source&nbsp;code</a></span></p>
-<p>Instant allows compiled C/C++ modules to be created at runtime in your
-  Python application, using SWIG to wrap the C/C++ code.</p>
-  <p>A simple example:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> instant <span class="py-keyword">import</span> inline
-<span class="py-prompt">&gt;&gt;&gt; </span>add_func = inline(<span class="py-string">&quot;double add(double a, double b){ return a+b; }&quot;</span>)
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> <span class="py-string">&quot;The sum of 3 and 4.5 is &quot;</span>, add_func(3, 4.5)</pre>
-  <p>The main functions are <code>build_module</code>, 
-  <code>write_code</code>, and <code>inline*</code> see their documentation
-  for more details.</p>
-  <p>For more examples, see the tests/ directory in the Instant 
-  distribution.</p>
-  <p>Questions, bugs and patches should be sent to 
-  instant-dev@fenics.org.</p>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module locking</h1><p class="nomargin-top"><span class="codelink"><a href="instant.locking-pysrc.html">source&nbsp;code</a></span></p>
+<p>File locking for the cache system, to avoid problems when multiple 
+  processes work with the same module. Only works on UNIX systems.</p>
 
-<hr />
-<div class="fields">      <p><strong>Version:</strong>
-        0.9.7
-      </p>
-      <p><strong>Date:</strong>
-        2009-05-28
-      </p>
-      <p><strong>Author:</strong>
-        Magne Westlie, Kent-Andre Mardal &lt;kent-and@simula.no&gt;, Martin
-        Alnes &lt;martinal@simula.no&gt;, Ilmar M. Wilbers 
-        &lt;ilmarw@simula.no&gt;
-      </p>
-</div><!-- ==================== SUBMODULES ==================== -->
-<a name="section-Submodules"></a>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
   <td colspan="2" class="table-header">
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr valign="top">
-        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="left"><span class="table-header">Functions</span></td>
         <td align="right" valign="top"
-         ><span class="options">[<a href="#section-Submodules"
+         ><span class="options">[<a href="#section-Functions"
          class="privatelink" onclick="toggle_private();"
          >hide private</a>]</span></td>
       </tr>
     </table>
   </td>
 </tr>
-  <tr><td class="summary">
-  <ul class="nomargin">
-    <li> <strong class="uidlink"><a href="instant.build-module.html">instant.build</a></strong>: <em class="summary">This module contains the main part of Instant, the build_module 
-        function.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.cache-module.html">instant.cache</a></strong>: <em class="summary">This module contains helper functions for working with the module 
-        cache.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.codegeneration-module.html">instant.codegeneration</a></strong>: <em class="summary">This module contains helper functions for code generation.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.config-module.html">instant.config</a></strong>: <em class="summary">This module contains helper functions for configuration using 
-        pkg-config.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.inlining-module.html">instant.inlining</a></strong>: <em class="summary">This module contains the inline* functions, which allows easy 
-        inlining of C/C++ functions.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.locking-module.html">instant.locking</a></strong>: <em class="summary">File locking for the cache system, to avoid problems when multiple 
-        processes work with the same module.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.output-module.html">instant.output</a></strong>: <em class="summary">This module contains internal logging utilities.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.paths-module.html">instant.paths</a></strong>: <em class="summary">This module contains helper functions for working with temp and 
-        cache directories.</em>    </li>
-    <li> <strong class="uidlink"><a href="instant.signatures-module.html">instant.signatures</a></strong>: <em class="summary">This module contains helper functions for working with checksums.</em>    </li>
-  </ul></td></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="release_all_locks"></a><span class="summary-sig-name">release_all_locks</span>()</span><br />
+      Release all locks currently held by Instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant.locking-pysrc.html#release_all_locks">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_lock"></a><span class="summary-sig-name">get_lock</span>(<span class="summary-sig-arg">cache_dir</span>,
+        <span class="summary-sig-arg">module_name</span>)</span><br />
+      Get a new file lock.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant.locking-pysrc.html#get_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="release_lock"></a><span class="summary-sig-name">release_lock</span>(<span class="summary-sig-arg">lock</span>)</span><br />
+      Release a lock currently held by Instant.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="instant.locking-pysrc.html#release_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
-
-<br />
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -142,6 +151,27 @@
     </table>
   </td>
 </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_lock_names"></a><span class="summary-name">_lock_names</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_lock_files"></a><span class="summary-name">_lock_files</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_lock_count"></a><span class="summary-name">_lock_count</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -155,8 +185,8 @@
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="instant-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
