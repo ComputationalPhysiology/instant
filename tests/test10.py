@@ -108,3 +108,29 @@ b = numpy.arange(3)#, dtype='int32')
 c = sum_func(a, b, b.size)
 print c
 print numpy.dot(a, b)
+
+# Example 5: arrays with more than 3 dimensions, uses old typemaps, only doubles
+c_code = """
+void sum (int m, int* mp, double* array1, int n, int* np, double* array2){
+  int w = mp[0], x = mp[1], y = mp[2], z = mp[3];
+  for (int i=0; i<w; i++)
+    for (int j=0; j<x; j++)
+      for (int k=0; k<y; k++)
+        for (int l=0; l<z; l++){
+          *array2 = *array1*2;
+          array1++;
+          array2++;
+        }
+}
+"""
+
+sum_func = inline_with_numpy(c_code, arrays = [['m', 'mp', 'array1', 'multi'],
+                                               ['n', 'np', 'array2', 'multi'],],
+                             cache_dir="test_ex5_cache")
+
+a = numpy.arange(16, dtype='float64')
+a.shape = (2,2,2,2)
+b = a.copy()*0
+
+sum_func(a, b)
+print numpy.array(a*2 == b).all()

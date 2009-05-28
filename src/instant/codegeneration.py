@@ -66,10 +66,10 @@ def write_interfacefile(filename, modulename, code, init_code,
     typemaps = ""
     valid_types = ['float', 'double', 'short', 'int', 'long',
                    'unsigned short', 'unsigned int', 'unsigned long']
-    DATA_TYPE = 'double'
     for a in arrays:
         if type(a) == tuple:
             a = list(a)
+        DATA_TYPE = 'double'
         for vt in valid_types:
             if vt in a:
                 DATA_TYPE = vt
@@ -116,7 +116,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                   PyArrayObject* pyarray;
                   pyarray = (PyArrayObject*)$input; 
                   $1 = int(pyarray->nd);
-                  int* dims = new int($1); 
+                  int* dims = new int[$1]; 
                   for (int d=0; d<$1; d++) {
                      dims[d] = int(pyarray->dimensions[d]);
                   }
