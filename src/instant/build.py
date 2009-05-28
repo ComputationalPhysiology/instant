@@ -242,11 +242,15 @@ def build_module(modulename=None, source_directory=".",
         - If you want to compile the files yourself. TODO: Not yet supported.
       - B{arrays}:
         - A nested list describing the C arrays to be made from NumPy arrays.
-          If the NumPy array is 1D, the inner list should contain strings with
-          the variable names for length of the array and the array itself.
-          If the NumPy array is a matrix or a tensor, the inner list should
-          contain strings with variable names for the number of dimensions,
-          the length in each dimension, and the array itself, respectively.
+        The SWIG interface for fil NumPy is used. For 1D arrays, the inner
+        list should contain strings with the variable names for the length of
+        the arrays and the array itself. 2D matrices should contain the names
+        of the dimensions in the two directions as well as the name of the
+        array, and 3D tensors should contain the names of the dimensions in
+        the three directions in addition to the name of the array.
+        If the NumPy array har more than four dimensions, the inner list should
+        contain strings with variable names for the number of dimensions,
+        the length in each dimension as a pointer, and the array itself, respectively.
       - B{generate_interface}:
         - A bool to indicate if you want to generate the interface files.
       - B{generate_setup}:
