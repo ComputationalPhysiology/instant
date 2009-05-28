@@ -152,6 +152,10 @@ def write_interfacefile(filename, modulename, code, init_code,
     local_headers_code  = mapstrings('#include "%s"', local_headers)
     wrap_headers_code1  = mapstrings('#include "%s"', wrap_headers)
     wrap_headers_code2  = mapstrings('%%include "%s"', wrap_headers)
+
+    numpy_i_include = ''
+    if arrays:
+        numpy_i_include = r'%include "numpy.i"'
     
     interface_string = reindent("""
         %%module  %(modulename)s
@@ -169,7 +173,7 @@ def write_interfacefile(filename, modulename, code, init_code,
         %%}
 
         //%%feature("autodoc", "1");
-        %%include "numpy.i"
+        %(numpy_i_include)s
         
         %%init%%{
         %(init_code)s
