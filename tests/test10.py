@@ -103,7 +103,7 @@ sum_func = inline_with_numpy(c_code, arrays = [['x1', 'y1', 'array1', 'in', 'lon
 
 a = numpy.arange(9)#, dtype='int32')
 a.shape = (3, 3)
-b = numpy.arange(3)#, dtype='int32')
+b = numpy.arange(3, dtype='int32')
 
 c = sum_func(a, b, b.size)
 print c
