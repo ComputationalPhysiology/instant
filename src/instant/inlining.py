@@ -1,6 +1,7 @@
 """This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
 import sys
+from os.path import join
 from output import instant_assert, instant_warning, instant_error
 from build import build_module
 
@@ -90,7 +91,7 @@ def inline_with_numpy(c_code, **kwargs):
     kwargs["code"] = c_code 
     kwargs["init_code"]      = kwargs.get("init_code","")      + "\nimport_array();\n"
     kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["arrayobject.h"]
-    kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s/numpy" % numpy.get_include()]
+    kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + [join("%s" %numpy.get_include(), "numpy")]
     func_name = get_func_name(c_code)
     module = build_module(**kwargs)
     if hasattr(module, func_name):
