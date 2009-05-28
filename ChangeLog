@@ -1,4 +1,9 @@
 
+Release 0.9.7
+Use typemaps from the NumPy SWIG interface file (numpy.i),
+enabling the use of many new data types.
+Removed support for Numeric and numarray.
+	
 Release 0.9.6
 Minor update with some new utility functions required by FFC. 
 
