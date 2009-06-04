@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 from instant import inline_with_numpy
 from numpy import *
