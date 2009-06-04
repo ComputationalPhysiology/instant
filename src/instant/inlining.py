@@ -1,6 +1,5 @@
 """This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
-import sys
 from output import instant_assert, instant_warning, instant_error
 from build import build_module
 

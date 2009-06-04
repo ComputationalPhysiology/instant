@@ -55,7 +55,9 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
     """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
     
     The usage is: 
-    (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(*list_of_packages)
+      (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(*list_of_packages)
+    or:
+        (includes, flags, libraries, libdirs, linkflags) = header_and_libs_from_pkgconfig(*list_of_packages, returnLinkFlags=True)
     """
     returnLinkFlags = kwargs.get("returnLinkFlags", False)
     result, output = get_status_output("pkg-config --version ")
@@ -94,6 +96,7 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
         else: 
             raise OSError("The pkg-config file %s does not exist" % pack)
 
-    if returnLinkFlags: return (includes,flags,libs, libdirs, linkflags) 
-    return (includes,flags,libs, libdirs) 
+    if returnLinkFlags:
+        return (includes, flags, libs, libdirs, linkflags) 
+    return (includes, flags, libs, libdirs) 
 
