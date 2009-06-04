@@ -64,8 +64,9 @@ def write_interfacefile(filename, modulename, code, init_code,
     
     # create typemaps 
     typemaps = ""
-    valid_types = ['float', 'double', 'short', 'int', 'long',
-                   'unsigned short', 'unsigned int', 'unsigned long']
+    valid_types = ['float', 'double', 'short', 'int', 'long', 'long long',
+                   'unsigned short', 'unsigned int', 'unsigned long',
+                   'unsigned long long']
     for a in arrays:
         if type(a) == tuple:
             a = list(a)
