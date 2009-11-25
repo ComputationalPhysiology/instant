@@ -41,7 +41,10 @@ def get_instant_dir():
 
 def get_default_cache_dir():
     "Return the default cache directory."
-    cache_dir = os.path.join(get_instant_dir(), "cache")
+    if "INSTANT_CACHE_DIR" in os.environ:
+        cache_dir = os.environ["INSTANT_CACHE_DIR"]
+    else:
+        cache_dir = os.path.join(get_instant_dir(), "cache")
     if not os.path.isdir(cache_dir):
         instant_debug("Creating cache directory '%s'." % cache_dir)
         os.mkdir(cache_dir)
