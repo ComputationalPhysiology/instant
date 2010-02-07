@@ -83,6 +83,10 @@ def check_memory_cache(moduleid):
                       "'%s' from moduleid.signature()." % moduleid)
         module = memory_cached_module(moduleid)
         if module:
+            # FIXME (GNW): I haved commented this out since it can continually 
+            #              insert indentical objects into the cache. This
+            #              function checks the cache, so why should it also 
+            #              insert?
             #for moduleid in moduleids:
             #    place_module_in_memory_cache(moduleid, module)
             return module, moduleids
