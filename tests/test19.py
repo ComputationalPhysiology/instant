@@ -25,15 +25,15 @@ double sum(double a, double b)
 class Sig:
     def __init__(self, sig):
         self.sig = sig
-    
+
     def signature(self):
         time.sleep(1.0)
         return self.sig
-    
+
     def __hash__(self):
         time.sleep(0.5)
         return hash(self.sig)
-    
+
     def __cmp__(self, other):
         if isinstance(other, Sig):
             return cmp(self.sig, other.sig)
@@ -107,22 +107,23 @@ print cmd
 stat = os.system(cmd)
 assert stat == 0 # c
 
+print "Skipping unit test, see https://bugs.launchpad.net/instant/+bug/518389"
 # Build and rebuild with generic signature object
-sig = Sig("((test19_signature_module))")
-tic()
-module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
-assert module is not None
-t1 = toc("(1) With signature")
-tic()
-module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
-assert module is not None
-t2 = toc("(2) With signature")
-assert t1 > t2
-tic()
-module = import_module(sig, cache_dir)
-assert module is not None
-t3 = toc("(3) import_module")
-assert t1 > t3
+#sig = Sig("((test19_signature_module))")
+#tic()
+#module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
+#assert module is not None
+#t1 = toc("(1) With signature")
+#tic()
+#module = build_module(code=c_code, signature=sig, cache_dir=cache_dir)
+#assert module is not None
+#t2 = toc("(2) With signature")
+#assert t1 > t2
+#tic()
+#module = import_module(sig, cache_dir)
+#assert module is not None
+#t3 = toc("(3) import_module")
+#assert t1 > t3
 
 # Build and rebuild without modulename or signature
 tic()
