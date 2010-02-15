@@ -1,0 +1,8 @@
+Instant
+-------
+
+Instant is a Python module that allows for instant inlining of C and
+C++ code in Python. It is a small Python module built on top of SWIG
+and Distutils. For more information, visit
+
+  http://www.fenics.org/instant

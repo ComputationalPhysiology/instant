@@ -1,57 +1,40 @@
-
-Release 0.9.7
-Use typemaps from the NumPy SWIG interface file (numpy.i),
-enabling the use of many new data types.
-Removed support for Numeric and numarray.
-	
-Release 0.9.6
-Minor update with some new utility functions required by FFC. 
-
-Release 0.9.5
-Restructured and rewritten much of the code.
-Improved multilevel cache functionality.
-Added instant-clean and instant-showcache scripts.
-
-Release 0.9.4 
-Various new examples with swiginac and sympy implemented.
-Bug fix on 64bit. Removed director flag by default.  
-
-Release 0.9.3 
-Implemented caching
-
-Release 0.9.2 
-Bug fix for the JIT in FFC
-
-Release 0.9.1 
-Added test example which demonstrate use of external C code. 
-Added flag to turn of regeneration of the interface file 
-(useful during debugging)
-
-Release 0.9 
-Port to Windows with mingw by laserjungle, some updates
-by Martin Alnæs, and some cleanup. 
-
-Release 0.8 
-Added support for NumPy and Numarray. 
-
-Release 0.7
-Added functionality for the use of pkg-config files. 
-
+0.9.7
+ - Use typemaps from the NumPy SWIG interface file (numpy.i)
+   enabling the use of many new data types.
+ - Removed support for Numeric and numarray.
+0.9.6
+ - Minor update with some new utility functions required by FFC.
+0.9.5
+ - Restructured and rewritten much of the code.
+ - Improved multilevel cache functionality.
+ - Added instant-clean and instant-showcache scripts.
+0.9.4
+ - Various new examples with swiginac and sympy implemented.
+ - Bug fix on 64bit. Removed director flag by default.
+0.9.3
+ - Implemented caching
+0.9.2
+ - Bug fix for the JIT in FFC
+0.9.1
+ - Added test example which demonstrate use of external C code.
+ - Added flag to turn of regeneration of the interface file
+   (useful during debugging)
+0.9
+ - Port to Windows with mingw by laserjungle, some updates
+   by Martin Alnæs, and some cleanup.
+0.8
+ - Added support for NumPy and Numarray.
+0.7
+ - Added functionality for the use of pkg-config files.
 0.6
-Created a more user-friendly interface
-
-0.5 
-Added SWIG directors for cross language inheritance
-
+ - Created a more user-friendly interface
+0.5
+ - Added SWIG directors for cross language inheritance
 0.4
-Added md5sum to avoid unnecessary compilation 
-
+ - Added md5sum to avoid unnecessary compilation
 0.3
-Support for NumPy arrays 
-
+ - Support for NumPy arrays
 0.2
-Fixed bug in setup script
-
+ - Fixed bug in setup script
 0.1
-Initial release of Instant
-
+ - Initial release of Instant
