@@ -1,4 +1,4 @@
-0.9.8
+0.9.8 [2010-02-15]
  - Fix cache related memory leak
 0.9.7
  - Use typemaps from the NumPy SWIG interface file (numpy.i)
