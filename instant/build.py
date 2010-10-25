@@ -523,9 +523,11 @@ def build_module_vtk(c_code, cache_dir=None):
 
     module_path = copy_to_cache(module_path, cache_dir, modulename)
 
-    print "module_path ", module_path
-    module = import_and_cache_module(module_path, modulename, moduleids)
     os.chdir(original_path)
+    lock = get_lock(cache_dir, modulename)
+
+    module = import_and_cache_module(module_path, modulename, moduleids)
+    release_lock(lock)
 
     return module
       

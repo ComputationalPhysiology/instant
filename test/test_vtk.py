@@ -15,8 +15,6 @@ vtkObject* test1(char* filename){
 }
 """
 
-
-
 c_code2 = """
 void test2(vtkUnstructuredGrid* grid){
   std::cout << "number of cells "<<grid->GetNumberOfCells () <<std::endl; 

@@ -32,6 +32,7 @@ def checksum_from_modulename(modulename):
 def import_module_directly(path, modulename):
     "Import a module with the given module name that resides in the given path."
     sys.path.insert(0, path)
+
     try:
         module = __import__(modulename)
     except:
