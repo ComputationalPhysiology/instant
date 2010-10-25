@@ -501,3 +501,35 @@ def build_module(modulename=None, source_directory=".",
     instant_error("In instant.build_module: Should never reach this point!")
     # end build_module
 
+
+def build_module_vtk(c_code, cache_dir=None): 
+    original_path = os.getcwd()
+    cache_dir = validate_cache_dir(cache_dir)
+    signature = modulename_from_checksum(compute_checksum(c_code))
+    modulename = signature
+    moduleids = [signature]
+    module_path = os.path.join(get_temp_dir(), modulename)
+
+
+    os.mkdir(module_path)
+    os.chdir(module_path)
+
+    write_cmakefile(modulename)
+    s = generate_interface_file_vtk(signature, c_code)
+    write_vtk_interface_file(signature, c_code)
+
+    ret, output = get_status_output("cmake -DDEBUG=TRUE . > cmake.log ")
+    ret, output = get_status_output("make > compile.log ")
+
+    module_path = copy_to_cache(module_path, cache_dir, modulename)
+
+    print "module_path ", module_path
+    module = import_and_cache_module(module_path, modulename, moduleids)
+    os.chdir(original_path)
+
+    return module
+      
+    
+
+
+

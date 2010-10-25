@@ -1,7 +1,7 @@
 """This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
 from output import instant_assert, instant_warning, instant_error
-from build import build_module
+from build import build_module, build_module_vtk
 
 
 def get_func_name(c_code):
@@ -12,6 +12,7 @@ def get_func_name(c_code):
     except:
         instant_error("Failed to extract function name from c_code.")
     return func_name
+
 
 
 def inline(c_code, **kwargs):
@@ -133,3 +134,16 @@ def inline_module_with_numpy(c_code, **kwargs):
     kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s" % numpy.get_include()]
     module = build_module(**kwargs)
     return module
+
+
+def inline_vtk(c_code, cache_dir=None): 
+
+    module = build_module_vtk(c_code)
+    func_name = get_func_name(c_code)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
+    else:
+        instant_warning("Didn't find function '%s', returning module." % func_name)
+    return module
+
+

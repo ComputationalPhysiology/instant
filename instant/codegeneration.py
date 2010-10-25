@@ -273,6 +273,151 @@ def _test_write_setup():
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs)
     print "".join(open("setup.py").readlines())
 
+def unique(list):
+    set = {}
+    map(set.__setitem__, list, [])
+    return set.keys()
+
+
+def find_vtk_classes(str): 
+    pattern = "vtk\w*"
+    l = unique(re.findall(pattern, str))
+    return l 
+
+def create_typemaps(classes): 
+    s = ""
+
+    typemap_template = """
+%%typemap(in) %(class_name)s * {
+    vtkObjectBase* obj = vtkPythonGetPointerFromObject($input, "%(class_name)s");
+    %(class_name)s * oobj = NULL;  
+    if (obj->IsA("%(class_name)s")) {
+        oobj = %(class_name)s::SafeDownCast(obj); 
+        $1 = oobj;  
+    }
+}
+
+%%typemap(out) %(class_name)s * {
+   $result = vtkPythonGetObjectFromPointer($1);
+}
+   
+   """
+
+    for cl in classes: 
+        s += typemap_template % { "class_name" : cl } 
+
+    return s
+
+
+def generate_vtk_includes(classes):
+    s = """
+#include "vtkPythonUtil.h"
+    """
+    for cl in classes: 
+        s += """
+#include \"%s.h\" """ % cl
+    return s 
+
+
+def generate_interface_file_vtk(signature, code):
+
+    interface_template =  """
+%%module test
+%%{
+
+%(includes)s
+
+%(code)s
+
+%%}
+
+%(typemaps)s 
+
+%(code)s 
+
+"""
+    
+    class_list = find_vtk_classes(code)
+    includes = generate_vtk_includes(class_list) 
+    typemaps = create_typemaps(class_list)
+    s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes } 
+    return s
+
+
+def write_cmakefile(name):    
+    file_template = """
+cmake_minimum_required(VERSION 2.6.0)
+
+# This project is designed to be built outside the Insight source tree.
+PROJECT(%(name)%s)
+
+# Find ITK.
+FIND_PACKAGE(ITK REQUIRED)
+IF(ITK_FOUND)
+  INCLUDE(${ITK_USE_FILE})
+ENDIF(ITK_FOUND)
+
+# Find VTK.
+FIND_PACKAGE(VTK REQUIRED)
+IF(VTK_FOUND)
+  INCLUDE(${VTK_USE_FILE})
+ENDIF(VTK_FOUND)
+
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+
+set(SWIG_MODULE_NAME %(name)s)
+set(CMAKE_SWIG_FLAGS
+  -module ${SWIG_MODULE_NAME}
+  -shadow
+  -modern
+  -modernargs
+  -fastdispatch
+  -fvirtual
+  -nosafecstrings
+  -noproxydel
+  -fastproxy
+  -fastinit
+  -fastunpack
+  -fastquery
+  -nobuildnone
+  -Iinclude/swig
+  )
+
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
+
+set(SWIG_SOURCES %(name)s.i)
+
+set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
+
+include_directories(${PYTHON_INCLUDE_PATH} ${%(name)s_SOURCE_DIR})
+
+set(VTK_LIBS ITKCommon vtkCommon vtkImaging vtkIO vtkFiltering vtkRendering vtkGraphics vtkCommonPythonD vtkFilteringPythonD)
+
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
+
+swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS})
+
+
+    """ % { "name" : name }
+
+    f = open("CMakeLists.txt", 'w')
+
+    f.write(file_template)
+
+
+def write_vtk_interface_file(signature, code):     
+    filename = signature
+    ifile = filename + ".i"
+    iff = open(ifile, 'w')
+    ifile_code = generate_interface_file_vtk(signature, code)
+    iff.write(ifile_code)
+
+
+
+
+
 
 if __name__ == "__main__":
     _test_write_interfacefile()
