@@ -15,9 +15,9 @@ void test(vtkvmtkDoubleVector* a) {
 
 func = inline_vmtk(code, cache_dir="test_vmtk")
 
-A = vtkvmtk.vtkvmtkDoubleVector()
-A.Allocate(12,1)
-print A.ComputeNorm()
-func(A)
-print A.ComputeNorm()
+v = vtkvmtk.vtkvmtkDoubleVector()
+v.Allocate(12,1)
+print "norm of v ", v.ComputeNorm()
+func(v)
+print "norm of v after test ", v.ComputeNorm()
 
