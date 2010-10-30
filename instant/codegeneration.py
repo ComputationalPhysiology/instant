@@ -407,6 +407,80 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS})
     f.write(file_template)
 
 
+def write_vmtk_cmakefile(name):    
+    file_template = """
+cmake_minimum_required(VERSION 2.6.0)
+
+# This project is designed to be built outside the Insight source tree.
+PROJECT(%(name)%s)
+
+# Find ITK.
+FIND_PACKAGE(ITK REQUIRED)
+IF(ITK_FOUND)
+  INCLUDE(${ITK_USE_FILE})
+ENDIF(ITK_FOUND)
+
+# Find VTK.
+FIND_PACKAGE(VTK REQUIRED)
+IF(VTK_FOUND)
+  INCLUDE(${VTK_USE_FILE})
+ENDIF(VTK_FOUND)
+
+# Find VMTK.
+#FIND_PACKAGE(VMTK REQUIRED)
+#IF(VMTK_FOUND)
+#  INCLUDE(${VMTK_USE_FILE})
+#ENDIF(ITK_FOUND)
+
+
+
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+
+set(SWIG_MODULE_NAME %(name)s)
+set(CMAKE_SWIG_FLAGS
+  -module ${SWIG_MODULE_NAME}
+  -shadow
+  -modern
+  -modernargs
+  -fastdispatch
+  -fvirtual
+  -nosafecstrings
+  -noproxydel
+  -fastproxy
+  -fastinit
+  -fastunpack
+  -fastquery
+  -nobuildnone
+  -Iinclude/swig
+  )
+
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
+
+set(SWIG_SOURCES %(name)s.i)
+
+set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
+
+include_directories(${PYTHON_INCLUDE_PATH} ${%(name)s_SOURCE_DIR} /usr/local/include/vmtk)
+link_directories(/usr/local/lib/vmtk .)
+
+set(VTK_LIBS ITKCommon vtkCommon vtkImaging vtkIO vtkFiltering vtkRendering vtkGraphics vtkCommonPythonD vtkFilteringPythonD)
+set(VMTK_LIBS vtkvmtkCommonPythonD vtkvmtkITKPythonD vtkvmtkCommon vtkvmtkITK vtkvmtkComputationalGeometryPythonD vtkvmtkMiscPythonD vtkvmtkComputationalGeometry vtkvmtkMisc vtkvmtkDifferentialGeometryPythonD vtkvmtkSegmentationPythonD vtkvmtkDifferentialGeometry vtkvmtkSegmentation vtkvmtkIOPythonD) 
+
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
+
+swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS} ${VMTK_LIBS})
+
+
+    """ % { "name" : name }
+
+    f = open("CMakeLists.txt", 'w')
+
+    f.write(file_template)
+
+
+
 def write_vtk_interface_file(signature, code):     
     filename = signature
     ifile = filename + ".i"

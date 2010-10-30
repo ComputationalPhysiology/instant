@@ -1,7 +1,7 @@
 """This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
 from output import instant_assert, instant_warning, instant_error
-from build import build_module, build_module_vtk
+from build import build_module, build_module_vtk, build_module_vmtk
 
 
 def get_func_name(c_code):
@@ -146,4 +146,13 @@ def inline_vtk(c_code, cache_dir=None):
         instant_warning("Didn't find function '%s', returning module." % func_name)
     return module
 
+def inline_vmtk(c_code, cache_dir=None): 
+
+    module = build_module_vmtk(c_code)
+    func_name = get_func_name(c_code)
+    if hasattr(module, func_name):
+        return getattr(module, func_name)
+    else:
+        instant_warning("Didn't find function '%s', returning module." % func_name)
+    return module
 

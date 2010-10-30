@@ -531,6 +531,35 @@ def build_module_vtk(c_code, cache_dir=None):
 
     return module
       
+def build_module_vmtk(c_code, cache_dir=None): 
+    original_path = os.getcwd()
+    cache_dir = validate_cache_dir(cache_dir)
+    signature = modulename_from_checksum(compute_checksum(c_code))
+    modulename = signature
+    moduleids = [signature]
+    module_path = os.path.join(get_temp_dir(), modulename)
+
+
+    os.mkdir(module_path)
+    os.chdir(module_path)
+
+    write_vmtk_cmakefile(modulename)
+    s = generate_interface_file_vtk(signature, c_code)
+    write_vtk_interface_file(signature, c_code)
+
+    ret, output = get_status_output("cmake -DDEBUG=TRUE . > cmake.log ")
+    ret, output = get_status_output("make > compile.log ")
+
+    module_path = copy_to_cache(module_path, cache_dir, modulename)
+
+    os.chdir(original_path)
+    lock = get_lock(cache_dir, modulename)
+
+    module = import_and_cache_module(module_path, modulename, moduleids)
+    release_lock(lock)
+
+    return module
+      
     
 
 
