@@ -19,9 +19,17 @@ c_code2 = """
 void test2(vtkUnstructuredGrid* grid){
   std::cout << "number of cells "<<grid->GetNumberOfCells () <<std::endl; 
   vtkCell* cell; 
+  vtkPoints* points; 
+  double x[3]; 
   for (int i=0; i<grid->GetNumberOfCells (); i++) { 
     cell = grid->GetCell (i);
-    std::cout <<"cell type "<< cell->GetCellType () <<std::endl; 
+    std::cout <<"cell no. "<<i <<" cell type "<< cell->GetCellType () <<std::endl; 
+    points = cell->GetPoints ();
+    std::cout <<"points->GetNumberOfPoints() "<< points->GetNumberOfPoints() <<std::endl;  
+    for (int d=0; d<cell->GetNumberOfPoints(); d++){
+	points->GetPoint(d, x); 
+        std::cout <<" x " <<x[0]<<" "<<x[1]<<" "<<x[2]<<std::endl;  
+    }
   }
 }
 """
