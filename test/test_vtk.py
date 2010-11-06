@@ -30,6 +30,10 @@ void test2(vtkUnstructuredGrid* grid){
 	points->GetPoint(d, x); 
         std::cout <<" x " <<x[0]<<" "<<x[1]<<" "<<x[2]<<std::endl;  
     }
+    vtkIdList* ids = cell->GetPointIds(); 
+    for (int d=0; d<ids->GetNumberOfIds(); d++){
+        std::cout <<" ids " <<ids->GetId(d) <<std::endl;  
+    }
   }
 }
 """
@@ -38,6 +42,7 @@ void test2(vtkUnstructuredGrid* grid){
 func1 = inline_vtk(c_code1, cache_dir="test_vtk")
 func2 = inline_vtk(c_code2, cache_dir="test_vtk")
 
+filename = "u2.vtu"
 filename = "u000000.vtu"
 
 mesh = func1(filename)
