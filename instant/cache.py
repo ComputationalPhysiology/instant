@@ -32,20 +32,21 @@ def checksum_from_modulename(modulename):
 def import_module_directly(path, modulename):
     "Import a module with the given module name that resides in the given path."
     sys.path.insert(0, path)
-
+    e = None
     try:
         module = __import__(modulename)
-    except:
-        instant_warning("In instant.import_module_directly: Failed to import module '%s' from '%s'." % (modulename, path))
+    except Exception, e:
+        instant_warning("In instant.import_module_directly: Failed to import module '%s' from '%s';\n%s:%s;" % (modulename, path, type(e).__name__, e))
         module = None
     finally:
         sys.path.pop(0)
-    return module
+    return module, e
 
 
 _memory_cache = {}
 def memory_cached_module(moduleid):
     "Returns the cached module if found."
+    import sys
     module = _memory_cache.get(moduleid, None)
     instant_debug("Found '%s' in memory cache with key '%r'." % (module, moduleid))
     return module
@@ -63,8 +64,8 @@ def is_valid_module_name(name):
 
 
 def import_and_cache_module(path, modulename, moduleids):
-    module = import_module_directly(path, modulename)
-    instant_assert(module is not None, "Failed to import module found in cache. Modulename: '%s'; Path: '%s'." % (modulename, path))
+    module, e = import_module_directly(path, modulename)
+    instant_assert(module is not None, "Failed to import module found in cache. Modulename: '%s';\nPath: '%s';\n%s:%s;" % (modulename, path, type(e).__name__, e))
     for moduleid in moduleids:
         place_module_in_memory_cache(moduleid, module)
     return module
