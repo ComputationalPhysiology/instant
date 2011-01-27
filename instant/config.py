@@ -4,15 +4,19 @@ import os
 from output import get_status_output
 import re
 
+_swig_version = None
 def get_swig_version(): 
     """ Return the current swig version in a 'str'"""
-    # Check for swig installation
-    result, output = get_status_output("swig -version")
-    if result != 0: 
-        raise OSError("SWIG is not installed on the system.")
-    pattern = "SWIG Version (.*)"
-    r = re.search(pattern, output)
-    return r.groups(0)[0]
+    global _swig_version
+    if _swig_version is None:
+        # Check for swig installation
+        result, output = get_status_output("swig -version")
+        if result != 0: 
+            raise OSError("SWIG is not installed on the system.")
+        pattern = "SWIG Version (.*)"
+        r = re.search(pattern, output)
+        _swig_version = r.groups(0)[0]
+    return _swig_version
 
 def check_swig_version(version, same=False):
     """ Check the swig version
@@ -51,6 +55,8 @@ def check_swig_version(version, same=False):
     
     return swig_enough
 
+_pkg_config_installed = None
+_hl_cache = {}
 def header_and_libs_from_pkgconfig(*packages, **kwargs):
     """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
     
@@ -59,9 +65,12 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
     or:
         (includes, flags, libraries, libdirs, linkflags) = header_and_libs_from_pkgconfig(*list_of_packages, returnLinkFlags=True)
     """
+    global _pkg_config_installed, _hl_cache
     returnLinkFlags = kwargs.get("returnLinkFlags", False)
-    result, output = get_status_output("pkg-config --version ")
-    if result != 0: 
+    if _pkg_config_installed is None:
+        result, output = get_status_output("pkg-config --version ")
+        _pkg_config_installed = (result == 0)
+    if not _pkg_config_installed:
         raise OSError("The pkg-config package is not installed on the system.")
 
     env = os.environ.copy()
@@ -76,27 +85,37 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
     libdirs = []
     linkflags = []
     for pack in packages:
-        result, output = get_status_output("pkg-config --exists %s " % pack, env=env)
-        if result == 0: 
-            tmp = get_status_output("pkg-config --cflags-only-I %s " % pack, env=env)[1].split()
-            includes.extend(i[2:] for i in tmp)
-            
-            tmp = get_status_output("pkg-config --cflags-only-other %s " % pack, env=env)[1].split()
-            flags.extend(tmp)
-            
-            tmp = get_status_output("pkg-config --libs-only-l  %s " % pack, env=env)[1].split()
-            libs.extend(i[2:] for i in tmp)
-            
-            tmp = get_status_output("pkg-config --libs-only-L  %s " % pack, env=env)[1].split()
-            libdirs.extend(i[2:] for i in tmp)
+        if not pack in _hl_cache:
+            result, output = get_status_output("pkg-config --exists %s " % pack, env=env)
+            if result == 0: 
+                tmp = get_status_output("pkg-config --cflags-only-I %s " % pack, env=env)[1].split()
+                _includes = [i[2:] for i in tmp]
 
-            tmp = get_status_output("pkg-config --libs-only-other  %s " % pack, env=env)[1].split()
-            linkflags.extend(tmp)
+                _flags = get_status_output("pkg-config --cflags-only-other %s " % pack, env=env)[1].split()
 
-        else: 
+                tmp = get_status_output("pkg-config --libs-only-l  %s " % pack, env=env)[1].split()
+                _libs = [i[2:] for i in tmp]
+
+                tmp = get_status_output("pkg-config --libs-only-L  %s " % pack, env=env)[1].split()
+                _libdirs = [i[2:] for i in tmp]
+
+                _linkflags = get_status_output("pkg-config --libs-only-other  %s " % pack, env=env)[1].split()
+
+                _hl_cache[pack] = (_includes, _flags, _libs, _libdirs, _linkflags)
+            else:
+                _hl_cache[pack] = None
+
+        result = _hl_cache[pack]
+        if not result:
             raise OSError("The pkg-config file %s does not exist" % pack)
 
-    if returnLinkFlags:
-        return (includes, flags, libs, libdirs, linkflags) 
-    return (includes, flags, libs, libdirs) 
+        _includes, _flags, _libs, _libdirs, _linkflags = result
+        includes.extend(_includes)
+        flags.extend(_flags)
+        libs.extend(_libs)
+        libdirs.extend(_libdirs)
+        linkflags.extend(_linkflags)
 
+    if returnLinkFlags:
+        return (includes, flags, libs, libdirs, linkflags)
+    return (includes, flags, libs, libdirs)

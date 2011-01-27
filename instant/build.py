@@ -5,7 +5,7 @@ from itertools import chain
 
 # TODO: Import only the official interface
 from output import *
-from config import header_and_libs_from_pkgconfig
+from config import header_and_libs_from_pkgconfig, get_swig_version
 from paths import *
 from signatures import *
 from cache import *
@@ -77,8 +77,9 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
             return
     
     # Verify that SWIG is on the system
-    (swig_stat, swig_out) = get_status_output("swig -version")
-    if swig_stat != 0:
+    try:
+        get_swig_version()
+    except OSError:
         instant_error("In instant.recompile: Could not find swig!"\
             " You can download swig from http://www.swig.org")
     
@@ -87,7 +88,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     compile_log_file = open(compile_log_filename, "w")
     try:
         # Build module
-        cmd = "python %s build_ext" % setup_name
+        cmd = "python %s build_ext install --install-platlib=." % setup_name
         instant_info("--- Instant: compiling ---")
         instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
@@ -98,18 +99,6 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
                 os.remove(compilation_checksum_filename)
             instant_error("In instant.recompile: The module did not "\
                 "compile, see '%s'" % compile_log_filename)
-        
-        # 'Install' module
-        cmd = "python %s install --install-platlib=." % setup_name
-        instant_debug("cmd = %s" % cmd)
-        ret, output = get_status_output(cmd)
-        compile_log_file.write(output)
-        compile_log_file.flush()
-        if ret != 0:
-            if os.path.exists(compilation_checksum_filename):
-                os.remove(compilation_checksum_filename)
-            instant_error("In instant.recompile: Could not 'install' "\
-                "the module, see '%s'" % compile_log_filename)
     finally:
         compile_log_file.close()
     
