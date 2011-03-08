@@ -2,11 +2,10 @@
 
 import re, os
 from output import instant_assert, instant_warning, instant_debug, write_file
-
+from config import get_swig_binary
 
 def mapstrings(format, sequence):
     return "\n".join(format % i for i in sequence)
-    
 
 def reindent(code):
     '''Reindent a multiline string to allow easier to read syntax.
@@ -191,7 +190,6 @@ def write_interfacefile(filename, modulename, code, init_code,
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
 
-
 def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
@@ -226,7 +224,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
         import os
         from distutils.core import setup, Extension
         name = '%s'
-        swig_cmd =r'swig -python %s %s %s'
+        swig_cmd =r'%s -python %s %s %s'
         os.system(swig_cmd)
         sources = %s
         setup(name = '%s',
@@ -235,8 +233,9 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
                              include_dirs=%s,
                              library_dirs=%s,
                              libraries=%s %s %s)])  
-        """ % (modulename, swig_include_dirs, swig_args, swigfilename, cppsrcs, 
-               modulename, modulename, include_dirs, library_dirs, libraries, compile_args, link_args))
+        """ % (modulename, get_swig_binary(), swig_include_dirs, swig_args, \
+               swigfilename, cppsrcs, modulename, modulename, include_dirs, \
+               library_dirs, libraries, compile_args, link_args))
     
     write_file(filename, code)
     instant_debug("Done writing setup.py file.")
@@ -253,9 +252,10 @@ def _test_write_interfacefile():
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
     arrays = [["length1", "array1"], ["dims", "lengths", "array2"]]
     
-    write_interfacefile("%s.i" % modulename, modulename, code, init_code, additional_definitions, additional_declarations, system_headers, local_headers, wrap_headers, arrays)
+    write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
+                        additional_definitions, additional_declarations, \
+                        system_headers, local_headers, wrap_headers, arrays)
     print "".join(open("%s.i" % modulename).readlines())
-
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -270,7 +270,9 @@ def _test_write_setup():
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
     
-    write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs)
+    write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
+                include_dirs, library_dirs, libraries, swig_include_dirs, \
+                swigargs, cppargs, lddargs)
     print "".join(open("setup.py").readlines())
 
 def unique(list):
@@ -336,7 +338,6 @@ def generate_interface_file_vtk(signature, code):
 %(code)s 
 
 """
-    
     class_list = find_vtk_classes(code)
     includes = generate_vtk_includes(class_list) 
     typemaps = create_typemaps(class_list)
@@ -479,18 +480,12 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS} ${VMTK_L
 
     f.write(file_template)
 
-
-
 def write_vtk_interface_file(signature, code):     
     filename = signature
     ifile = filename + ".i"
     iff = open(ifile, 'w')
     ifile_code = generate_interface_file_vtk(signature, code)
     iff.write(ifile_code)
-
-
-
-
 
 
 if __name__ == "__main__":

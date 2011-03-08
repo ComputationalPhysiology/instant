@@ -4,19 +4,48 @@ import os
 from output import get_status_output
 import re
 
-_swig_version = None
+# Global cache variables
+_swig_binary_cache = None
+_swig_version_cache = None
+_pkg_config_installed = None
+_header_and_library_cache = {}
+
+def check_and_set_swig_binary(binary="swig", path=""):
+    """ Check if a particular swig binary is available"""
+    global _swig_binary_cache
+    if not isinstance(binary, str):
+        raise TypeError, "expected a 'str' as first argument"
+    if not isinstance(path, str):
+        raise TypeError, "expected a 'str' as second argument"
+    swig_binary = os.path.join(path, binary)
+    if swig_binary == _swig_binary_cache:
+        return True
+    
+    result, output = get_status_output("%s -version"%swig_binary)
+    if result != 0: 
+        return False
+    
+    # Set cache
+    _swig_binary_cache = swig_binary
+
+    return True
+
+def get_swig_binary():
+    "Return any cached swig binary"
+    return _swig_binary_cache if _swig_binary_cache else "swig"
+
 def get_swig_version(): 
     """ Return the current swig version in a 'str'"""
-    global _swig_version
-    if _swig_version is None:
+    global _swig_version_cache
+    if _swig_version_cache is None:
         # Check for swig installation
-        result, output = get_status_output("swig -version")
+        result, output = get_status_output("%s -version"%get_swig_binary())
         if result != 0: 
             raise OSError("SWIG is not installed on the system.")
         pattern = "SWIG Version (.*)"
         r = re.search(pattern, output)
-        _swig_version = r.groups(0)[0]
-    return _swig_version
+        _swig_version_cache = r.groups(0)[0]
+    return _swig_version_cache
 
 def check_swig_version(version, same=False):
     """ Check the swig version
@@ -55,17 +84,19 @@ def check_swig_version(version, same=False):
     
     return swig_enough
 
-_pkg_config_installed = None
-_hl_cache = {}
 def header_and_libs_from_pkgconfig(*packages, **kwargs):
-    """This function returns list of include files, flags, libraries and library directories obtain from a pkgconfig file.
+    """This function returns list of include files, flags,
+    libraries and library directories obtain from a pkgconfig file.
     
     The usage is: 
-      (includes, flags, libraries, libdirs) = header_and_libs_from_pkgconfig(*list_of_packages)
+      (includes, flags, libraries, libdirs) = \
+             header_and_libs_from_pkgconfig(*list_of_packages)
     or:
-        (includes, flags, libraries, libdirs, linkflags) = header_and_libs_from_pkgconfig(*list_of_packages, returnLinkFlags=True)
+        (includes, flags, libraries, libdirs, linkflags) = \
+             header_and_libs_from_pkgconfig(*list_of_packages, \
+             returnLinkFlags=True)
     """
-    global _pkg_config_installed, _hl_cache
+    global _pkg_config_installed, _header_and_library_cache
     returnLinkFlags = kwargs.get("returnLinkFlags", False)
     if _pkg_config_installed is None:
         result, output = get_status_output("pkg-config --version ")
@@ -85,27 +116,34 @@ def header_and_libs_from_pkgconfig(*packages, **kwargs):
     libdirs = []
     linkflags = []
     for pack in packages:
-        if not pack in _hl_cache:
-            result, output = get_status_output("pkg-config --exists %s " % pack, env=env)
+        if not pack in _header_and_library_cache:
+            result, output = get_status_output(\
+                "pkg-config --exists %s " % pack, env=env)
             if result == 0: 
-                tmp = get_status_output("pkg-config --cflags-only-I %s " % pack, env=env)[1].split()
+                tmp = get_status_output(\
+                    "pkg-config --cflags-only-I %s " % pack, env=env)[1].split()
                 _includes = [i[2:] for i in tmp]
 
-                _flags = get_status_output("pkg-config --cflags-only-other %s " % pack, env=env)[1].split()
+                _flags = get_status_output(\
+                    "pkg-config --cflags-only-other %s " % pack, env=env)[1].split()
 
-                tmp = get_status_output("pkg-config --libs-only-l  %s " % pack, env=env)[1].split()
+                tmp = get_status_output(\
+                    "pkg-config --libs-only-l  %s " % pack, env=env)[1].split()
                 _libs = [i[2:] for i in tmp]
 
-                tmp = get_status_output("pkg-config --libs-only-L  %s " % pack, env=env)[1].split()
+                tmp = get_status_output(\
+                    "pkg-config --libs-only-L  %s " % pack, env=env)[1].split()
                 _libdirs = [i[2:] for i in tmp]
 
-                _linkflags = get_status_output("pkg-config --libs-only-other  %s " % pack, env=env)[1].split()
+                _linkflags = get_status_output(\
+                    "pkg-config --libs-only-other  %s " % pack, env=env)[1].split()
 
-                _hl_cache[pack] = (_includes, _flags, _libs, _libdirs, _linkflags)
+                _header_and_library_cache[pack] = (_includes, _flags, _libs, \
+                                                   _libdirs, _linkflags)
             else:
-                _hl_cache[pack] = None
+                _header_and_library_cache[pack] = None
 
-        result = _hl_cache[pack]
+        result = _header_and_library_cache[pack]
         if not result:
             raise OSError("The pkg-config file %s does not exist" % pack)
 

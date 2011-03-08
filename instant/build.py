@@ -35,7 +35,6 @@ def arg_strings(x):
         x = x.split()
     return strip_strings(x)
 
-
 def copy_files(source, dest, files):
     """Copy a list of files from a source directory to a destination directory.
     This may seem a bit complicated, but a lot of this code is error checking."""
@@ -105,7 +104,6 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
 
-
 def copy_to_cache(module_path, cache_dir, modulename):
     "Copy module directory to cache."
     # Get lock, check if the module exists, _otherwise_ copy the
@@ -141,7 +139,6 @@ def copy_to_cache(module_path, cache_dir, modulename):
     delete_temp_dir()
     release_lock(lock)
     return cache_module_path
-
 
 def build_module(modulename=None, source_directory=".",
                  code="", init_code="",
