@@ -25,8 +25,11 @@ def check_and_set_swig_binary(binary="swig", path=""):
     if result != 0: 
         return False
     
-    # Set cache
+    # Set binary cache
     _swig_binary_cache = swig_binary
+
+    # Reset SWIG version cache
+    _swig_version_cache = None
 
     return True
 
@@ -34,7 +37,7 @@ def get_swig_binary():
     "Return any cached swig binary"
     return _swig_binary_cache if _swig_binary_cache else "swig"
 
-def get_swig_version(): 
+def get_swig_version():
     """ Return the current swig version in a 'str'"""
     global _swig_version_cache
     if _swig_version_cache is None:
