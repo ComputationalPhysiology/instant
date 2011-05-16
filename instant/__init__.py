@@ -18,7 +18,7 @@ Questions, bugs and patches should be sent to instant-dev@fenics.org.
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
 __date__ = "2009-05-28"
-__version__ = "0.9.9"
+__version__ = "0.9.10"
 
 # TODO: Import only the official interface
 from output import *
