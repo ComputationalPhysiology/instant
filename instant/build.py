@@ -84,7 +84,10 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     
     # Create log file for logging of compilation errors
     compile_log_filename = os.path.join(module_path, "compile.log")
+    compile_log_filename_dest = os.path.join(get_default_error_dir(), \
+                                             modulename, "compile.log")
     compile_log_file = open(compile_log_filename, "w")
+    
     try:
         # Build module
         cmd = "python %s build_ext install --install-platlib=." % setup_name
@@ -96,10 +99,17 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
         if ret != 0:
             if os.path.exists(compilation_checksum_filename):
                 os.remove(compilation_checksum_filename)
+            
             instant_error("In instant.recompile: The module did not "\
-                "compile, see '%s'" % compile_log_filename)
+                "compile, see '%s'" % compile_log_filename_dest)
     finally:
         compile_log_file.close()
+        if ret != 0:
+            # Copy file to error dir
+            error_dir = os.path.join(get_default_error_dir(), modulename)
+            if not os.path.isdir(error_dir):
+                os.mkdir(error_dir)
+            shutil.copy(compile_log_filename, compile_log_filename_dest)
     
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)

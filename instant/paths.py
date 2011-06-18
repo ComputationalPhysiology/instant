@@ -50,6 +50,17 @@ def get_default_cache_dir():
         os.mkdir(cache_dir)
     return cache_dir
 
+def get_default_error_dir():
+    "Return the default cache directory."
+    if "INSTANT_ERROR_DIR" in os.environ:
+        cache_dir = os.environ["INSTANT_ERROR_DIR"]
+    else:
+        cache_dir = os.path.join(get_instant_dir(), "error")
+    if not os.path.isdir(cache_dir):
+        instant_debug("Creating cache directory '%s'." % cache_dir)
+        os.mkdir(cache_dir)
+    return cache_dir
+
 def validate_cache_dir(cache_dir):
     if cache_dir is None:
         return get_default_cache_dir()
@@ -63,6 +74,7 @@ def _test():
     print "Temp dir:", get_temp_dir()
     print "Instant dir:", get_instant_dir()
     print "Default cache dir:", get_default_cache_dir()
+    print "Default error dir:", get_default_error_dir()
     delete_temp_dir()
    
 if __name__ == "__main__":
