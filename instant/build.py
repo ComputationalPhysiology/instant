@@ -105,6 +105,8 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     finally:
         compile_log_file.close()
         if ret != 0:
+            lock = get_lock(get_default_error_dir(), modulename)
+
             # Copy file to error dir
             error_dir = os.path.join(get_default_error_dir(), modulename)
             if not os.path.isdir(error_dir):
@@ -115,7 +117,8 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
             # by build bot
             shutil.copy(compile_log_filename, \
                         os.path.join(get_default_error_dir(), "compile.log"))
-    
+            
+            release_lock(lock)
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
 
