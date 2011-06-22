@@ -110,6 +110,11 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
             if not os.path.isdir(error_dir):
                 os.mkdir(error_dir)
             shutil.copy(compile_log_filename, compile_log_filename_dest)
+
+            # Also copy a file to .instant/error/compile.log for easier access
+            # by build bot
+            shutil.copy(compile_log_filename, \
+                        os.path.join(get_default_error_dir(), "compile.log"))
     
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
