@@ -3,7 +3,7 @@
 # This script cleans the Instant cache
 
 __author__ = "Ilmar Wilbers (ilmarw@simula.no)"
-__date__ = "2008-08-08 -- 2011-06-17"
+__date__ = "2008-08-08 -- 2011-06-23"
 __copyright__ = "Copyright (C) 2008 Ilmar Wilbers"
 __license__  = "GNU GPL version 3 or any later version"
 
@@ -45,6 +45,8 @@ if len(modules+error_logs) == 0:
 # Remove cached forms
 lockfiles = [m for m in modules if     m.endswith(".lock")]
 modules   = [m for m in modules if not m.endswith(".lock")]
+error_lockfiles  = [f for f in error_logs if     f.endswith(".lock")]
+error_logs       = [f for f in error_logs if not f.endswith(".lock")]
 print "Removing %d modules from Instant cache..." % len(modules)
 for module in modules:
     directory = os.path.join(cache_dir, module)
@@ -52,10 +54,14 @@ for module in modules:
 
 print "Removing %d error logs from Instant cache..." % len(error_logs)
 for error_log in error_logs:
-    directory = os.path.join(error_dir, error_log)
-    shutil.rmtree(directory, ignore_errors=True)
+    os.remove(os.path.join(error_dir, error_log))
 
-print "Removing %d lock files from Instant cache..." % len(lockfiles)
+print "Removing %d lock files from Instant cache..." % len(lockfiles+error_lockfiles)
 for lf in lockfiles:
     f = os.path.join(cache_dir, lf)
     os.remove(f)
+
+for lf in error_lockfiles:
+    f = os.path.join(error_dir, lf)
+    os.remove(f)
+
