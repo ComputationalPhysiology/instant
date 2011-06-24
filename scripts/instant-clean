@@ -54,7 +54,10 @@ for module in modules:
 
 print "Removing %d error logs from Instant cache..." % len(error_logs)
 for error_log in error_logs:
-    os.remove(os.path.join(error_dir, error_log))
+    if os.path.isdir(os.path.join(error_dir, error_log)):
+        shutil.rmtree(os.path.join(error_dir, error_log))
+    else:
+        os.remove(os.path.join(error_dir, error_log))
 
 print "Removing %d lock files from Instant cache..." % len(lockfiles+error_lockfiles)
 for lf in lockfiles:
