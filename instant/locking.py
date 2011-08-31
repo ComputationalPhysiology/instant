@@ -4,12 +4,12 @@ Only works on UNIX systems.
 
 Two python libraries can be used:
 
-  flufl : A nfs safe which can be downloaded from:
+  flufl.lock : A nfs safe which can be downloaded from:
 
-          https://launchpad.net/flufl.lock
+                 https://launchpad.net/flufl.lock
 
-  fcntl : A builtin Python module which only works on posix machines
-          and it is does unfortunately not work on nfs
+  fcntl      : A builtin Python module which only works on posix machines
+               and it is does unfortunately not work on nfs
 
 """
 
@@ -20,7 +20,7 @@ from output import instant_error, instant_assert, instant_debug
 from paths import validate_cache_dir
 
 try:
-    import flufl
+    import flufl.lock
     fcntl = None
 except:
     flufl = None
