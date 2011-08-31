@@ -1,21 +1,70 @@
 """File locking for the cache system, to avoid problems
 when multiple processes work with the same module.
-Only works on UNIX systems."""
+Only works on UNIX systems.
+
+Two python libraries can be used:
+
+  flufl : A nfs safe which can be downloaded from:
+
+          https://launchpad.net/flufl.lock
+
+  fcntl : A builtin Python module which only works on posix machines
+          and it is does unfortunately not work on nfs
+
+"""
+
+__all__ = ["get_lock", "release_lock", "release_all_lock"]
 
 import os.path
 from output import instant_error, instant_assert, instant_debug
 from paths import validate_cache_dir
 
 try:
-    import fcntl
-except:
+    import flufl
     fcntl = None
+except:
+    flufl = None
+    try:
+        import fcntl
+    except:
+        fcntl = None
 
 # Keeping an overview of locks currently held,
 # to avoid deadlocks within a single process.
 _lock_names = {} # lock.fileno() -> lockname
 _lock_files = {} # lockname -> lock
 _lock_count = {} # lockname -> number of times this lock has been aquired and not yet released
+
+if flufl:
+    def get_lock(cache_dir, module_name):
+        "Get a new file lock."
+        
+        from flufl.lock.tests.subproc import acquire
+        from flufl.lock import Lock
+        from datetime import timedelta
+        
+        lockname = module_name + ".lock"
+        count = _lock_count.get(lockname, 0)
+        
+        instant_debug("Acquiring lock %s, count is %d." % (lockname, count))
+        
+        cache_dir = validate_cache_dir(cache_dir)
+        lockname = os.path.join(cache_dir, lockname)
+        acquire(lockname, timedelta(seconds=1))
+        lock = Lock(lockname)
+        lock.lock()
+        
+        return lock
+    
+    def release_lock(lock):
+        "Release a lock currently held by Instant."
+        if lock.is_locked:
+            hostname, pid, lockname = lock.details
+            instant_debug("Releasing lock %s." % (lockname))
+            lock.unlock()
+
+    def release_all_locks():
+        pass
 
 if fcntl:
     def get_lock(cache_dir, module_name):
@@ -73,3 +122,6 @@ else:
     def release_lock(lock):
         pass
 
+    def release_all_locks():
+        pass
+    

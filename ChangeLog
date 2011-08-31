@@ -1,6 +1,7 @@
+  - Added support for flufl for NFS safe file locking
 1.0-beta [2011-08-11]
-- Error log is now copied to ~/.instant/error/module_name/compile.log
-   and ~/.instant/error/compile.log for easier retrieval
+  - Error log is now copied to ~/.instant/error/module_name/compile.log
+    and ~/.instant/error/compile.log for easier retrieval
 0.9.10 [2011-05-16]
  - Added support for setting swig binary and swig path
 0.9.9 [2011-02-23]
