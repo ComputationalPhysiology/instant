@@ -1,6 +1,6 @@
 """This module contains the main part of Instant, the build_module function."""
 
-import os, sys, shutil, glob
+import os, sys, shutil, glob, errno
 from itertools import chain
 
 # TODO: Import only the official interface
@@ -35,6 +35,16 @@ def arg_strings(x):
         x = x.split()
     return strip_strings(x)
 
+def makedirs(path):
+    """
+    Creates a directory (tree). If directory already excists it does nothing.
+    """
+    try:
+        os.makedirs(path)
+    except os.error, e:
+        if e.errno != errno.EEXIST:
+            raise
+
 def copy_files(source, dest, files):
     """Copy a list of files from a source directory to a destination directory.
     This may seem a bit complicated, but a lot of this code is error checking."""
@@ -44,7 +54,7 @@ def copy_files(source, dest, files):
             instant_warning("In instant.copy_files: Path '%s' already exists, "\
                 "overwriting existing files: %r." % (dest, list(overwriting)))
     else:
-        os.mkdir(dest)
+        makedirs(dest)
     
     if source != dest:
         instant_debug("In instant.copy_files: Copying files %r from %r to %r"\
@@ -109,8 +119,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
 
             # Copy file to error dir
             error_dir = os.path.join(get_default_error_dir(), modulename)
-            if not os.path.isdir(error_dir):
-                os.mkdir(error_dir)
+            makedirs(error_dir)
             shutil.copy(compile_log_filename, compile_log_filename_dest)
 
             # Also copy a file to .instant/error/compile.log for easier access
@@ -153,7 +162,16 @@ def copy_to_cache(module_path, cache_dir, modulename):
         " to cache at %r" % (module_path, cache_module_path))
     
     # Do the copying
-    shutil.copytree(module_path, cache_module_path)
+    try:
+        shutil.copytree(module_path, cache_module_path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            pass
+        else:
+            raise
+    except:
+        raise
+    
     delete_temp_dir()
     release_lock(lock)
     return cache_module_path
@@ -392,14 +410,13 @@ def build_module(modulename=None, source_directory=".",
         instant_assert(not os.path.exists(module_path),
             "In instant.build_module: Not expecting module_path to exist: '%s'"\
             % module_path)
-        os.mkdir(module_path)
+        makedirs(module_path)
         use_cache = True
     else:
         use_cache = False
         moduleids = []
         module_path = os.path.join(original_path, modulename)
-        if not os.path.exists(module_path):
-            os.mkdir(module_path)
+        makedirs(module_path)
         
         ## Look for module in memory cache
         #module, moduleids = check_memory_cache(modulename)
@@ -515,7 +532,7 @@ def build_module_vtk(c_code, cache_dir=None):
     module_path = os.path.join(get_temp_dir(), modulename)
 
 
-    os.mkdir(module_path)
+    makedirs(module_path)
     os.chdir(module_path)
 
     write_cmakefile(modulename)
@@ -543,8 +560,7 @@ def build_module_vmtk(c_code, cache_dir=None):
     moduleids = [signature]
     module_path = os.path.join(get_temp_dir(), modulename)
 
-
-    os.mkdir(module_path)
+    makedirs(module_path)
     os.chdir(module_path)
 
     write_vmtk_cmakefile(modulename)
