@@ -165,12 +165,8 @@ def copy_to_cache(module_path, cache_dir, modulename):
     try:
         shutil.copytree(module_path, cache_module_path)
     except OSError, e:
-        if e.errno == errno.EEXIST:
-            pass
-        else:
+        if e.errno != errno.EEXIST:
             raise
-    except:
-        raise
     
     delete_temp_dir()
     release_lock(lock)
