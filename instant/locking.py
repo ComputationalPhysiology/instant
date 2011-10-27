@@ -39,7 +39,6 @@ if flufl:
     def get_lock(cache_dir, module_name):
         "Get a new file lock."
         
-        from flufl.lock.tests.subproc import acquire
         from flufl.lock import Lock
         from datetime import timedelta
         
@@ -50,7 +49,6 @@ if flufl:
         
         cache_dir = validate_cache_dir(cache_dir)
         lockname = os.path.join(cache_dir, lockname)
-        acquire(lockname, timedelta(seconds=1))
         lock = Lock(lockname)
         lock.lock()
         
@@ -66,7 +64,7 @@ if flufl:
     def release_all_locks():
         pass
 
-if fcntl:
+elif fcntl:
     def get_lock(cache_dir, module_name):
         "Get a new file lock."
         global _lock_names, _lock_files, _lock_count
