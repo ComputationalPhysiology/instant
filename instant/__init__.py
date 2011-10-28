@@ -13,12 +13,12 @@ C{inline*} see their documentation for more details.
 
 For more examples, see the tests/ directory in the Instant distribution.
 
-Questions, bugs and patches should be sent to instant-dev@fenics.org.
+Questions, bugs and patches should be sent to instant@lists.launchpad.net.
 """
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
 __date__ = "2009-05-28"
-__version__ = "1.0-beta"
+__version__ = "1.0-beta2"
 
 # TODO: Import only the official interface
 from output import *
