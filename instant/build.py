@@ -115,17 +115,26 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     finally:
         compile_log_file.close()
         if ret != 0:
+            print os.environ.keys()
+            if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
+                instant_warning("")
+                instant_warning("Content of instant compile.log")
+                instant_warning("==============================")
+                instant_warning(output)
+                instant_warning("")
+            
             lock = get_lock(get_default_error_dir(), modulename)
 
             # Copy file to error dir
             error_dir = os.path.join(get_default_error_dir(), modulename)
             makedirs(error_dir)
-            shutil.copy(compile_log_filename, compile_log_filename_dest)
-
-            # Also copy a file to .instant/error/compile.log for easier access
-            # by build bot
-            shutil.copy(compile_log_filename, \
-                        os.path.join(get_default_error_dir(), "compile.log"))
+            try:
+                shutil.copy(compile_log_filename, compile_log_filename_dest)
+            except os.error, e:
+                # If for one reason or the other the file is not there
+                # silently ignore exception
+                if e.errno != errno.ENOENT:
+                    raise 
             
             release_lock(lock)
     # Compilation succeeded, write new_compilation_checksum to checksum_file
