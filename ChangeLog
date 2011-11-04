@@ -1,6 +1,7 @@
  - If environmental variable INSTANT_DISPLAY_COMPILE_LOG is set the content 
    of compile.log will be displayed
  - Removed copying of compile.log to ~/.instant/error/
+1.0-beta2 [2011-10-28]
  - Added support for flufl.lock for NFS safe file locking
 1.0-beta [2011-08-11]
  - Error log is now copied to ~/.instant/error/module_name/compile.log
