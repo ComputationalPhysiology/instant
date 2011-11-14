@@ -97,7 +97,8 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     compile_log_filename_dest = os.path.join(get_default_error_dir(), \
                                              modulename, "compile.log")
     compile_log_file = open(compile_log_filename, "w")
-    
+
+    ret = 1
     try:
         # Build module
         cmd = "python %s build_ext install --install-platlib=." % setup_name
@@ -115,7 +116,6 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     finally:
         compile_log_file.close()
         if ret != 0:
-            print os.environ.keys()
             if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
                 instant_warning("")
                 instant_warning("Content of instant compile.log")
