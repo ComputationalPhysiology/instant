@@ -123,24 +123,15 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
                 instant_warning(output)
                 instant_warning("")
             
-            lock = get_lock(get_default_error_dir(), modulename)
-
-            # Copy file to error dir
-            error_dir = os.path.join(get_default_error_dir(), modulename)
-            makedirs(error_dir)
-            try:
-                shutil.copy(compile_log_filename, compile_log_filename_dest)
-            except os.error, e:
-                # If for one reason or the other the file is not there
-                # silently ignore exception
-                if e.errno != errno.ENOENT:
-                    raise 
-            
-            release_lock(lock)
+            # Copy module to error dir
+            module_path = copy_to_cache(module_path, get_default_error_dir(),\
+                                        modulename, check_for_existing_path=False)
+    
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
 
-def copy_to_cache(module_path, cache_dir, modulename):
+def copy_to_cache(module_path, cache_dir, modulename, \
+                  check_for_existing_path=True):
     "Copy module directory to cache."
     # Get lock, check if the module exists, _otherwise_ copy the
     # finished compiled module from /tmp/foo to the cache directory,
@@ -149,7 +140,7 @@ def copy_to_cache(module_path, cache_dir, modulename):
 
     # Validate the path
     cache_module_path = os.path.join(cache_dir, modulename)
-    if os.path.exists(cache_module_path):
+    if check_for_existing_path and os.path.exists(cache_module_path):
         # This indicates a race condition has happened (and is being avoided!).
         instant_warning("In instant.build_module: Path '%s' already exists,"\
             " but module wasn't found in cache previously. Not overwriting,"\
@@ -163,10 +154,10 @@ def copy_to_cache(module_path, cache_dir, modulename):
     
     # Error checks
     instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
-        " Cannot copy non-existing directory %r!" % module_path)
-    instant_assert(not os.path.isdir(cache_module_path),
-        "In instant.build_module: Cache directory %r shouldn't exist "\
-        "at this point!" % cache_module_path)
+                   " Cannot copy non-existing directory %r!" % module_path)
+    if check_for_existing_path and os.path.isdir(cache_module_path):
+        instant_error("In instant.build_module: Cache directory %r shouldn't"\
+                      " exist at this point!" % cache_module_path)
     instant_debug("In instant.build_module: Copying built module from %r"\
         " to cache at %r" % (module_path, cache_module_path))
     
@@ -176,9 +167,10 @@ def copy_to_cache(module_path, cache_dir, modulename):
     except OSError, e:
         if e.errno != errno.EEXIST:
             raise
+    finally:
+        delete_temp_dir()
+        release_lock(lock)
     
-    delete_temp_dir()
-    release_lock(lock)
     return cache_module_path
 
 def build_module(modulename=None, source_directory=".",
