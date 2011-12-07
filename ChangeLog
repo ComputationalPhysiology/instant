@@ -1,5 +1,6 @@
- - Copy all files to ~/.instant/error/module_name when instant fails
- - If environmental variable INSTANT_DISPLAY_COMPILE_LOG is set the content 
+1.0.0 [2011-12-07]
+ - Copy all files to ~/.instant/error/module_name when Instant fails
+ - If environmental variable INSTANT_DISPLAY_COMPILE_LOG is set the content
    of compile.log will be displayed
  - Removed copying of compile.log to ~/.instant/error/
 1.0-beta2 [2011-10-28]
