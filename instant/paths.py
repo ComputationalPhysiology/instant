@@ -13,7 +13,7 @@ def get_temp_dir():
     """Return a temporary directory for the duration of this process.
     
     Multiple calls in the same process returns the same directory.
-    Remember to all delete_temp_dir() before exiting."""
+    Remember to call delete_temp_dir() before exiting."""
     global _tmp_dir
     if _tmp_dir is None:
         datestring = "%d-%d-%d-%02d-%02d" % time.localtime()[:5]
@@ -30,7 +30,7 @@ def delete_temp_dir():
     _tmp_dir = None
 
 def get_instant_dir():
-    "Return a temporary directory for the duration of this process."
+    "Return the default instant directory, creating it if necessary."
     # os.path.expanduser works for Windows, Linux, and Mac
     # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
     instant_dir = os.path.join(os.path.expanduser("~"), ".instant")
@@ -51,7 +51,7 @@ def get_default_cache_dir():
     return cache_dir
 
 def get_default_error_dir():
-    "Return the default cache directory."
+    "Return the default error directory."
     if "INSTANT_ERROR_DIR" in os.environ:
         cache_dir = os.environ["INSTANT_ERROR_DIR"]
     else:
