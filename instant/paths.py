@@ -6,7 +6,7 @@ import os
 import shutil
 import tempfile
 import time
-from output import instant_debug, instant_assert
+from output import instant_debug, instant_error, instant_assert
 
 _tmp_dir = None
 def get_temp_dir():
@@ -66,7 +66,10 @@ def validate_cache_dir(cache_dir):
 def _check_or_create(directory, label):
     if not os.path.isdir(directory):
         instant_debug("Creating %s directory '%s'." % (label, directory))
-        os.mkdir(directory)
+        try:
+            os.makedirs(directory)
+        except OSError, e:
+            instant_error("Creating %s directory failed: %s" % (label, e))
 
 def _test():
     print "Temp dir:", get_temp_dir()
