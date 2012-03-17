@@ -34,9 +34,7 @@ def get_instant_dir():
     # os.path.expanduser works for Windows, Linux, and Mac
     # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
     instant_dir = os.path.join(os.path.expanduser("~"), ".instant")
-    if not os.path.isdir(instant_dir):
-        instant_debug("Creating instant directory '%s'." % instant_dir)
-        os.mkdir(instant_dir)
+    _check_or_create(instant_dir, "instant")
     return instant_dir
 
 def get_default_cache_dir():
@@ -45,30 +43,30 @@ def get_default_cache_dir():
         cache_dir = os.environ["INSTANT_CACHE_DIR"]
     else:
         cache_dir = os.path.join(get_instant_dir(), "cache")
-    if not os.path.isdir(cache_dir):
-        instant_debug("Creating cache directory '%s'." % cache_dir)
-        os.mkdir(cache_dir)
+    _check_or_create(cache_dir, "cache")
     return cache_dir
 
 def get_default_error_dir():
     "Return the default error directory."
     if "INSTANT_ERROR_DIR" in os.environ:
-        cache_dir = os.environ["INSTANT_ERROR_DIR"]
+        error_dir = os.environ["INSTANT_ERROR_DIR"]
     else:
-        cache_dir = os.path.join(get_instant_dir(), "error")
-    if not os.path.isdir(cache_dir):
-        instant_debug("Creating cache directory '%s'." % cache_dir)
-        os.mkdir(cache_dir)
-    return cache_dir
+        error_dir = os.path.join(get_instant_dir(), "error")
+    _check_or_create(error_dir, "error")
+    return error_dir
 
 def validate_cache_dir(cache_dir):
     if cache_dir is None:
         return get_default_cache_dir()
     instant_assert(isinstance(cache_dir, str), "Expecting cache_dir to be a string.")
     cache_dir = os.path.abspath(cache_dir)
-    if not os.path.isdir(cache_dir):
-        os.mkdir(cache_dir)
+    _check_or_create(cache_dir, "cache")
     return cache_dir
+
+def _check_or_create(directory, label):
+    if not os.path.isdir(directory):
+        instant_debug("Creating %s directory '%s'." % (label, directory))
+        os.mkdir(directory)
 
 def _test():
     print "Temp dir:", get_temp_dir()
