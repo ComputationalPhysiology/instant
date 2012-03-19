@@ -76,6 +76,8 @@ def makedirs(path):
             raise
 
 def _test():
+    from output import set_logging_level
+    set_logging_level("DEBUG")
     print "Temp dir:", get_temp_dir()
     print "Instant dir:", get_instant_dir()
     print "Default cache dir:", get_default_cache_dir()
