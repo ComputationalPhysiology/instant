@@ -40,18 +40,18 @@ def get_instant_dir():
 
 def get_default_cache_dir():
     "Return the default cache directory."
-    if "INSTANT_CACHE_DIR" in os.environ:
-        cache_dir = os.environ["INSTANT_CACHE_DIR"]
-    else:
+    cache_dir = os.environ.get("INSTANT_CACHE_DIR")
+    # Catches the cases where INSTANT_CACHE_DIR is not set or ''
+    if not cache_dir:
         cache_dir = os.path.join(get_instant_dir(), "cache")
     makedirs(cache_dir)
     return cache_dir
 
 def get_default_error_dir():
     "Return the default error directory."
-    if "INSTANT_ERROR_DIR" in os.environ:
-        error_dir = os.environ["INSTANT_ERROR_DIR"]
-    else:
+    error_dir = os.environ.get("INSTANT_ERROR_DIR")
+    # Catches the cases where INSTANT_ERROR_DIR is not set or ''
+    if not error_dir:
         error_dir = os.path.join(get_instant_dir(), "error")
     makedirs(error_dir)
     return error_dir
