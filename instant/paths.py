@@ -3,10 +3,11 @@
 # Utilities for directory handling:
 
 import os
+import errno
 import shutil
 import tempfile
 import time
-from output import instant_debug, instant_error, instant_assert
+from output import instant_debug, instant_assert
 
 _tmp_dir = None
 def get_temp_dir():
@@ -34,7 +35,7 @@ def get_instant_dir():
     # os.path.expanduser works for Windows, Linux, and Mac
     # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
     instant_dir = os.path.join(os.path.expanduser("~"), ".instant")
-    _check_or_create(instant_dir, "instant")
+    makedirs(instant_dir)
     return instant_dir
 
 def get_default_cache_dir():
@@ -43,7 +44,7 @@ def get_default_cache_dir():
         cache_dir = os.environ["INSTANT_CACHE_DIR"]
     else:
         cache_dir = os.path.join(get_instant_dir(), "cache")
-    _check_or_create(cache_dir, "cache")
+    makedirs(cache_dir)
     return cache_dir
 
 def get_default_error_dir():
@@ -52,7 +53,7 @@ def get_default_error_dir():
         error_dir = os.environ["INSTANT_ERROR_DIR"]
     else:
         error_dir = os.path.join(get_instant_dir(), "error")
-    _check_or_create(error_dir, "error")
+    makedirs(error_dir)
     return error_dir
 
 def validate_cache_dir(cache_dir):
@@ -60,16 +61,19 @@ def validate_cache_dir(cache_dir):
         return get_default_cache_dir()
     instant_assert(isinstance(cache_dir, str), "Expecting cache_dir to be a string.")
     cache_dir = os.path.abspath(cache_dir)
-    _check_or_create(cache_dir, "cache")
+    makedirs(cache_dir)
     return cache_dir
 
-def _check_or_create(directory, label):
-    if not os.path.isdir(directory):
-        instant_debug("Creating %s directory '%s'." % (label, directory))
-        try:
-            os.makedirs(directory)
-        except OSError, e:
-            instant_error("Creating %s directory failed: %s" % (label, e))
+def makedirs(path):
+    """
+    Creates a directory (tree). If directory already excists it does nothing.
+    """
+    try:
+        os.makedirs(path)
+        instant_debug("In instant.makedirs: Creating directory %r" % path)
+    except os.error, e:
+        if e.errno != errno.EEXIST:
+            raise
 
 def _test():
     print "Temp dir:", get_temp_dir()
