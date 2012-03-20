@@ -1,3 +1,4 @@
+ - Cache dir is now created if not existing
 1.0.0 [2011-12-07]
  - Copy all files to ~/.instant/error/module_name when Instant fails
  - If environmental variable INSTANT_DISPLAY_COMPILE_LOG is set the content

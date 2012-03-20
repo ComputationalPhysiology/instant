@@ -35,16 +35,6 @@ def arg_strings(x):
         x = x.split()
     return strip_strings(x)
 
-def makedirs(path):
-    """
-    Creates a directory (tree). If directory already excists it does nothing.
-    """
-    try:
-        os.makedirs(path)
-    except os.error, e:
-        if e.errno != errno.EEXIST:
-            raise
-
 def copy_files(source, dest, files):
     """Copy a list of files from a source directory to a destination directory.
     This may seem a bit complicated, but a lot of this code is error checking."""
