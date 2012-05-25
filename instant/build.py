@@ -91,7 +91,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     ret = 1
     try:
         # Build module
-        cmd = "python %s build_ext install --install-platlib=." % setup_name
+        cmd = "%s %s build_ext install --install-platlib=." % (sys.executable, setup_name)
         instant_info("--- Instant: compiling ---")
         instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
