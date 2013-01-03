@@ -276,10 +276,10 @@ def _test_write_setup():
     print "".join(open("setup.py").readlines())
 
 def unique(list):
-    set = {}
-    map(set.__setitem__, list, [])
-    return set.keys()
-
+    keys = {}
+    for e in seq:
+        keys[e] = 1
+    return keys.keys()
 
 def find_vtk_classes(str): 
     pattern = "vtk\w*"
