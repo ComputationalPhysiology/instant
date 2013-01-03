@@ -62,7 +62,7 @@ def write_file(filename, text):
         f = open(filename, "w")
         f.write(text)
         f.close()
-    except IOError, e:
+    except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
 

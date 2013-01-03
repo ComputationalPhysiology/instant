@@ -1,7 +1,7 @@
 """This module contains helper functions for configuration using pkg-config."""
 
 import os
-from output import get_status_output
+from .output import get_status_output
 import re
 
 # Global cache variables
@@ -14,9 +14,9 @@ def check_and_set_swig_binary(binary="swig", path=""):
     """ Check if a particular swig binary is available"""
     global _swig_binary_cache
     if not isinstance(binary, str):
-        raise TypeError, "expected a 'str' as first argument"
+        raise TypeError("expected a 'str' as first argument")
     if not isinstance(path, str):
-        raise TypeError, "expected a 'str' as second argument"
+        raise TypeError("expected a 'str' as second argument")
     swig_binary = os.path.join(path, binary)
     if swig_binary == _swig_binary_cache:
         return True
@@ -68,8 +68,8 @@ def check_swig_version(version, same=False):
     assert isinstance(version,str), "Provide the first version number as a 'str'"
     assert len(version.split("."))==3, "Provide the version number as three numbers seperated by '.'"
 
-    installed_version = map(int, get_swig_version().split('.'))
-    handed_version    = map(int, version.split('.'))
+    installed_version = list(map(int, get_swig_version().split('.')))
+    handed_version    = list(map(int, version.split('.')))
     
     # If same is True then just check that all numbers are equal
     if same:

@@ -7,7 +7,7 @@ import errno
 import shutil
 import tempfile
 import time
-from output import instant_debug, instant_assert
+from .output import instant_debug, instant_assert
 
 _tmp_dir = None
 def get_temp_dir():
@@ -71,17 +71,17 @@ def makedirs(path):
     try:
         os.makedirs(path)
         instant_debug("In instant.makedirs: Creating directory %r" % path)
-    except os.error, e:
+    except os.error as e:
         if e.errno != errno.EEXIST:
             raise
 
 def _test():
-    from output import set_logging_level
+    from .output import set_logging_level
     set_logging_level("DEBUG")
-    print "Temp dir:", get_temp_dir()
-    print "Instant dir:", get_instant_dir()
-    print "Default cache dir:", get_default_cache_dir()
-    print "Default error dir:", get_default_error_dir()
+    print("Temp dir:", get_temp_dir())
+    print("Instant dir:", get_instant_dir())
+    print("Default cache dir:", get_default_cache_dir())
+    print("Default error dir:", get_default_error_dir())
     delete_temp_dir()
    
 if __name__ == "__main__":

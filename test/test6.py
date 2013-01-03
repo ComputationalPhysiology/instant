@@ -51,8 +51,8 @@ e = abs(d-c)
 e.shape=(4000000,)
 
 max_difference = max(e) 
-print "The difference between the arrays computed by numpy and instant is ", max_difference 
+print("The difference between the arrays computed by numpy and instant is ", max_difference) 
 
-print 'With instant:',t2-t1,'seconds'
-print 'With numpy:   ',t4-t3,'seconds'
+print('With instant:',t2-t1,'seconds')
+print('With numpy:   ',t4-t3,'seconds')
 

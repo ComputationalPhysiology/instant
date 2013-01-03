@@ -37,6 +37,6 @@ max_func = c_module.max
 sum = sum_func(a)
 max = max_func(a)
 
-print "sum ", sum
-print "max ", max
+print("sum ", sum)
+print("max ", max)
 

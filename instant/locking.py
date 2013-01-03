@@ -16,8 +16,8 @@ Two python libraries can be used:
 __all__ = ["get_lock", "release_lock", "release_all_lock"]
 
 import os.path
-from output import instant_error, instant_assert, instant_debug
-from paths import validate_cache_dir
+from .output import instant_error, instant_assert, instant_debug
+from .paths import validate_cache_dir
 
 try:
     import flufl.lock
@@ -107,7 +107,7 @@ elif fcntl:
     
     def release_all_locks():
         "Release all locks currently held by Instant."
-        locks = _lock_files.values()
+        locks = list(_lock_files.values())
         for lock in locks:
             release_lock(lock)
         instant_assert(all(_lock_count[lockname] == 0 for lockname in _lock_count), "Lock counts not zero after releasing all locks.")

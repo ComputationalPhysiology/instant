@@ -41,15 +41,15 @@ Q = sin(arange(0, T, T/N))+1
 t1 = time.time()
 time_loop(p, Q, 1.0, 1.0, 1.0/N, N, 1.0)
 t2 = time.time()
-print 'With instant:',t2-t1,'seconds'
+print('With instant:',t2-t1,'seconds')
 
 p2 = zeros(N)
 t1 = time.time()
 time_loop2(p2, Q, 1.0, 1.0, 1.0/N, N, 1.0)
 t2 = time.time()
-print 'With Python :',t2-t1,'seconds'
+print('With Python :',t2-t1,'seconds')
 
-print 'The max difference between p and p2 is ', max(abs(p - p2)) 
+print('The max difference between p and p2 is ', max(abs(p - p2))) 
 
 
 tt = arange(0,1,1.0/N) 

@@ -4,6 +4,7 @@ from instant import build_module
 import numpy
 import sys
 import time
+from functools import reduce
 
 
 c_code = """
@@ -40,15 +41,15 @@ d = numpy.arange(10000000); d = numpy.cos(d)
 t1 = time.time() 
 add(a,b,c)
 t2 = time.time()
-print 'With instant:',t2-t1,'seconds'
+print('With instant:',t2-t1,'seconds')
 
 t1 = time.time() 
 numpy.add(a,b,d)
 t2 = time.time()
-print 'With numpy:   ',t2-t1,'seconds'
+print('With numpy:   ',t2-t1,'seconds')
 
 difference = abs(d - c) 
 sum = reduce( lambda a,b: a+b, difference)  
-print "The difference between the arrays computed by numpy and instant is " + str(sum) 
+print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 
 

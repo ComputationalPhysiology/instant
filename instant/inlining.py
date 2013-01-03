@@ -1,7 +1,7 @@
 """This module contains the inline* functions, which allows easy inlining of C/C++ functions."""
 
-from output import instant_assert, instant_warning, instant_error
-from build import build_module, build_module_vtk, build_module_vmtk
+from .output import instant_assert, instant_warning, instant_error
+from .build import build_module, build_module_vtk, build_module_vmtk
 
 
 def get_func_name(c_code):

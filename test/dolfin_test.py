@@ -30,6 +30,6 @@ func = instant.inline(cpp_code, system_headers=headers, include_dirs=include_dir
 
 func(a, b, c, d)
 
-print b.array()
+print(b.array())
 
 

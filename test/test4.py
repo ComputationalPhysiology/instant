@@ -2,6 +2,7 @@
 
 from instant import build_module 
 import numpy,sys
+from functools import reduce
 
 a = numpy.arange(10000000)
 a = numpy.sin(a)
@@ -49,16 +50,16 @@ t1 = time.time()
 d = test4_ext.add(a,b)
 t2 = time.time()
 
-print 'With instant:',t2-t1,'seconds'
+print('With instant:',t2-t1,'seconds')
 
 t1 = time.time() 
 c = a+b
 t2 = time.time()
 
-print 'With numpy:   ',t2-t1,'seconds'
+print('With numpy:   ',t2-t1,'seconds')
 
 difference = abs(c - d) 
 
 sum = reduce( lambda a,b: a+b, difference)  
-print "The difference between the arrays computed by numpy and instant is " + str(sum) 
+print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 

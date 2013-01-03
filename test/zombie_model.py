@@ -74,7 +74,7 @@ try:
     #pylab.savefig('pressure_plot')
     pylab.show()
 except: 
-    print "To get a plot of the solution install pylab"
+    print("To get a plot of the solution install pylab")
 
 
 

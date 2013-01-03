@@ -53,8 +53,8 @@ t3 = time.clock()
 compute_func(x,y)
 t2 = time.time()
 t4 = time.clock()
-print 'With instant and OpenMP', t4-t3, 'seconds process time'
-print 'With instant and OpenMP', t2-t1, 'seconds wall time'
+print('With instant and OpenMP', t4-t3, 'seconds process time')
+print('With instant and OpenMP', t2-t1, 'seconds wall time')
 
 compute_func_scalar = inline_with_numpy(c_code_scalar, arrays = [['n', 'x'], ['m', 'y']])  
 
@@ -65,11 +65,11 @@ t7 = time.clock()
 compute_func_scalar(x,y)
 t6 = time.time()
 t8 = time.clock()
-print 'With instant ', t8-t7, 'seconds process time'
-print 'With instant ', t6-t5, 'seconds wall time'
+print('With instant ', t8-t7, 'seconds process time')
+print('With instant ', t6-t5, 'seconds wall time')
 
-print ""
-print 'Speed-up ', (t6-t5)/(t2-t1), 'seconds wall time'
+print("")
+print('Speed-up ', (t6-t5)/(t2-t1), 'seconds wall time')
 
 
 

@@ -9,7 +9,7 @@ sig = "((instant unittest test16.py))"
 # Trying to import module
 module = import_module(sig, cache_dir="test_cache")
 if module is None:
-    print "Defining code"
+    print("Defining code")
     c_code = """
     class Sum { 
     public: 
@@ -23,7 +23,7 @@ if module is None:
       return sum.sum(a,b); 
     }
     """
-    print "Compiling code"
+    print("Compiling code")
     module = build_module(code=c_code, signature=sig, cache_dir="test_cache")
 
 # Testing module
@@ -34,7 +34,7 @@ sum = Sum()
 a = 3.7
 b = 4.8
 c = use_Sum(sum,a,b)
-print "The sum of %g and %g is %g"% (a,b,c) 
+print("The sum of %g and %g is %g"% (a,b,c)) 
 
 
 class Sub(Sum): 
@@ -42,7 +42,7 @@ class Sub(Sum):
     Sum.__init__(self) 
     
   def sum(self,a,b): 
-    print "sub" 
+    print("sub") 
     return a-b; 
 
 
@@ -51,4 +51,4 @@ sub = Sub()
 a = 3.7
 b = 4.8
 c = use_Sum(sub,a,b)
-print "The sub of %g and %g is %g"% (a,b,c) 
+print("The sub of %g and %g is %g"% (a,b,c)) 

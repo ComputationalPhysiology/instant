@@ -26,14 +26,14 @@ a = numpy.arange(27000); a = numpy.sin(a)
 c = a.copy()
 a.shape = (30, 30, 30)
 
-print 'b = (1,1)'
+print('b = (1,1)')
 b = (1., 1.)
 sum1 = sum_func(a, b)
-print b, 'b not changed when list'
+print(b, 'b not changed when list')
 
 b = numpy.ones(2)
 sum1 = sum_func(a, b)
-print b, 'b not changed when numpy array'
+print(b, 'b not changed when numpy array')
 
 # Example 2: two array, both inout and of same size
 # Cannot avoid specifying all dimensions for both arrays
@@ -60,9 +60,9 @@ b = a.copy()
 a *= 2
 
 sum1 = sum_func(a, b)
-print 'a and b changed'
-print a
-print b
+print('a and b changed')
+print(a)
+print(b)
 
 # Example 3: two arrays, one in, one out
 c_code = """
@@ -83,7 +83,7 @@ a *= 2
 
 c = sum_func(a, a.size)
 c.shape = a.shape
-print c
+print(c)
 
 # Example 4: three arrays, one in, one inout, and one out
 c_code = """
@@ -106,8 +106,8 @@ a.shape = (3, 3)
 b = numpy.arange(3, dtype='int32')
 
 c = sum_func(a, b, b.size)
-print c
-print numpy.dot(a, b)
+print(c)
+print(numpy.dot(a, b))
 
 # Example 5: arrays with more than 3 dimensions, uses old typemaps, only doubles
 c_code = """
@@ -133,4 +133,4 @@ a.shape = (2,2,2,2)
 b = a.copy()*0
 
 sum_func(a, b)
-print numpy.array(a*2 == b).all()
+print(numpy.array(a*2 == b).all())

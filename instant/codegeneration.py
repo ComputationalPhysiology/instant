@@ -1,8 +1,8 @@
 """This module contains helper functions for code generation."""
 
 import re, os
-from output import instant_assert, instant_warning, instant_debug, write_file
-from config import get_swig_binary
+from .output import instant_assert, instant_warning, instant_debug, write_file
+from .config import get_swig_binary
 
 def mapstrings(format, sequence):
     return "\n".join(format % i for i in sequence)
@@ -255,7 +255,7 @@ def _test_write_interfacefile():
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
                         additional_definitions, additional_declarations, \
                         system_headers, local_headers, wrap_headers, arrays)
-    print "".join(open("%s.i" % modulename).readlines())
+    print("".join(open("%s.i" % modulename).readlines()))
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -273,13 +273,13 @@ def _test_write_setup():
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
                 include_dirs, library_dirs, libraries, swig_include_dirs, \
                 swigargs, cppargs, lddargs)
-    print "".join(open("setup.py").readlines())
+    print("".join(open("setup.py").readlines()))
 
 def unique(list):
     keys = {}
     for e in seq:
         keys[e] = 1
-    return keys.keys()
+    return list(keys.keys())
 
 def find_vtk_classes(str): 
     pattern = "vtk\w*"
@@ -490,6 +490,6 @@ def write_vtk_interface_file(signature, code):
 
 if __name__ == "__main__":
     _test_write_interfacefile()
-    print "\n"*3
+    print("\n"*3)
     _test_write_setup()
 

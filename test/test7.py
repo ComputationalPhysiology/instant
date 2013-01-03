@@ -4,6 +4,7 @@ import numpy as N
 import time
 from instant import build_module
 import sys
+from functools import reduce
 
 
 c_code = """
@@ -36,7 +37,7 @@ a = N.arange(seed)
 t1 = time.time()
 b = N.sin(a) + N.cos(a) + N.tan(a)   
 t2 = time.time()
-print "With NumPy: ", t2-t1, "seconds" 
+print("With NumPy: ", t2-t1, "seconds") 
 
 
 from test7_ext import func
@@ -45,7 +46,7 @@ c = N.arange(seed)
 t1 = time.time()
 func(a,c)
 t2 = time.time()
-print "With instant: ", t2-t1, "seconds" 
+print("With instant: ", t2-t1, "seconds") 
 
 
 t1 = time.time()
@@ -53,13 +54,13 @@ d = N.sin(a)
 d += N.cos(a)
 d += N.tan(a) 
 t2 = time.time()
-print "With NumPy inplace aritmetic: ", t2-t1, "seconds" 
+print("With NumPy inplace aritmetic: ", t2-t1, "seconds") 
 
 
 
 difference = abs(b - c) 
 sum = reduce( lambda a,b: a+b, difference)  
-print "The difference between the arrays computed by numpy and instant is " + str(sum) 
+print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 
 
 

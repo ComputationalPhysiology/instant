@@ -53,8 +53,8 @@ time_loop(p, Q, 1.0, 1.0, 1.0/N, N, 1.0)
 t2 = time.time()
 t4 = time.clock()
 
-print 'With instant and OpenMP:',t4-t3,'seconds process time'
-print 'With instant and OpenMP:',t2-t1,'seconds process time'
+print('With instant and OpenMP:',t4-t3,'seconds process time')
+print('With instant and OpenMP:',t2-t1,'seconds process time')
 
 #p2 = zeros(N)
 #t1 = time.time()

@@ -10,7 +10,7 @@ def tic():
 
 def toc(msg=""):
     t = time.time() + _t
-    print "t = %f  (%s)" % (t, msg)
+    print("t = %f  (%s)" % (t, msg))
     return t
 
 c_code = """

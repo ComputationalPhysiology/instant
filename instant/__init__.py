@@ -21,12 +21,12 @@ __date__ = "2011-12-07"
 __version__ = "1.0.0"
 
 # TODO: Import only the official interface
-from output import *
-from config import *
-from paths import *
-from signatures import *
-from cache import *
-from codegeneration import *
-from build import *
-from inlining import *
+from .output import *
+from .config import *
+from .paths import *
+from .signatures import *
+from .cache import *
+from .codegeneration import *
+from .build import *
+from .inlining import *
 

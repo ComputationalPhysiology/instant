@@ -12,10 +12,10 @@ Example operations:
 """
 
 import os, sys, re
-from output import instant_warning, instant_assert, instant_debug
-from paths import get_default_cache_dir, validate_cache_dir
-from signatures import compute_checksum
-from locking import get_lock, release_lock
+from .output import instant_warning, instant_assert, instant_debug
+from .paths import get_default_cache_dir, validate_cache_dir
+from .signatures import compute_checksum
+from .locking import get_lock, release_lock
 
 # TODO: We could make this an argument, but it's used indirectly several places so take care.
 _modulename_prefix = "instant_module_"
@@ -35,7 +35,7 @@ def import_module_directly(path, modulename):
     e = None
     try:
         module = __import__(modulename)
-    except Exception, e:
+    except Exception as e:
         instant_warning("In instant.import_module_directly: Failed to import module '%s' from '%s';\n%s:%s;" % (modulename, path, type(e).__name__, e))
         module = None
     finally:

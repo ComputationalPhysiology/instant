@@ -12,7 +12,7 @@ def tic():
 
 def toc(msg=""):
     t = time.time() + _t
-    print "t = %f  (%s)" % (t, msg)
+    print("t = %f  (%s)" % (t, msg))
     return t
 
 c_code = """
@@ -57,7 +57,7 @@ assert t1 > t2
 
 # Try importing module in a separate python process
 cmd = 'python -c "import %s"' % modulename
-print cmd
+print(cmd)
 stat = os.system(cmd)
 assert stat == 0 # a
 
@@ -80,7 +80,7 @@ assert t1 > t3
 
 # Try importing module in a separate python process
 cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
-print cmd
+print(cmd)
 stat = os.system(cmd)
 assert stat == 0 # b
 
@@ -103,11 +103,11 @@ assert t1 > t3
 
 # Try importing module in a separate python process
 cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
-print cmd
+print(cmd)
 stat = os.system(cmd)
 assert stat == 0 # c
 
-print "Skipping unit test, see https://bugs.launchpad.net/instant/+bug/518389"
+print("Skipping unit test, see https://bugs.launchpad.net/instant/+bug/518389")
 # Build and rebuild with generic signature object
 #sig = Sig("((test19_signature_module))")
 #tic()
