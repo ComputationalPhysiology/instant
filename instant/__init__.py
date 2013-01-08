@@ -17,8 +17,8 @@ Questions, bugs and patches should be sent to instant@lists.launchpad.net.
 """
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
-__date__ = "2011-12-07"
-__version__ = "1.1.0"
+__date__ = "2013-01-08"
+__version__ = "1.1.0+"
 
 # TODO: Import only the official interface
 from .output import *
