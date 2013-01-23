@@ -121,6 +121,7 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     try: 
         ret, output = get_status_output("cmake -DDEBUG=TRUE  . > cmake.log ")
         ret, output = get_status_output("make VERBOSE=1 > compile.log ")
+        ret, output = get_status_output("make VERBOSE=1 > compile2.log ")
 
     finally:
         compile_log_file.close()
