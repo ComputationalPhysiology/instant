@@ -1,8 +1,8 @@
 """This module contains helper functions for code generation."""
 
 import re, os
-from .output import instant_assert, instant_warning, instant_debug, write_file
-from .config import get_swig_binary
+from output import instant_assert, instant_warning, instant_debug, write_file
+from config import get_swig_binary
 
 def mapstrings(format, sequence):
     return "\n".join(format % i for i in sequence)
@@ -157,34 +157,35 @@ def write_interfacefile(filename, modulename, code, init_code,
     if arrays:
         numpy_i_include = r'%include "numpy.i"'
     
-    interface_string = """
-%%module  %(modulename)s
-//%%module (directors="1") %(modulename)s
+    interface_string = reindent("""
+        %%module  %(modulename)s
+        //%%module (directors="1") %(modulename)s
 
-//%%feature("director");
+        //%%feature("director");
 
-%%{
-#include <iostream>
-%(additional_definitions)s 
-%(system_headers_code)s 
-%(local_headers_code)s 
-%(wrap_headers_code1)s 
-%(code)s
-%%}
+        %%{
+        #include <iostream>
+        %(additional_definitions)s 
+        %(system_headers_code)s 
+        %(local_headers_code)s 
+        %(wrap_headers_code1)s 
+        %(code)s
+        %%}
 
-//%%feature("autodoc", "1");
-%(numpy_i_include)s
+        //%%feature("autodoc", "1");
+        %(numpy_i_include)s
+        
+        %%init%%{
+        %(init_code)s
+        %%}
 
-%%init%%{
-%(init_code)s
-%%}
+        %(additional_definitions)s
+        %(additional_declarations)s
+        %(wrap_headers_code2)s
+        //%(typemaps)s
+        %(code)s;
 
-%(additional_definitions)s
-%(additional_declarations)s
-%(wrap_headers_code2)s
-//%(typemaps)s
-%(code)s;
-""" % locals()
+        """ % locals())
     
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
@@ -254,7 +255,7 @@ def _test_write_interfacefile():
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
                         additional_definitions, additional_declarations, \
                         system_headers, local_headers, wrap_headers, arrays)
-    print("".join(open("%s.i" % modulename).readlines()))
+    print "".join(open("%s.i" % modulename).readlines())
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -272,13 +273,13 @@ def _test_write_setup():
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
                 include_dirs, library_dirs, libraries, swig_include_dirs, \
                 swigargs, cppargs, lddargs)
-    print("".join(open("setup.py").readlines()))
+    print "".join(open("setup.py").readlines())
 
 def unique(list):
-    keys = {}
-    for e in seq:
-        keys[e] = 1
-    return list(keys.keys())
+    set = {}
+    map(set.__setitem__, list, [])
+    return set.keys()
+
 
 def find_vtk_classes(str): 
     pattern = "vtk\w*"
@@ -342,6 +343,61 @@ def generate_interface_file_vtk(signature, code):
     typemaps = create_typemaps(class_list)
     s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes } 
     return s
+
+def write_dolfin_cmakefile(name): 
+    cmake_template = """
+
+cmake_minimum_required(VERSION 2.6.0)
+
+# This project is designed to be built outside the Insight source tree.
+set (name %s)
+PROJECT(${name})
+
+# Find ITK.
+FIND_PACKAGE(dolfin REQUIRED)
+IF(dolfin_FOUND)
+  INCLUDE(${DOLFIN_USE_FILE})
+ENDIF(dolfin_FOUND)
+
+FIND_PACKAGE(PythonLibs REQUIRED)
+
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+set(SWIG_MODULE_NAME ${name})
+set(CMAKE_SWIG_FLAGS
+  -module ${SWIG_MODULE_NAME}
+  -shadow
+  -modern
+  -modernargs
+  -fastdispatch
+  -fvirtual
+  -nosafecstrings
+  -noproxydel
+  -fastproxy
+  -fastinit
+  -fastunpack
+  -fastquery
+  -nobuildnone
+  -I.
+  )
+
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
+
+set(SWIG_SOURCES ${name}.i)
+
+set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
+
+include_directories(${PYTHON_INCLUDE_PATH} ${${name}_SOURCE_DIR})
+
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
+
+swig_link_libraries(${SWIG_MODULE_NAME} ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES})
+
+""" % name 
+
+    filename = "CMakeLists.txt"
+    write_file(filename, cmake_template)
 
 
 def write_cmakefile(name):    
@@ -489,6 +545,6 @@ def write_vtk_interface_file(signature, code):
 
 if __name__ == "__main__":
     _test_write_interfacefile()
-    print("\n"*3)
+    print "\n"*3
     _test_write_setup()
 

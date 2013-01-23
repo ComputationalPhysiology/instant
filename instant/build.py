@@ -4,13 +4,13 @@ import os, sys, shutil, glob, errno
 from itertools import chain
 
 # TODO: Import only the official interface
-from .output import *
-from .config import header_and_libs_from_pkgconfig, get_swig_version
-from .paths import *
-from .signatures import *
-from .cache import *
-from .codegeneration import *
-from .locking import get_lock, release_lock
+from output import *
+from config import header_and_libs_from_pkgconfig, get_swig_version
+from paths import *
+from signatures import *
+from cache import *
+from codegeneration import *
+from locking import get_lock, release_lock
     
 def assert_is_str(x):
     instant_assert(isinstance(x, str),
@@ -34,6 +34,16 @@ def arg_strings(x):
     if isinstance(x, str):
         x = x.split()
     return strip_strings(x)
+
+def makedirs(path):
+    """
+    Creates a directory (tree). If directory already excists it does nothing.
+    """
+    try:
+        os.makedirs(path)
+    except os.error, e:
+        if e.errno != errno.EEXIST:
+            raise
 
 def copy_files(source, dest, files):
     """Copy a list of files from a source directory to a destination directory.
@@ -89,9 +99,11 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     compile_log_file = open(compile_log_filename, "w")
 
     ret = 1
+    
+    a = """
     try:
         # Build module
-        cmd = "%s %s build_ext install --install-platlib=." % (sys.executable, setup_name)
+        cmd = "python %s build_ext install --install-platlib=." % setup_name
         instant_info("--- Instant: compiling ---")
         instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
@@ -103,10 +115,17 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
             
             instant_error("In instant.recompile: The module did not "\
                 "compile, see '%s'" % compile_log_filename_dest)
+
+    """
+
+    try: 
+        ret, output = get_status_output("cmake -DDEBUG=TRUE  . > cmake.log ")
+        ret, output = get_status_output("make VERBOSE=1 > compile.log ")
+
     finally:
         compile_log_file.close()
         if ret != 0:
-            if "INSTANT_DISPLAY_COMPILE_LOG" in list(os.environ.keys()):
+            if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
                 instant_warning("")
                 instant_warning("Content of instant compile.log")
                 instant_warning("==============================")
@@ -154,7 +173,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
     # Do the copying
     try:
         shutil.copytree(module_path, cache_module_path)
-    except OSError as e:
+    except OSError, e:
         if e.errno != errno.EEXIST:
             raise
     finally:
@@ -438,11 +457,15 @@ def build_module(modulename=None, source_directory=".",
         
         # Generate setup.py if wanted
         setup_name = "setup.py"
+        generate_setup = False
         if generate_setup:
             write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers, \
                         include_dirs, library_dirs, libraries, swig_include_dirs, \
                         swigargs, cppargs, lddargs)
         
+        generate_cmake = True
+        if generate_cmake: 
+            write_dolfin_cmakefile(modulename)
         # --- Build module
         
         # At this point we have all the files, and can make the
