@@ -157,35 +157,34 @@ def write_interfacefile(filename, modulename, code, init_code,
     if arrays:
         numpy_i_include = r'%include "numpy.i"'
     
-    interface_string = reindent("""
-        %%module  %(modulename)s
-        //%%module (directors="1") %(modulename)s
+    interface_string = """
+%%module  %(modulename)s
+//%%module (directors="1") %(modulename)s
 
-        //%%feature("director");
+//%%feature("director");
 
-        %%{
-        #include <iostream>
-        %(additional_definitions)s 
-        %(system_headers_code)s 
-        %(local_headers_code)s 
-        %(wrap_headers_code1)s 
-        %(code)s
-        %%}
+%%{
+#include <iostream>
+%(additional_definitions)s 
+%(system_headers_code)s 
+%(local_headers_code)s 
+%(wrap_headers_code1)s 
+%(code)s
+%%}
 
-        //%%feature("autodoc", "1");
-        %(numpy_i_include)s
-        
-        %%init%%{
-        %(init_code)s
-        %%}
+//%%feature("autodoc", "1");
+%(numpy_i_include)s
 
-        %(additional_definitions)s
-        %(additional_declarations)s
-        %(wrap_headers_code2)s
-        //%(typemaps)s
-        %(code)s;
+%%init%%{
+%(init_code)s
+%%}
 
-        """ % locals())
+%(additional_definitions)s
+%(additional_declarations)s
+%(wrap_headers_code2)s
+//%(typemaps)s
+%(code)s;
+""" % locals()
     
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
