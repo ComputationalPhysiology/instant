@@ -73,7 +73,7 @@ def copy_files(source, dest, files):
             shutil.copyfile(a, b)
 
 
-def recompile(modulename, module_path, setup_name, new_compilation_checksum):
+def recompile(modulename, module_path, new_compilation_checksum, use_setup):
     """Recompile module if the new checksum is different from
     the one in the checksum file in the module directory."""
     # Check if the old checksum matches the new one
@@ -100,15 +100,12 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
 
     ret = 1
     
-    a = """
-    try:
+    if use_setup: 
         # Build module
-        cmd = "python %s build_ext install --install-platlib=." % setup_name
+        cmd = "python setup.py build_ext install --install-platlib=." 
         instant_info("--- Instant: compiling ---")
         instant_debug("cmd = %s" % cmd)
         ret, output = get_status_output(cmd)
-        compile_log_file.write(output)
-        compile_log_file.flush()
         if ret != 0:
             if os.path.exists(compilation_checksum_filename):
                 os.remove(compilation_checksum_filename)
@@ -116,26 +113,48 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
             instant_error("In instant.recompile: The module did not "\
                 "compile, see '%s'" % compile_log_filename_dest)
 
-    """
 
-    try: 
-        ret, output = get_status_output("cmake -DDEBUG=TRUE  . > cmake.log ")
-        ret, output = get_status_output("make VERBOSE=1 > compile.log ")
-        print ret
-        print output
-#        ret, output = get_status_output("make VERBOSE=1 > compile2.log ")
-        print ret
-        print output
+    else: 
+        instant_info("--- Instant: compiling ---")
+        cmd1 = "cmake -DDEBUG=TRUE  . > cmake.log";  
+        instant_debug("cmd = %s" % cmd1) 
+        ret, output1 = get_status_output(cmd1)
 
-    finally:
-        compile_log_file.close()
         if ret != 0:
-            if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
-                instant_warning("")
-                instant_warning("Content of instant compile.log")
-                instant_warning("==============================")
-                instant_warning(output)
-                instant_warning("")
+            if os.path.exists(compilation_checksum_filename):
+                os.remove(compilation_checksum_filename)
+            
+            instant_error("In instant.recompile: The cmake configuration failed"\
+                ", see '%s'" % compile_log_filename_dest)
+
+
+        cmd2 = "make VERBOSE=1 > compile.log "
+        instant_debug("cmd = %s" % cmd1) 
+        ret, output2 = get_status_output(cmd2)
+
+        if ret != 0:
+            if os.path.exists(compilation_checksum_filename):
+                os.remove(compilation_checksum_filename)
+            
+            instant_error("In instant.recompile: The module did not "\
+                "compile, see '%s'" % compile_log_filename_dest)
+
+
+
+        output = output1 + output2 
+
+    compile_log_file.write(output)
+    compile_log_file.flush()
+
+
+    compile_log_file.close()
+    if ret != 0:
+        if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
+            instant_warning("")
+            instant_warning("Content of instant compile.log")
+            instant_warning("==============================")
+            instant_warning(output)
+            instant_warning("")
             
             # Copy module to error dir
             module_path = copy_to_cache(module_path, get_default_error_dir(),\
@@ -143,6 +162,8 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     
     # Compilation succeeded, write new_compilation_checksum to checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
+
+
 
 def copy_to_cache(module_path, cache_dir, modulename, \
                   check_for_existing_path=True):
@@ -464,14 +485,12 @@ def build_module(modulename=None, source_directory=".",
         
         # Generate setup.py if wanted
         setup_name = "setup.py"
-        generate_setup = False
         if generate_setup:
             write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers, \
                         include_dirs, library_dirs, libraries, swig_include_dirs, \
                         swigargs, cppargs, lddargs)
         
-        generate_cmake = True
-        if generate_cmake: 
+        else: 
             write_dolfin_cmakefile(modulename)
         # --- Build module
         
@@ -509,7 +528,7 @@ def build_module(modulename=None, source_directory=".",
         new_compilation_checksum = compute_checksum(text, allfiles)
         
         # Recompile if necessary
-        recompile(modulename, module_path, setup_name, new_compilation_checksum)
+        recompile(modulename, module_path, new_compilation_checksum, generate_setup)
         
         # --- Load, cache, and return module
 
