@@ -121,7 +121,11 @@ def recompile(modulename, module_path, setup_name, new_compilation_checksum):
     try: 
         ret, output = get_status_output("cmake -DDEBUG=TRUE  . > cmake.log ")
         ret, output = get_status_output("make VERBOSE=1 > compile.log ")
-        ret, output = get_status_output("make VERBOSE=1 > compile2.log ")
+        print ret
+        print output
+#        ret, output = get_status_output("make VERBOSE=1 > compile2.log ")
+        print ret
+        print output
 
     finally:
         compile_log_file.close()
@@ -178,7 +182,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         if e.errno != errno.EEXIST:
             raise
     finally:
-        delete_temp_dir()
+#        delete_temp_dir()
         release_lock(lock)
     
     return cache_module_path
@@ -331,6 +335,8 @@ def build_module(modulename=None, source_directory=".",
     # --- Replace arguments with defaults if necessary
     
     cache_dir = validate_cache_dir(cache_dir)
+
+    print "SWIG include dirs ", swig_include_dirs 
     
     # Split sources by file-suffix (.c or .cpp)
     csrcs = [f for f in sources if f.endswith('.c') or f.endswith('.C')]

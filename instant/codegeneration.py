@@ -351,15 +351,17 @@ cmake_minimum_required(VERSION 2.6.0)
 
 # This project is designed to be built outside the Insight source tree.
 set (name %s)
-PROJECT(${name})
 
-# Find ITK.
 FIND_PACKAGE(dolfin REQUIRED)
 IF(dolfin_FOUND)
-  INCLUDE(${DOLFIN_USE_FILE})
+ INCLUDE(${DOLFIN_USE_FILE})
 ENDIF(dolfin_FOUND)
 
-FIND_PACKAGE(PythonLibs REQUIRED)
+if (NOT $ENV{CXX})
+  set(CMAKE_CXX_COMPILER ${DOLFIN_CXX_COMPILER})
+endif()
+
+PROJECT(${name})
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -379,7 +381,7 @@ set(CMAKE_SWIG_FLAGS
   -fastunpack
   -fastquery
   -nobuildnone
-  -I.
+   ${DOLFIN_CXX_DEFINITIONS}
   )
 
 set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -388,11 +390,11 @@ set(SWIG_SOURCES ${name}.i)
 
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
-include_directories(${PYTHON_INCLUDE_PATH} ${${name}_SOURCE_DIR})
+include_directories(${DOLFIN_PYTHON_INCLUDE_DIRS} ${${name}_SOURCE_DIR})
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
-swig_link_libraries(${SWIG_MODULE_NAME} ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES})
+swig_link_libraries(${SWIG_MODULE_NAME} ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${DOLFIN_PYTHON_LIBRARIES})
 
 """ % name 
 
