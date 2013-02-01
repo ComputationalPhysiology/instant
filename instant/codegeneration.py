@@ -156,36 +156,36 @@ def write_interfacefile(filename, modulename, code, init_code,
     numpy_i_include = ''
     if arrays:
         numpy_i_include = r'%include "numpy.i"'
-    
-    interface_string = reindent("""
-        %%module  %(modulename)s
-        //%%module (directors="1") %(modulename)s
 
-        //%%feature("director");
+    # Do not reindent as SWIG interface code can also include Python code.
+    interface_string = """%%module  %(modulename)s
+//%%module (directors="1") %(modulename)s
 
-        %%{
-        #include <iostream>
-        %(additional_definitions)s 
-        %(system_headers_code)s 
-        %(local_headers_code)s 
-        %(wrap_headers_code1)s 
-        %(code)s
-        %%}
+//%%feature("director");
 
-        //%%feature("autodoc", "1");
-        %(numpy_i_include)s
-        
-        %%init%%{
-        %(init_code)s
-        %%}
+%%{
+#include <iostream>
+%(additional_definitions)s 
+%(system_headers_code)s 
+%(local_headers_code)s 
+%(wrap_headers_code1)s 
+%(code)s
+%%}
 
-        %(additional_definitions)s
-        %(additional_declarations)s
-        %(wrap_headers_code2)s
-        //%(typemaps)s
-        %(code)s;
+//%%feature("autodoc", "1");
+%(numpy_i_include)s
 
-        """ % locals())
+%%init%%{
+%(init_code)s
+%%}
+
+%(additional_definitions)s
+%(additional_declarations)s
+%(wrap_headers_code2)s
+//%(typemaps)s
+%(code)s;
+
+""" % locals()
     
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
@@ -344,29 +344,45 @@ def generate_interface_file_vtk(signature, code):
     s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes } 
     return s
 
-def write_dolfin_cmakefile(name): 
-    cmake_template = """
+def write_cmakefile(module_name, cmake_packages):
+    find_package_template = """
+# Configuration for package %(package)s
+FIND_PACKAGE(%(package)s REQUIRED)
+IF(%(package)s_FOUND)
+ INCLUDE(${%(PACKAGE)s_USE_FILE})
+ENDIF(%(package)s_FOUND)
 
+if (NOT $ENV{CXX})
+  set(CMAKE_CXX_COMPILER ${%(PACKAGE)s_CXX_COMPILER})
+endif()
+"""    
+    cmake_form = dict(module_name=module_name)
+    cmake_form["find_packages"] = "\n\n".join(find_package_template % \
+                                              dict(package=package,
+                                                   PACKAGE=package.upper())\
+                                              for package in cmake_packages)
+    cmake_form["packages_definitions"] = "\n".join(
+        "${%s_CXX_DEFINITIONS}" % package.upper()
+        for package in cmake_packages)
+
+    cmake_form["package_include_dirs"] = "\n".join(\
+        "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
+        package.upper() for package in cmake_packages)
+    
+    cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
 # This project is designed to be built outside the Insight source tree.
-set (name %s)
+set (NAME %(module_name)s)
 
-FIND_PACKAGE(dolfin REQUIRED)
-IF(dolfin_FOUND)
- INCLUDE(${DOLFIN_USE_FILE})
-ENDIF(dolfin_FOUND)
+%(find_packages)s
 
-if (NOT $ENV{CXX})
-  set(CMAKE_CXX_COMPILER ${DOLFIN_CXX_COMPILER})
-endif()
-
-PROJECT(${name})
+PROJECT(${NAME})
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
-set(SWIG_MODULE_NAME ${name})
+set(SWIG_MODULE_NAME ${NAME})
 set(CMAKE_SWIG_FLAGS
   -module ${SWIG_MODULE_NAME}
   -shadow
@@ -381,28 +397,25 @@ set(CMAKE_SWIG_FLAGS
   -fastunpack
   -fastquery
   -nobuildnone
-   ${DOLFIN_CXX_DEFINITIONS}
+%(packages_definitions)s
   )
 
 set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
 
-set(SWIG_SOURCES ${name}.i)
+set(SWIG_SOURCES ${NAME}.i)
 
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
-include_directories(${DOLFIN_PYTHON_INCLUDE_DIRS} ${${name}_SOURCE_DIR})
+%(package_include_dirs)s
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
-swig_link_libraries(${SWIG_MODULE_NAME} ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${DOLFIN_PYTHON_LIBRARIES})
-
-""" % name 
+""" % cmake_form
 
     filename = "CMakeLists.txt"
     write_file(filename, cmake_template)
 
-
-def write_cmakefile(name):    
+def write_itk_cmakefile(name):    
     file_template = """
 cmake_minimum_required(VERSION 2.6.0)
 

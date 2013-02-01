@@ -73,9 +73,12 @@ def copy_files(source, dest, files):
             shutil.copyfile(a, b)
 
 
-def recompile(modulename, module_path, new_compilation_checksum, use_setup):
+def recompile(modulename, module_path, new_compilation_checksum,
+              build_system="distutils"):
     """Recompile module if the new checksum is different from
     the one in the checksum file in the module directory."""
+
+    assert(build_system in ["distutils", "cmake"])
     # Check if the old checksum matches the new one
     compilation_checksum_filename = "%s.checksum" % modulename
     if os.path.exists(compilation_checksum_filename):
@@ -102,7 +105,7 @@ def recompile(modulename, module_path, new_compilation_checksum, use_setup):
 
     try: 
     
-	if use_setup: 
+	if build_system == "distutils": 
 	    # Build module
 	    cmd = "python setup.py build_ext install --install-platlib=." 
 	    instant_info("--- Instant: compiling ---")
@@ -222,6 +225,7 @@ def build_module(modulename=None, source_directory=".",
                  cppargs=['-O2'], lddargs=[],
                  object_files=[], arrays=[],
                  generate_interface=True, generate_setup=True,
+                 cmake_packages=[], 
                  signature=None, cache_dir=None):
     """Generate and compile a module from C/C++ code using SWIG.
     
@@ -312,6 +316,10 @@ def build_module(modulename=None, source_directory=".",
         - A bool to indicate if you want to generate the interface files.
       - B{generate_setup}:
         - A bool to indicate if you want to generate the setup.py file.
+      - B{cmake_packages}:
+        - A list with CMake configured packages which are used to configure
+        and build the extension module. If used it will override the default
+        behaviour of using distutils.
       - B{signature}:
         - A signature string to identify the form instead of the source code.
       - B{cache_dir}:
@@ -349,6 +357,7 @@ def build_module(modulename=None, source_directory=".",
     arrays            = [strip_strings(a) for a in arrays]
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
+    cmake_packages   = strip_strings(cmake_packages)
     instant_assert(   signature is None \
                    or isinstance(signature, str) \
                    or hasattr(signature, "signature"),
@@ -392,6 +401,7 @@ def build_module(modulename=None, source_directory=".",
     instant_debug('    arrays: %r' % arrays)
     instant_debug('    generate_interface: %r' % generate_interface)
     instant_debug('    generate_setup: %r' % generate_setup)
+    instant_debug('    cmake_packages: %r' % cmake_packages)
     instant_debug('    signature: %r' % signature)
     instant_debug('    cache_dir: %r' % cache_dir)
     instant_debug('::: End Arguments :::')
@@ -421,7 +431,7 @@ def build_module(modulename=None, source_directory=".",
                 include_dirs, library_dirs, libraries,
                 swig_include_dirs, swigargs, cppargs, lddargs,
                 object_files, arrays,
-                generate_interface, generate_setup,
+                generate_interface, generate_setup, cmake_packages, 
                 # The signature isn't defined, and the cache_dir doesn't affect the module:
                 #signature, cache_dir)
                 )
@@ -485,14 +495,17 @@ def build_module(modulename=None, source_directory=".",
                 local_headers, wrap_headers, arrays)
         
         # Generate setup.py if wanted
-        setup_name = "setup.py"
-        if generate_setup:
+        if generate_setup and not cmake_packages:
+            setup_name = "setup.py"
             write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers, \
                         include_dirs, library_dirs, libraries, swig_include_dirs, \
                         swigargs, cppargs, lddargs)
+            build_system = "distutils"
         
         else: 
-            write_dolfin_cmakefile(modulename)
+            write_cmakefile(modulename, cmake_packages)
+            build_system = "cmake"
+            
         # --- Build module
         
         # At this point we have all the files, and can make the
@@ -529,7 +542,7 @@ def build_module(modulename=None, source_directory=".",
         new_compilation_checksum = compute_checksum(text, allfiles)
         
         # Recompile if necessary
-        recompile(modulename, module_path, new_compilation_checksum, generate_setup)
+        recompile(modulename, module_path, new_compilation_checksum, build_system)
         
         # --- Load, cache, and return module
 
