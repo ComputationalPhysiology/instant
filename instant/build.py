@@ -104,7 +104,8 @@ def recompile(modulename, module_path, new_compilation_checksum,
     ret = 1
 
     try: 
-    
+        output = "<compilation was executed>"
+
 	if build_system == "distutils": 
 	    # Build module
 	    cmd = "python setup.py build_ext install --install-platlib=." 
@@ -125,8 +126,8 @@ def recompile(modulename, module_path, new_compilation_checksum,
 	    instant_info("--- Instant: compiling ---")
 	    cmd1 = "cmake -DDEBUG=TRUE . ";  
 	    instant_debug("cmd = %s" % cmd1) 
-	    ret, output1 = get_status_output(cmd1)
-	    compile_log_file.write(output1)
+	    ret, output = get_status_output(cmd1)
+	    compile_log_file.write(output)
 	    compile_log_file.flush()
 
 	    if ret != 0:
