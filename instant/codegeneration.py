@@ -368,6 +368,12 @@ endif()
     cmake_form["package_include_dirs"] = "\n".join(\
         "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
         package.upper() for package in cmake_packages)
+
+    cmake_form["package_swig_link_libraries"] = "\n".join(\
+        """if (DEFINED %s_PYTHON_LIBRARIES)
+  swig_link_libraries(${SWIG_MODULE_NAME} ${%s_PYTHON_LIBRARIES})
+endif()""" %
+        (package.upper(), package.upper()) for package in cmake_packages)
     
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
@@ -409,6 +415,8 @@ set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 %(package_include_dirs)s
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
+
+%(package_swig_link_libraries)s
 
 """ % cmake_form
 
