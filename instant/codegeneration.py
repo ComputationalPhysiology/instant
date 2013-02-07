@@ -369,11 +369,18 @@ endif()
         "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
         package.upper() for package in cmake_packages)
 
+    cmake_form["package_flags"] = "\n".join(\
+        """set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} ${%(package)s_CXX_FLAGS}\")
+set(CMAKE_EXE_LINKER_FLAGS \"${CMAKE_EXE_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
+set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
+""" %
+        dict(package=package.upper()) for package in cmake_packages)
+
     cmake_form["package_swig_link_libraries"] = "\n".join(\
-        """if (DEFINED %s_PYTHON_LIBRARIES)
-  swig_link_libraries(${SWIG_MODULE_NAME} ${%s_PYTHON_LIBRARIES})
+        """if (DEFINED %(package)s_LIBRARIES OR DEFINED %(package)s_3RD_PARTY_LIBRARIES OR DEFINED %(package)s_PYTHON_LIBRARIES)
+  swig_link_libraries(${SWIG_MODULE_NAME} ${%(package)s_LIBRARIES} ${%(package)s_3RD_PARTY_LIBRARIES} ${%(package)s_PYTHON_LIBRARIES})
 endif()""" %
-        (package.upper(), package.upper()) for package in cmake_packages)
+        dict(package=package.upper()) for package in cmake_packages)
     
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
@@ -413,6 +420,8 @@ set(SWIG_SOURCES ${NAME}.i)
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
 %(package_include_dirs)s
+
+%(package_flags)s
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
