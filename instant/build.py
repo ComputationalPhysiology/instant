@@ -205,7 +205,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         if e.errno != errno.EEXIST:
             raise
     finally:
-#        delete_temp_dir()
+        delete_temp_dir()
         release_lock(lock)
 
     return cache_module_path
