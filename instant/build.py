@@ -499,7 +499,9 @@ def build_module(modulename=None, source_directory=".",
             build_system = "distutils"
 
         else:
-            write_cmakefile(modulename, cmake_packages)
+            write_cmakefile(modulename, cmake_packages, csrcs, cppsrcs, local_headers, \
+                        include_dirs, library_dirs, libraries, swig_include_dirs, \
+                        swigargs, cppargs, lddargs)
             build_system = "cmake"
 
         # --- Build module

@@ -344,7 +344,7 @@ def generate_interface_file_vtk(signature, code):
     s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes } 
     return s
 
-def write_cmakefile(module_name, cmake_packages):
+def write_cmakefile(module_name, cmake_packages, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
     find_package_template = """
 # Configuration for package %(package)s
 FIND_PACKAGE(%(package)s REQUIRED)
@@ -356,7 +356,15 @@ if (NOT $ENV{CXX})
   set(CMAKE_CXX_COMPILER ${%(PACKAGE)s_CXX_COMPILER})
 endif()
 """    
+
     cmake_form = dict(module_name=module_name)
+
+    cmake_form["extra_libraries"] = libraries
+    cmake_form["extra_include_dirs"] = include_dirs 
+    cmake_form["extra_library_dirs"] = library_dirs
+    cmake_form=["extra_swig_include_dirs" ] = swig_include_dirs
+    cmake_form=["extra_swigargs"] = swigargs
+
     cmake_form["find_packages"] = "\n\n".join(find_package_template % \
                                               dict(package=package,
                                                    PACKAGE=package.upper())\
@@ -381,6 +389,7 @@ set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_
   swig_link_libraries(${SWIG_MODULE_NAME} ${%(package)s_LIBRARIES} ${%(package)s_3RD_PARTY_LIBRARIES} ${%(package)s_PYTHON_LIBRARIES})
 endif()""" %
         dict(package=package.upper()) for package in cmake_packages)
+
     
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
@@ -411,6 +420,8 @@ set(CMAKE_SWIG_FLAGS
   -fastquery
   -nobuildnone
 %(packages_definitions)s
+%(extra_swigargs)s
+%(extra_swig_include_dirs)s
   )
 
 set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -419,13 +430,25 @@ set(SWIG_SOURCES ${NAME}.i)
 
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
+if(%(extra_include_dirs)s)
+include_directories(%(extra_include_dirs)s)
+endif()
 %(package_include_dirs)s
 
 %(package_flags)s
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
-%(package_swig_link_libraries)s
+if(%(extra_libraries)s)
+swig_link_libraries(%(extra_libraries)s)
+endif()
+
+if(%(extra_library_dirs)s)
+link_directories(%(extra_libraries_dirs)s)
+endif()
+
+
+%(package_swig_link_libraries)s %(libraries)s 
 
 """ % cmake_form
 
