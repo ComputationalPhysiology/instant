@@ -345,6 +345,7 @@ def generate_interface_file_vtk(signature, code):
     return s
 
 def write_cmakefile(module_name, cmake_packages, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
+
     find_package_template = """
 # Configuration for package %(package)s
 FIND_PACKAGE(%(package)s REQUIRED)
@@ -359,11 +360,12 @@ endif()
 
     cmake_form = dict(module_name=module_name)
 
-    cmake_form["extra_libraries"] = libraries
-    cmake_form["extra_include_dirs"] = include_dirs 
-    cmake_form["extra_library_dirs"] = library_dirs
-    cmake_form=["extra_swig_include_dirs" ] = swig_include_dirs
-    cmake_form=["extra_swigargs"] = swigargs
+    cmake_form["extra_libraries"] = ";".join(libraries)
+    cmake_form["extra_include_dirs"] = ";".join(include_dirs) 
+    cmake_form["extra_swig_include_dirs"] = " -I".join([" "] + swig_include_dirs)
+    
+    cmake_form["extra_swigargs"] = " ".join(swigargs)
+
 
     cmake_form["find_packages"] = "\n\n".join(find_package_template % \
                                               dict(package=package,
@@ -430,8 +432,9 @@ set(SWIG_SOURCES ${NAME}.i)
 
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
-if(%(extra_include_dirs)s)
-include_directories(%(extra_include_dirs)s)
+set(EXTRA_INCLUDE_DIRS %(extra_include_dirs)s)
+if(EXTRA_INCLUDE_DIRS)
+  include_directories(${EXTRA_INCLUDE_DIRS})
 endif()
 %(package_include_dirs)s
 
@@ -439,16 +442,14 @@ endif()
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
-if(%(extra_libraries)s)
-swig_link_libraries(%(extra_libraries)s)
-endif()
-
-if(%(extra_library_dirs)s)
-link_directories(%(extra_libraries_dirs)s)
+set(EXTRA_LINK_LIBRARIES %(extra_libraries)s)
+if(EXTRA_LIBRARIES)
+  swig_link_libraries(${EXTRA_LIBRARIES})
 endif()
 
 
-%(package_swig_link_libraries)s %(libraries)s 
+
+%(package_swig_link_libraries)s  
 
 """ % cmake_form
 
