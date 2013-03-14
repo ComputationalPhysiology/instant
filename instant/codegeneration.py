@@ -388,10 +388,15 @@ set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_
 
     cmake_form["package_swig_link_libraries"] = "\n".join(\
         """if (DEFINED %(package)s_LIBRARIES OR DEFINED %(package)s_3RD_PARTY_LIBRARIES OR DEFINED %(package)s_PYTHON_LIBRARIES)
-  swig_link_libraries(${SWIG_MODULE_NAME} ${%(package)s_LIBRARIES} ${%(package)s_3RD_PARTY_LIBRARIES} ${%(package)s_PYTHON_LIBRARIES})
+  swig_link_libraries(${SWIG_MODULE_NAME} ${%(package)s_LIBRARIES} ${%(package)s_3RD_PARTY_LIBRARIES} ${%(package)s_PYTHON_LIBRARIES} ${EXTRA_SOURCE_LIB})
 endif()""" %
         dict(package=package.upper()) for package in cmake_packages)
 
+    cppsrcs.extend(csrcs)
+    if len(cppsrcs) > 0: 
+        cmake_form["extra_sources_files"] = "set(SOURCE_FILES %s) " %  " ".join(cppsrcs)
+    else: 
+        cmake_form["extra_sources_files"] = "set(SOURCE_FILES)" 
     
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
@@ -440,7 +445,10 @@ endif()
 
 %(package_flags)s
 
-swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
+%(extra_sources_files)s
+
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES} ${SOURCE_FILES})
+
 
 set(EXTRA_LINK_LIBRARIES %(extra_libraries)s)
 if(EXTRA_LIBRARIES)
