@@ -45,10 +45,6 @@ import_array();
 // Typemaps, shared_ptr declarations, exceptions, version
 %include <boost_shared_ptr.i>
 
-%{
-//#define SWIG_SHARED_PTR_QNAMESPACE boost
-%}
-
 // Global typemaps and forward declarations
 %include "dolfin/swig/typemaps/includes.i"
 %include "dolfin/swig/forwarddeclarations.i"
