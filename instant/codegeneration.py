@@ -375,6 +375,10 @@ endif()
         "${%s_CXX_DEFINITIONS}" % package.upper()
         for package in cmake_packages)
 
+    cmake_form["packages_definitions"] += "\n"+"\n".join(
+        "${%s_PYTHON_DEFINITIONS}" % package.upper()
+        for package in cmake_packages)
+
     cmake_form["package_include_dirs"] = "\n".join(\
         "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
         package.upper() for package in cmake_packages)
@@ -392,12 +396,30 @@ set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_
 endif()""" %
         dict(package=package.upper()) for package in cmake_packages)
 
+    cmake_form["package_python_definitions"] = "\n".join(\
+        """if (DEFINED %(package)s_PYTHON_DEFINITIONS)
+  add_definitions(${%(package)s_PYTHON_DEFINITIONS})
+endif()""" %
+        dict(package=package.upper()) for package in cmake_packages)
+
     cppsrcs.extend(csrcs)
     if len(cppsrcs) > 0: 
         cmake_form["extra_sources_files"] = "set(SOURCE_FILES %s) " %  " ".join(cppsrcs)
     else: 
-        cmake_form["extra_sources_files"] = "set(SOURCE_FILES)" 
-    
+        cmake_form["extra_sources_files"] = "set(SOURCE_FILES)"
+
+    if cppargs:
+        cmake_form["cppargs"] = "set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} %s\")" % \
+                                (" ".join(cppargs))
+    else:
+        cmake_form["cppargs"] = ""
+
+    if lddargs:
+        cmake_form["lddargs"] = "set(CMAKE_EXE_LINKER_FLAGS \""\
+                                "${CMAKE_EXE_LINKER_FLAGS} %s\")" % (" ".join(lddargs))
+    else:
+        cmake_form["lddargs"] = ""
+        
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
@@ -407,6 +429,9 @@ set (NAME %(module_name)s)
 %(find_packages)s
 
 PROJECT(${NAME})
+
+%(cppargs)s
+%(lddargs)s
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -447,15 +472,14 @@ endif()
 
 %(extra_sources_files)s
 
-swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES} ${SOURCE_FILES})
+%(package_python_definitions)s
 
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES} ${SOURCE_FILES})
 
 set(EXTRA_LINK_LIBRARIES %(extra_libraries)s)
 if(EXTRA_LIBRARIES)
   swig_link_libraries(${EXTRA_LIBRARIES})
 endif()
-
-
 
 %(package_swig_link_libraries)s  
 
