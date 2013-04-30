@@ -462,7 +462,7 @@ set(SWIG_SOURCES ${NAME}.i)
 
 set_source_files_properties(${SWIG_SOURCES} PROPERTIES CPLUSPLUS ON)
 
-set(EXTRA_INCLUDE_DIRS %(extra_include_dirs)s)
+set(EXTRA_INCLUDE_DIRS \"%(extra_include_dirs)s\")
 if(EXTRA_INCLUDE_DIRS)
   include_directories(${EXTRA_INCLUDE_DIRS})
 endif()
@@ -474,11 +474,20 @@ endif()
 
 %(package_python_definitions)s
 
-swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES} ${SOURCE_FILES})
+swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
-set(EXTRA_LINK_LIBRARIES %(extra_libraries)s)
+set(EXTRA_LIBRARIES %(extra_libraries)s)
+if(SOURCE_FILES)
+  set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} -fpic\")
+  add_library(source_file_lib
+    STATIC
+    ${SOURCE_FILES})
+  set(EXTRA_LIBRARIES \"source_file_lib ${EXTRA_LIBRARIES}\")
+endif()
+
 if(EXTRA_LIBRARIES)
-  swig_link_libraries(${EXTRA_LIBRARIES})
+  string(STRIP ${EXTRA_LIBRARIES} EXTRA_LIBRARIES)
+  swig_link_libraries(${SWIG_MODULE_NAME} ${EXTRA_LIBRARIES})
 endif()
 
 %(package_swig_link_libraries)s  
