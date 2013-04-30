@@ -124,7 +124,8 @@ def recompile(modulename, module_path, new_compilation_checksum,
 
         else:
             # Build makefile for extension module with cmake
-            cmd = "cmake -DDEBUG=TRUE . ";
+            cmd = "cmake -DDEBUG=TRUE .";
+            #cmd = "cmake .";
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
             compile_log_file.write(output)
@@ -137,7 +138,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
                 instant_error(msg % (cmd, compile_log_filename_dest))
 
             # Build extension module with cmake generated makefile
-            cmd = "make VERBOSE=1 "
+            cmd = "make VERBOSE=1"
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
             compile_log_file.write(output)

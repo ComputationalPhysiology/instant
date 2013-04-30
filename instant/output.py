@@ -65,11 +65,12 @@ def write_file(filename, text):
     except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
-
-# Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
 from subprocess import Popen, PIPE, STDOUT
 def get_status_output(cmd, input=None, cwd=None, env=None):
-    pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+    "Replacement for commands.getstatusoutput which does not work on Windows."
+    cmd = cmd.strip().split()
+    instant_debug("Running: " + str(cmd))
+    pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
 
     (output, errout) = pipe.communicate(input=input)
     assert not errout
@@ -78,3 +79,38 @@ def get_status_output(cmd, input=None, cwd=None, env=None):
 
     return (status, output)
 
+def get_output(cmd):
+    "Replacement for commands.getoutput which does not work on Windows."
+    cmd = cmd.strip().split()
+    pipe = Popen(cmd, shell=False, stdout=PIPE, stderr=STDOUT, bufsize=-1)
+    r = pipe.wait()
+    output, error = pipe.communicate()
+    return output
+
+# Some HPC platforms does not work with the subprocess module and needs commands
+#import platform
+#if platform.system() == "Windows":
+#    # Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
+#    from subprocess import Popen, PIPE, STDOUT
+#    def get_status_output(cmd, input=None, cwd=None, env=None):
+#        "Replacement for commands.getstatusoutput which does not work on Windows."
+#        pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+#
+#        (output, errout) = pipe.communicate(input=input)
+#        assert not errout
+#
+#        status = pipe.returncode
+#
+#        return (status, output)
+#
+#    def get_output(cmd):
+#        "Replacement for commands.getoutput which does not work on Windows."
+#        pipe = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, bufsize=-1)
+#        r = pipe.wait()
+#        output, error = pipe.communicate()
+#        return output
+#
+#else:
+#    import commands
+#    get_status_output = commands.getstatusoutput
+#    get_output = commands.getoutput
