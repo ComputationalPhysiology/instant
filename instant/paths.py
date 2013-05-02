@@ -7,6 +7,7 @@ import errno
 import shutil
 import tempfile
 import time
+from .signatures import compute_checksum
 from .output import instant_debug, instant_assert
 
 _tmp_dir = None
@@ -18,7 +19,7 @@ def get_temp_dir():
     global _tmp_dir
     if _tmp_dir is None:
         datestring = "%d-%d-%d-%02d-%02d" % time.localtime()[:5]
-        suffix = datestring + "_instant"
+        suffix = datestring + "_instant_" + compute_checksum(get_instant_dir())
         _tmp_dir = tempfile.mkdtemp(suffix)
         instant_debug("Created temp directory '%s'." % _tmp_dir)
     return _tmp_dir
