@@ -68,7 +68,8 @@ def write_file(filename, text):
 from subprocess import Popen, PIPE, STDOUT
 def get_status_output(cmd, input=None, cwd=None, env=None):
     "Replacement for commands.getstatusoutput which does not work on Windows."
-    cmd = cmd.strip().split()
+    if isinstance(cmd, str):
+        cmd = cmd.strip().split()
     instant_debug("Running: " + str(cmd))
     pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
 
@@ -81,7 +82,8 @@ def get_status_output(cmd, input=None, cwd=None, env=None):
 
 def get_output(cmd):
     "Replacement for commands.getoutput which does not work on Windows."
-    cmd = cmd.strip().split()
+    if isinstance(cmd, str):
+        cmd = cmd.strip().split()
     pipe = Popen(cmd, shell=False, stdout=PIPE, stderr=STDOUT, bufsize=-1)
     r = pipe.wait()
     output, error = pipe.communicate()
