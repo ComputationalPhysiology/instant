@@ -1,5 +1,13 @@
+try:
+    from dolfin import *
+except:
+    print "dolfin not installed..."
+    exit(0)
 
-from dolfin import *
+if not has_cgal():
+    print "dolfin not compiled with cgal..."
+    exit(0)
+
 import time
 import numpy
 import os
