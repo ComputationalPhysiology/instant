@@ -59,7 +59,7 @@ def place_module_in_memory_cache(moduleid, module):
 
 
 def is_valid_module_name(name):
-    NAMELENGTHLIMIT = 100
+    NAMELENGTHLIMIT = 200
     return len(name) < NAMELENGTHLIMIT and bool(re.search(r"^[a-zA-Z_][\w]*$", name))
 
 
