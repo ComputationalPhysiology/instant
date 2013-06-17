@@ -29,8 +29,10 @@ def check_and_set_swig_binary(binary="swig", path=""):
     _swig_binary_cache = swig_binary
 
     # Reset SWIG version cache
-    _swig_version_cache = None
-
+    pattern = "SWIG Version (.*)"
+    r = re.search(pattern, output)
+    _swig_version_cache = r.groups(0)[0]
+    
     return True
 
 def get_swig_binary():
