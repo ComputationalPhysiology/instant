@@ -5,12 +5,10 @@
 
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/function/Function.h>
+#include <dolfin/geometry/BoundingBoxTree.h>
 
 namespace dolfin
 {
-  class Function;  
-  class FunctionSpace;    
-  template<typename T> class Array;
 
   class Probe
   {
