@@ -9,17 +9,17 @@ def mapstrings(format, sequence):
 
 def reindent(code):
     '''Reindent a multiline string to allow easier to read syntax.
-    
+
     Each line will be indented relative to the first non-empty line.
     Start the first line without text like shown in this example::
-    
+
         code = reindent("""
             Foo
             Bar
                 Blatti
             Ping
             """)
-    
+
     makes all indentation relative to Foo.
     '''
     lines = code.split("\n")
@@ -42,7 +42,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                         additional_definitions, additional_declarations,
                         system_headers, local_headers, wrap_headers, arrays):
     """Generate a SWIG interface file. Intended for internal library use.
-    
+
     The input arguments are as follows:
       - modulename (Name of the module)
       - code (Code to be wrapped)
@@ -55,13 +55,13 @@ def write_interfacefile(filename, modulename, code, init_code,
       - local_headers (A list of local headers with declarations needed by the wrapped code)
       - wrap_headers (A list of local headers that will be included in the code and wrapped by SWIG)
       - arrays (A nested list, the inner lists describing the different arrays)
-    
+
     The result of this function is that a SWIG interface with
     the name modulename.i is written to the current directory.
     """
     instant_debug("Generating SWIG interface file '%s'." % filename)
-    
-    # create typemaps 
+
+    # create typemaps
     typemaps = ""
     valid_types = ['float', 'double', 'short', 'int', 'long', 'long long',
                    'unsigned short', 'unsigned int', 'unsigned long',
@@ -109,24 +109,24 @@ def write_interfacefile(filename, modulename, code, init_code,
                 a.remove('multi')
                 typemaps += reindent("""
                 %%typemap(in) (int %(n)s,int* %(ptv)s,%(dtype)s* %(array)s){
-                  if (!PyArray_Check($input)) { 
+                  if (!PyArray_Check($input)) {
                     PyErr_SetString(PyExc_TypeError, "Not a NumPy array");
                     return NULL; ;
                   }
                   PyArrayObject* pyarray;
-                  pyarray = (PyArrayObject*)$input; 
+                  pyarray = (PyArrayObject*)$input;
                   $1 = int(pyarray->nd);
-                  int* dims = new int[$1]; 
+                  int* dims = new int[$1];
                   for (int d=0; d<$1; d++) {
                      dims[d] = int(pyarray->dimensions[d]);
                   }
-            
-                  $2 = dims;  
+
+                  $2 = dims;
                   $3 = (%(dtype)s*)pyarray->data;
                 }
                 %%typemap(freearg) (int %(n)s,int* %(ptv)s,%(dtype)s* %(array)s){
                     // deleting dims
-                    delete $2; 
+                    delete $2;
                 }
                 """ % { 'n' : a[0] , 'ptv' : a[1], 'array' : a[2], 'dtype' : DATA_TYPE })
             elif len(a) == 2:
@@ -147,7 +147,7 @@ def write_interfacefile(filename, modulename, code, init_code,
             # end
         # end if
     # end for
-    
+
     system_headers_code = mapstrings('#include <%s>', system_headers)
     local_headers_code  = mapstrings('#include "%s"', local_headers)
     wrap_headers_code1  = mapstrings('#include "%s"', wrap_headers)
@@ -165,10 +165,10 @@ def write_interfacefile(filename, modulename, code, init_code,
 
 %%{
 #include <iostream>
-%(additional_definitions)s 
-%(system_headers_code)s 
-%(local_headers_code)s 
-%(wrap_headers_code1)s 
+%(additional_definitions)s
+%(system_headers_code)s
+%(local_headers_code)s
+%(wrap_headers_code1)s
 %(code)s
 %%}
 
@@ -186,7 +186,7 @@ def write_interfacefile(filename, modulename, code, init_code,
 %(code)s;
 
 """ % locals()
-    
+
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
 
@@ -195,30 +195,30 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
     instant_debug("Generating %s." % filename)
 
     swig_include_dirs.append(os.path.join(os.path.dirname(__file__), 'swig'))
-    
+
     # Handle arguments
     swigfilename = "%s.i" % modulename
     wrapperfilename = "%s_wrap.cxx" % modulename
-    
+
     # Treat C and C++ files in the same way for now
     cppsrcs = cppsrcs + csrcs + [wrapperfilename]
-    
+
     swig_args = ""
     if swigargs:
         swig_args = " ".join(swigargs)
 
     compile_args = ""
-    if cppargs:  
-        compile_args = ", extra_compile_args=%r" % cppargs 
+    if cppargs:
+        compile_args = ", extra_compile_args=%r" % cppargs
 
     link_args = ""
-    if lddargs:  
-        link_args = ", extra_link_args=%r" % lddargs 
+    if lddargs:
+        link_args = ", extra_link_args=%r" % lddargs
 
     swig_include_dirs = " ".join("-I%s"%d for d in swig_include_dirs)
     if len(local_headers) > 0:
         swig_include_dirs += " -I.."
-    
+
     # Generate code
     code = reindent("""
         import os
@@ -232,11 +232,11 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
                              sources,
                              include_dirs=%s,
                              library_dirs=%s,
-                             libraries=%s %s %s)])  
+                             libraries=%s %s %s)])
         """ % (modulename, get_swig_binary(), swig_include_dirs, swig_args, \
                swigfilename, cppsrcs, modulename, modulename, include_dirs, \
                library_dirs, libraries, compile_args, link_args))
-    
+
     write_file(filename, code)
     instant_debug("Done writing setup.py file.")
 
@@ -251,7 +251,7 @@ def _test_write_interfacefile():
     local_headers = ["local_header1.h", "local_header2.h"]
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
     arrays = [["length1", "array1"], ["dims", "lengths", "array2"]]
-    
+
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
                         additional_definitions, additional_declarations, \
                         system_headers, local_headers, wrap_headers, arrays)
@@ -269,7 +269,7 @@ def _test_write_setup():
     swigargs = ["-Swigarg1", "-Swigarg2"]
     cppargs = ["-cpparg1", "-cpparg2"]
     lddargs = ["-Lddarg1", "-Lddarg2"]
-    
+
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
                 include_dirs, library_dirs, libraries, swig_include_dirs, \
                 swigargs, cppargs, lddargs)
@@ -281,32 +281,32 @@ def unique(list):
     return set.keys()
 
 
-def find_vtk_classes(str): 
+def find_vtk_classes(str):
     pattern = "vtk\w*"
     l = unique(re.findall(pattern, str))
-    return l 
+    return l
 
-def create_typemaps(classes): 
+def create_typemaps(classes):
     s = ""
 
     typemap_template = """
 %%typemap(in) %(class_name)s * {
     vtkObjectBase* obj = vtkPythonGetPointerFromObject($input, "%(class_name)s");
-    %(class_name)s * oobj = NULL;  
+    %(class_name)s * oobj = NULL;
     if (obj->IsA("%(class_name)s")) {
-        oobj = %(class_name)s::SafeDownCast(obj); 
-        $1 = oobj;  
+        oobj = %(class_name)s::SafeDownCast(obj);
+        $1 = oobj;
     }
 }
 
 %%typemap(out) %(class_name)s * {
    $result = vtkPythonGetObjectFromPointer($1);
 }
-   
+
    """
 
-    for cl in classes: 
-        s += typemap_template % { "class_name" : cl } 
+    for cl in classes:
+        s += typemap_template % { "class_name" : cl }
 
     return s
 
@@ -315,10 +315,10 @@ def generate_vtk_includes(classes):
     s = """
 #include "vtkPythonUtil.h"
     """
-    for cl in classes: 
+    for cl in classes:
         s += """
 #include \"%s.h\" """ % cl
-    return s 
+    return s
 
 
 def generate_interface_file_vtk(signature, code):
@@ -333,15 +333,15 @@ def generate_interface_file_vtk(signature, code):
 
 %%}
 
-%(typemaps)s 
+%(typemaps)s
 
-%(code)s 
+%(code)s
 
 """
     class_list = find_vtk_classes(code)
-    includes = generate_vtk_includes(class_list) 
+    includes = generate_vtk_includes(class_list)
     typemaps = create_typemaps(class_list)
-    s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes } 
+    s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes }
     return s
 
 def write_cmakefile(module_name, cmake_packages, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
@@ -352,18 +352,14 @@ FIND_PACKAGE(%(package)s REQUIRED)
 IF(%(package)s_FOUND)
  INCLUDE(${%(PACKAGE)s_USE_FILE})
 ENDIF(%(package)s_FOUND)
-
-if (NOT $ENV{CXX})
-  set(CMAKE_CXX_COMPILER ${%(PACKAGE)s_CXX_COMPILER})
-endif()
-"""    
+"""
 
     cmake_form = dict(module_name=module_name)
 
     cmake_form["extra_libraries"] = ";".join(libraries)
-    cmake_form["extra_include_dirs"] = ";".join(include_dirs) 
+    cmake_form["extra_include_dirs"] = ";".join(include_dirs)
     cmake_form["extra_swig_include_dirs"] = " -I".join([" "] + swig_include_dirs)
-    
+
     cmake_form["extra_swigargs"] = " ".join(swigargs)
 
 
@@ -384,8 +380,7 @@ endif()
         package.upper() for package in cmake_packages)
 
     cmake_form["package_flags"] = "\n".join(\
-        """set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} ${%(package)s_CXX_FLAGS}\")
-set(CMAKE_EXE_LINKER_FLAGS \"${CMAKE_EXE_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
+        """set(CMAKE_EXE_LINKER_FLAGS \"${CMAKE_EXE_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
 set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
 """ %
         dict(package=package.upper()) for package in cmake_packages)
@@ -403,9 +398,9 @@ endif()""" %
         dict(package=package.upper()) for package in cmake_packages)
 
     cppsrcs.extend(csrcs)
-    if len(cppsrcs) > 0: 
+    if len(cppsrcs) > 0:
         cmake_form["extra_sources_files"] = "set(SOURCE_FILES %s) " %  " ".join(cppsrcs)
-    else: 
+    else:
         cmake_form["extra_sources_files"] = "set(SOURCE_FILES)"
 
     if cppargs:
@@ -419,11 +414,10 @@ endif()""" %
                                 "${CMAKE_EXE_LINKER_FLAGS} %s\")" % (" ".join(lddargs))
     else:
         cmake_form["lddargs"] = ""
-        
+
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
-# This project is designed to be built outside the Insight source tree.
 set (NAME %(module_name)s)
 
 %(find_packages)s
@@ -490,14 +484,14 @@ if(EXTRA_LIBRARIES)
   swig_link_libraries(${SWIG_MODULE_NAME} ${EXTRA_LIBRARIES})
 endif()
 
-%(package_swig_link_libraries)s  
+%(package_swig_link_libraries)s
 
 """ % cmake_form
 
     filename = "CMakeLists.txt"
     write_file(filename, cmake_template)
 
-def write_itk_cmakefile(name):    
+def write_itk_cmakefile(name):
     file_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
@@ -560,7 +554,7 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS})
     f.write(file_template)
 
 
-def write_vmtk_cmakefile(name):    
+def write_vmtk_cmakefile(name):
     file_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
@@ -619,7 +613,7 @@ include_directories(${PYTHON_INCLUDE_PATH} ${%(name)s_SOURCE_DIR} /usr/local/inc
 link_directories(/usr/local/lib/vmtk .)
 
 set(VTK_LIBS ITKCommon vtkCommon vtkImaging vtkIO vtkFiltering vtkRendering vtkGraphics vtkCommonPythonD vtkFilteringPythonD)
-set(VMTK_LIBS vtkvmtkCommonPythonD vtkvmtkITKPythonD vtkvmtkCommon vtkvmtkITK vtkvmtkComputationalGeometryPythonD vtkvmtkMiscPythonD vtkvmtkComputationalGeometry vtkvmtkMisc vtkvmtkDifferentialGeometryPythonD vtkvmtkSegmentationPythonD vtkvmtkDifferentialGeometry vtkvmtkSegmentation vtkvmtkIOPythonD) 
+set(VMTK_LIBS vtkvmtkCommonPythonD vtkvmtkITKPythonD vtkvmtkCommon vtkvmtkITK vtkvmtkComputationalGeometryPythonD vtkvmtkMiscPythonD vtkvmtkComputationalGeometry vtkvmtkMisc vtkvmtkDifferentialGeometryPythonD vtkvmtkSegmentationPythonD vtkvmtkDifferentialGeometry vtkvmtkSegmentation vtkvmtkIOPythonD)
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
@@ -632,7 +626,7 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS} ${VMTK_L
 
     f.write(file_template)
 
-def write_vtk_interface_file(signature, code):     
+def write_vtk_interface_file(signature, code):
     filename = signature
     ifile = filename + ".i"
     iff = open(ifile, 'w')
@@ -644,4 +638,3 @@ if __name__ == "__main__":
     _test_write_interfacefile()
     print "\n"*3
     _test_write_setup()
-
