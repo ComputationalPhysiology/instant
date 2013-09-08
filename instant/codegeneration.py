@@ -352,11 +352,6 @@ FIND_PACKAGE(%(package)s REQUIRED)
 IF(%(package)s_FOUND)
  INCLUDE(${%(PACKAGE)s_USE_FILE})
 ENDIF(%(package)s_FOUND)
-
-if (NOT $ENV{CXX})
-  message("*****************")
-  set(CMAKE_CXX_COMPILER ${%(PACKAGE)s_CXX_COMPILER})
-endif()
 """
 
     cmake_form = dict(module_name=module_name)
@@ -423,7 +418,6 @@ endif()""" %
     cmake_template = """
 cmake_minimum_required(VERSION 2.6.0)
 
-# This project is designed to be built outside the Insight source tree.
 set (NAME %(module_name)s)
 
 %(find_packages)s
