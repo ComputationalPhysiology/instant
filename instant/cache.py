@@ -104,7 +104,7 @@ def check_memory_cache(moduleid):
         if module: return module, moduleids
         moduleids.append(moduleid)
     
-    instant_debug("In instant.check_memory_cache: Failed to find module.")
+    instant_debug("In instant.check_memory_cache: Failed to find module: %s." % moduleid)
     return None, moduleids
 
 
@@ -126,7 +126,7 @@ def check_disk_cache(modulename, cache_dir, moduleids):
                 release_lock(lock)
                 return module
             else:
-                instant_debug("In instant.check_disk_cache: Failed to imported "\
+                instant_debug("In instant.check_disk_cache: Failed to import "\
                               "module '%s' from '%s'." % (modulename, path))
     
     # All attempts failed

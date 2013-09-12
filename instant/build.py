@@ -10,7 +10,7 @@ from paths import *
 from signatures import *
 from cache import *
 from codegeneration import *
-from locking import get_lock, release_lock
+from locking import file_lock
 
 def assert_is_str(x):
     instant_assert(isinstance(x, str),
@@ -174,40 +174,38 @@ def copy_to_cache(module_path, cache_dir, modulename, \
     # Get lock, check if the module exists, _otherwise_ copy the
     # finished compiled module from /tmp/foo to the cache directory,
     # and then release lock
-    lock = get_lock(cache_dir, modulename)
+    with file_lock(cache_dir, modulename) as lock:
 
-    # Validate the path
-    cache_module_path = os.path.join(cache_dir, modulename)
-    if check_for_existing_path and os.path.exists(cache_module_path):
-        # This indicates a race condition has happened (and is being avoided!).
-        instant_warning("In instant.build_module: Path '%s' already exists,"\
-            " but module wasn't found in cache previously. Not overwriting,"\
-            " assuming this module is valid." % cache_module_path)
-
-        release_lock(lock)
-        return cache_module_path
-
-        # Not deleting anymore, relying on locking system
-        #shutil.rmtree(cache_module_path, ignore_errors=True)
-
-    # Error checks
-    instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
-                   " Cannot copy non-existing directory %r!" % module_path)
-    if check_for_existing_path and os.path.isdir(cache_module_path):
-        instant_error("In instant.build_module: Cache directory %r shouldn't"\
-                      " exist at this point!" % cache_module_path)
-    instant_debug("In instant.build_module: Copying built module from %r"\
-        " to cache at %r" % (module_path, cache_module_path))
-
-    # Do the copying
-    try:
-        shutil.copytree(module_path, cache_module_path)
-    except OSError, e:
-        if e.errno != errno.EEXIST:
-            raise
-    finally:
-        delete_temp_dir()
-        release_lock(lock)
+        # Validate the path
+        cache_module_path = os.path.join(cache_dir, modulename)
+        if check_for_existing_path and os.path.exists(cache_module_path):
+            # This indicates a race condition has happened (and is being avoided!).
+            instant_warning("In instant.build_module: Path '%s' already exists,"\
+                " but module wasn't found in cache previously. Not overwriting,"\
+                " assuming this module is valid." % cache_module_path)
+        
+            return cache_module_path
+        
+            # Not deleting anymore, relying on locking system
+            #shutil.rmtree(cache_module_path, ignore_errors=True)
+        
+        # Error checks
+        instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
+                       " Cannot copy non-existing directory %r!" % module_path)
+        if check_for_existing_path and os.path.isdir(cache_module_path):
+            instant_error("In instant.build_module: Cache directory %r shouldn't"\
+                          " exist at this point!" % cache_module_path)
+        instant_debug("In instant.build_module: Copying built module from %r"\
+            " to cache at %r" % (module_path, cache_module_path))
+        
+        # Do the copying
+        try:
+            shutil.copytree(module_path, cache_module_path)
+        except OSError, e:
+            if e.errno != errno.EEXIST:
+                raise
+        finally:
+            delete_temp_dir()
 
     return cache_module_path
 
@@ -548,19 +546,21 @@ def build_module(modulename=None, source_directory=".",
         # Copy compiled module to cache
         if use_cache:
             module_path = copy_to_cache(module_path, cache_dir, modulename)
+            with file_lock(cache_dir, modulename) as lock:
 
-        # Import module and place in memory cache
-        # Do not use locks if use_cache is False:
-        if use_cache:
-            lock = get_lock(cache_dir, modulename)
-        module = import_and_cache_module(module_path, modulename, moduleids)
-        if use_cache:
-            release_lock(lock)
+                # Import module and place in memory cache
+                module = import_and_cache_module(module_path, modulename, moduleids)
+        else:
+
+            # Import module and place in memory cache
+            module = import_and_cache_module(module_path, modulename, moduleids)
+            
         if not module:
             instant_error("Failed to import newly compiled module!")
 
         instant_debug("In instant.build_module: Returning %s from build_module."\
             % module)
+
         return module
         # The end!
 

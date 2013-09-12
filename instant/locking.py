@@ -13,7 +13,7 @@ Two python libraries can be used:
 
 """
 
-__all__ = ["get_lock", "release_lock", "release_all_lock"]
+__all__ = ["get_lock", "release_lock", "release_all_lock", "file_lock"]
 
 import os.path
 from .output import instant_error, instant_assert, instant_debug
@@ -71,8 +71,10 @@ elif fcntl:
         
         lockname = module_name + ".lock"
         count = _lock_count.get(lockname, 0)
-        
-        instant_debug("Acquiring lock %s, count is %d." % (lockname, count))
+        import inspect
+        frame = inspect.currentframe().f_back
+        instant_debug("Acquiring lock %s, count is %d. Called from: %s line: %d" % \
+                      (lockname, count, inspect.getfile(frame), frame.f_lineno))
         
         if count == 0:
             cache_dir = validate_cache_dir(cache_dir)
@@ -93,7 +95,11 @@ elif fcntl:
         lockname = _lock_names[lock.fileno()]
         count = _lock_count[lockname]
 
-        instant_debug("Releasing lock %s, count is %d." % (lockname, count))
+        import inspect
+        frame = inspect.currentframe().f_back
+
+        instant_debug("Releasing lock %s, count is %d. Called from: %s line: %d" % \
+                      (lockname, count, inspect.getfile(frame), frame.f_lineno))
 
         instant_assert(count > 0, "Releasing lock that Instant is supposedly not holding.")
         instant_assert(lock is _lock_files[lockname], "Lock mismatch, might be something wrong in locking logic.")
@@ -123,3 +129,17 @@ else:
     def release_all_locks():
         pass
     
+class file_lock(object):
+    """
+    File lock using with statement
+    """
+    def __init__(self, cache_dir, module_name):
+        self.cache_dir = cache_dir
+        self.module_name = module_name
+    
+    def __enter__(self):
+        self.lock = get_lock(self.cache_dir, self.module_name)
+        return self.lock
+
+    def __exit__(self, type, value, tb):
+        release_lock(self.lock)
