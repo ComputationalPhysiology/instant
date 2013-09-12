@@ -24,6 +24,14 @@ def set_log_handler(handler):
     _log.addHandler(_loghandler)
 
 def set_logging_level(level):
+    import inspect
+    frame = inspect.currentframe().f_back
+    instant_warning("set_logging_level is deprecated but was called "\
+                    "from %s, at line %d. Use set_log_level instead." % \
+                    (inspect.getfile(frame), frame.f_lineno))
+    set_log_level(level)
+    
+def set_log_level(level):
     if isinstance(level, str):
         level = level.upper()
         assert level in ("INFO", "WARNING", "ERROR", "DEBUG")

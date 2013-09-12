@@ -1,3 +1,4 @@
+ - Introduce set_log_level and deprecate set_logging_level
 1.2.0 [2013-03-24]
  - Allow to use CMake instead of distutils/pkg-config
 1.1.0 [2013-01-07]
