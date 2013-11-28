@@ -19,7 +19,7 @@ def get_temp_dir():
     global _tmp_dir
     if _tmp_dir is None:
         datestring = "%d-%d-%d-%02d-%02d" % time.localtime()[:5]
-        suffix = datestring + "_instant_" + compute_checksum(get_instant_dir())
+        suffix = datestring + "_instant_" + compute_checksum(get_default_cache_dir())
         _tmp_dir = tempfile.mkdtemp(suffix)
         instant_debug("Created temp directory '%s'." % _tmp_dir)
     return _tmp_dir
