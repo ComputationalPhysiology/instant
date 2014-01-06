@@ -10,31 +10,31 @@ import os
 import instant
 
 code = """
-namespace dolfin 
+namespace dolfin
 {
   class Probe
   {
-    
   public:
-      
+
     Probe(const Array<double>& x, const FunctionSpace& V);
     void eval(const Function& u);
-    std::vector<double> get_probe(std::size_t i);
-    std::size_t value_size();
-    std::size_t number_of_evaluations();
-    std::vector<double> coordinates();
+    std::vector<double> get_probe(std::size_t i) const;
+    std::size_t value_size() const;
+    std::size_t number_of_evaluations() const;
+    std::vector<double> coordinates() const;
     void erase(std::size_t i);
     void clear();
 
-   private:
-      
-    std::vector<std::vector<double> > basis_matrix;
-    std::vector<double> coefficients;
+  private:
+
+    std::vector<std::vector<double> > _basis_matrix;
+    std::vector<double> _coefficients;
     double _x[3];
     boost::shared_ptr<const FiniteElement> _element;
-    Cell* dolfin_cell;
-    UFCCell* ufc_cell;
-    std::size_t value_size_loc;    
+    boost::scoped_ptr<Cell> dolfin_cell;
+    ufc::cell ufc_cell;
+    std::vector<double> _vertex_coordinates;
+    std::size_t value_size_loc;
     std::vector<std::vector<double> > _probes;
   };
 }
@@ -69,7 +69,7 @@ import_array();
 system_headers =  ['numpy/arrayobject.h',  'dolfin/function/Function.h', 'dolfin/function/FunctionSpace.h']
 swigargs = ['-c++', '-fcompact', '-O', '-I.', '-small']
 cmake_packages = ['DOLFIN']
-sources=["Probe.cpp"] 
+sources=["Probe.cpp"]
 source_dir="Probe"
 include_dirs=[".", os.path.abspath("Probe")]
 
@@ -95,7 +95,3 @@ u0 = interpolate(Expression('x[0]'), V)
 probe.eval(u0)
 print "The number of probes is ", probe.value_size()
 print "The value at ", x, " is ", probe.get_probe(0)
-
-
-
-
