@@ -13,7 +13,7 @@ C{inline*} see their documentation for more details.
 
 For more examples, see the tests/ directory in the Instant distribution.
 
-Questions, bugs and patches should be sent to instant@lists.launchpad.net.
+Questions, bugs and patches should be sent to fenics@fenicsproject.org.
 """
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
@@ -29,4 +29,3 @@ from .cache import *
 from .codegeneration import *
 from .build import *
 from .inlining import *
-
