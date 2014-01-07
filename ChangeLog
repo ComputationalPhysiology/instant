@@ -1,3 +1,4 @@
+1.3.0 [2014-01-07]
  - Add file_lock which can be used within a with statement
  - Introduce set_log_level and deprecate set_logging_level
 1.2.0 [2013-03-24]
