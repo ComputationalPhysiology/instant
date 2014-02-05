@@ -420,9 +420,9 @@ cmake_minimum_required(VERSION 2.6.0)
 
 set (NAME %(module_name)s)
 
-%(find_packages)s
-
 PROJECT(${NAME})
+
+%(find_packages)s
 
 %(cppargs)s
 %(lddargs)s
@@ -512,7 +512,6 @@ ENDIF(VTK_FOUND)
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-
 
 set(SWIG_MODULE_NAME %(name)s)
 set(CMAKE_SWIG_FLAGS
