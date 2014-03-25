@@ -74,21 +74,53 @@ def write_file(filename, text):
         instant_error("Can't open '%s': %s" % (filename, e))
 
 from subprocess import Popen, PIPE, STDOUT
-def get_status_output(cmd, input=None, cwd=None, env=None):
+def _get_status_output(cmd, input=None, cwd=None, env=None):
     "Replacement for commands.getstatusoutput which does not work on Windows."
     if isinstance(cmd, str):
         cmd = cmd.strip().split()
     instant_debug("Running: " + str(cmd))
+ 
+    # NOTE: Is not OFED-fork-safe! Check subprocess.py,
+    #       http://bugs.python.org/issue1336#msg146685
+    #       OFED-fork-safety means that parent should not
+    #       touch anything between fork() and exec(),
+    #       which is not met in subprocess module. See
+    #       https://www.open-mpi.org/faq/?category=openfabrics#ofa-fork
+    #       http://www.openfabrics.org/downloads/OFED/release_notes/OFED_3.12_rc1_release_notes#3.03
     pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
 
     (output, errout) = pipe.communicate(input=input)
     assert not errout
 
     status = pipe.returncode
-
     return (status, output)
 
-def get_output(cmd):
+import os, tempfile
+def get_status_output(cmd, input=None, cwd=None, env=None):
+    # TODO: We don't need function with such a generality.
+    #       We only need output and return code.
+    if not isinstance(cmd, str) or input is not None or \
+        cwd is not None or env is not None:
+        raise NotImplementedError
+
+    # TODO: Writing to tempfile and reading back is unnecessary and
+    #       prone to not being supported under different platforms.
+    #       In fact, output is usually written back to logfile
+    #       in instant, so it can be done directly.
+    f = tempfile.NamedTemporaryFile(delete=True)
+
+    # TODO: Is this redirection platform independnt?
+    cmd += ' > ' + f.name + ' 2> ' + os.devnull
+    
+    # NOTE: Possibly OFED-fork-safe, tests needed!!!
+    status = os.system(cmd)
+
+    output = f.read()
+    f.close()
+    return (status, output)
+
+def _get_output(cmd):
+    # TODO: can be removed, not used in instant
     "Replacement for commands.getoutput which does not work on Windows."
     if isinstance(cmd, str):
         cmd = cmd.strip().split()
