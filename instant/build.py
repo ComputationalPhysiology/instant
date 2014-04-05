@@ -5,7 +5,6 @@ from itertools import chain
 
 # TODO: Import only the official interface
 from output import *
-from config import header_and_libs_from_pkgconfig, get_swig_version
 from paths import *
 from signatures import *
 from cache import *
@@ -87,13 +86,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
         checksum_file.close()
         if old_compilation_checksum == new_compilation_checksum:
             return
-
-    # Verify that SWIG is on the system
-    try:
-        get_swig_version()
-    except OSError:
-        instant_error("In instant.recompile: Could not find swig!"\
-            " You can download swig from http://www.swig.org")
 
     # Create log file for logging of compilation errors
     compile_log_filename = os.path.join(module_path, "compile.log")
