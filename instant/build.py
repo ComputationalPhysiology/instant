@@ -170,7 +170,8 @@ def copy_to_cache(module_path, cache_dir, modulename, \
 
         # Validate the path
         cache_module_path = os.path.join(cache_dir, modulename)
-        if check_for_existing_path and os.path.exists(cache_module_path):
+        if check_for_existing_path and os.path.exists(os.path.join(\
+            cache_module_path, "finished_copying")):
             # This indicates a race condition has happened (and is being avoided!).
             instant_warning("In instant.build_module: Path '%s' already exists,"\
                 " but module wasn't found in cache previously. Not overwriting,"\
@@ -190,9 +191,11 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         instant_debug("In instant.build_module: Copying built module from %r"\
             " to cache at %r" % (module_path, cache_module_path))
         
-        # Do the copying
+        # Do the copying and mark that we are finished by creating an empty file
+        # finished_copying
         try:
             shutil.copytree(module_path, cache_module_path)
+            open(os.path.join(cache_module_path, "finished_copying"), "w")
         except OSError, e:
             if e.errno != errno.EEXIST:
                 raise
@@ -538,14 +541,9 @@ def build_module(modulename=None, source_directory=".",
         # Copy compiled module to cache
         if use_cache:
             module_path = copy_to_cache(module_path, cache_dir, modulename)
-            with file_lock(cache_dir, modulename) as lock:
 
-                # Import module and place in memory cache
-                module = import_and_cache_module(module_path, modulename, moduleids)
-        else:
-
-            # Import module and place in memory cache
-            module = import_and_cache_module(module_path, modulename, moduleids)
+        # Import module and place in memory cache
+        module = import_and_cache_module(module_path, modulename, moduleids)
             
         if not module:
             instant_error("Failed to import newly compiled module!")

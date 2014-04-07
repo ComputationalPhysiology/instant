@@ -15,7 +15,6 @@ import os, sys, re
 from .output import instant_warning, instant_assert, instant_debug
 from .paths import get_default_cache_dir, validate_cache_dir
 from .signatures import compute_checksum
-from .locking import get_lock, release_lock
 
 # TODO: We could make this an argument, but it's used indirectly several places so take care.
 _modulename_prefix = "instant_module_"
@@ -109,21 +108,18 @@ def check_memory_cache(moduleid):
 
 
 def check_disk_cache(modulename, cache_dir, moduleids):
-    # Get file lock to avoid race conditions in cache
-    lock = get_lock(cache_dir, modulename)
-    
     # Ensure a valid cache_dir
     cache_dir = validate_cache_dir(cache_dir)
     
     # Check on disk, in current directory and cache directory
     for path in (os.getcwd(), cache_dir):
-        if os.path.isdir(os.path.join(path, modulename)):
+        if os.path.exists(os.path.join(path, modulename, "finished_copying")):
+
             # Found existing directory, try to import and place in memory cache
             module = import_and_cache_module(path, modulename, moduleids)
             if module:
                 instant_debug("In instant.check_disk_cache: Imported module "\
                               "'%s' from '%s'." % (modulename, path))
-                release_lock(lock)
                 return module
             else:
                 instant_debug("In instant.check_disk_cache: Failed to import "\
@@ -132,7 +128,6 @@ def check_disk_cache(modulename, cache_dir, moduleids):
     # All attempts failed
     instant_debug("In instant.check_disk_cache: Can't import module with modulename "\
                   "%r using cache directory %r." % (modulename, cache_dir))
-    release_lock(lock)
     return None
 
 
