@@ -584,10 +584,8 @@ def build_module_vtk(c_code, cache_dir=None):
     module_path = copy_to_cache(module_path, cache_dir, modulename)
 
     os.chdir(original_path)
-    lock = get_lock(cache_dir, modulename)
 
     module = import_and_cache_module(module_path, modulename, moduleids)
-    release_lock(lock)
 
     return module
 
@@ -612,9 +610,7 @@ def build_module_vmtk(c_code, cache_dir=None):
     module_path = copy_to_cache(module_path, cache_dir, modulename)
 
     os.chdir(original_path)
-    lock = get_lock(cache_dir, modulename)
 
     module = import_and_cache_module(module_path, modulename, moduleids)
-    release_lock(lock)
 
     return module
