@@ -1,15 +1,19 @@
 """This module contains internal logging utilities."""
 
-import logging
+import logging, os
 
 # Logging wrappers
-
 _log = logging.getLogger("instant")
 _loghandler = logging.StreamHandler()
 _log.addHandler(_loghandler)
-_log.setLevel(logging.WARNING)
+#_log.setLevel(logging.WARNING)
 _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
+
+# Choose method for calling external programs
+_default_call_method = 'SUBPROCESS'
+_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", _default_call_method)
+_log.debug('Using call method: %s'%_call_method)
 
 def get_log_handler():
     return _loghandler
@@ -73,54 +77,60 @@ def write_file(filename, text):
     except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
-from subprocess import Popen, PIPE, STDOUT
-def get_status_output(cmd, input=None, cwd=None, env=None):
-    "Replacement for commands.getstatusoutput which does not work on Windows."
-    if isinstance(cmd, str):
-        cmd = cmd.strip().split()
-    instant_debug("Running: " + str(cmd))
-    pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+if _call_method == 'SUBPROCESS':
+    from subprocess import Popen, PIPE, STDOUT
 
-    (output, errout) = pipe.communicate(input=input)
-    assert not errout
+    def get_status_output(cmd, input=None, cwd=None, env=None):
+        "Replacement for commands.getstatusoutput which does not work on Windows."
+        if isinstance(cmd, str):
+            cmd = cmd.strip().split()
+        instant_debug("Running: " + str(cmd))
+ 
+        # NOTE: This is not OFED-fork-safe! Check subprocess.py,
+        #       http://bugs.python.org/issue1336#msg146685
+        #       OFED-fork-safety means that parent should not
+        #       touch anything between fork() and exec(),
+        #       which is not met in subprocess module. See
+        #       https://www.open-mpi.org/faq/?category=openfabrics#ofa-fork
+        #       http://www.openfabrics.org/downloads/OFED/release_notes/OFED_3.12_rc1_release_notes#3.03
+        pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
 
-    status = pipe.returncode
+        (output, errout) = pipe.communicate(input=input)
+        assert not errout
 
-    return (status, output)
+        status = pipe.returncode
+        return (status, output)
 
-def get_output(cmd):
-    "Replacement for commands.getoutput which does not work on Windows."
-    if isinstance(cmd, str):
-        cmd = cmd.strip().split()
-    pipe = Popen(cmd, shell=False, stdout=PIPE, stderr=STDOUT, bufsize=-1)
-    r = pipe.wait()
-    output, error = pipe.communicate()
-    return output
+elif _call_method == 'OS_SYSTEM':
+    import tempfile
+    from .paths import get_default_error_dir
 
-# Some HPC platforms does not work with the subprocess module and needs commands
-#import platform
-#if platform.system() == "Windows":
-#    # Taken from http://ivory.idyll.org/blog/mar-07/replacing-commands-with-subprocess
-#    from subprocess import Popen, PIPE, STDOUT
-#    def get_status_output(cmd, input=None, cwd=None, env=None):
-#        "Replacement for commands.getstatusoutput which does not work on Windows."
-#        pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
-#
-#        (output, errout) = pipe.communicate(input=input)
-#        assert not errout
-#
-#        status = pipe.returncode
-#
-#        return (status, output)
-#
-#    def get_output(cmd):
-#        "Replacement for commands.getoutput which does not work on Windows."
-#        pipe = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, bufsize=-1)
-#        r = pipe.wait()
-#        output, error = pipe.communicate()
-#        return output
-#
-#else:
-#    import commands
-#    get_status_output = commands.getstatusoutput
-#    get_output = commands.getoutput
+    def get_status_output(cmd, input=None, cwd=None, env=None):
+        # We don't need function with such a generality.
+        # We only need output and return code.
+        if not isinstance(cmd, str) or input is not None or \
+            cwd is not None or env is not None:
+            raise NotImplementedError(
+                'This implementation (%s) of get_status_output does'
+                ' not accept \'input\', \'cwd\' and \'env\' kwargs.'
+                %_call_method)
+
+        f = tempfile.NamedTemporaryFile(dir=get_default_error_dir(),
+                                        delete=True)
+
+        # Execute cmd with redirection
+        cmd += ' > ' + f.name + ' 2>&1'
+        instant_debug("Running: " + str(cmd))
+        # NOTE: Possibly OFED-fork-safe, tests needed!
+        status = os.system(cmd)
+
+        output = f.read()
+        f.close()
+        return (status, output)
+
+elif _call_method == 'COMMANDS':
+    from commands import getstatusoutput as get_status_output
+
+else:
+    instant_error('Incomprehensible environment variable'
+                  ' INSTANT_SYSTEM_CALL_METHOD=%s'%_call_method)

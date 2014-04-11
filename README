@@ -21,3 +21,33 @@ Optional dependencies
 To enable NFS safe file locking flufl.lock can be installed:
 
 https://launchpad.net/flufl.lock
+
+
+Environment
+===========
+
+Instant's behaviour depened on following environment variables:
+
+ - INSTANT_CACHE_DIR
+ - INSTANT_ERROR_DIR 
+
+     These options can override placement of default cache and error
+     directories in ~/.instant/cache and ~/.instant/error.
+
+ - INSTANT_SYSTEM_CALL_METHOD
+
+     Choose method for calling external programs (pkgconfig,
+     swig, cmake, make). Available values:
+
+       - 'SUBPROCESS'
+
+           Uses pipes. Probably not OFED-fork safe. Default.
+
+       - 'OS_SYSTEM'
+
+           Uses temporary files. Probably OFED-fork safe.
+
+       - 'COMMANDS'
+
+           Uses pipes. Possibly OFED-fork safe on some machines.
+           Does not work on Windows.
