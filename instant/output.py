@@ -133,4 +133,4 @@ elif _call_method == 'COMMANDS':
 
 else:
     instant_error('Incomprehensible environment variable'
-                  ' INSTANT_CALL_METHOD=%s'%_call_method)
+                  ' INSTANT_SYSTEM_CALL_METHOD=%s'%_call_method)
