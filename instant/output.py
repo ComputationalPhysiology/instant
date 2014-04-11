@@ -11,8 +11,8 @@ _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
 
 # Choose method for calling external programs
-_default_call_method = 'subprocess.Popen'
-_call_method = os.environ.get("INSTANT_CALL_METHOD", _default_call_method)
+_default_call_method = 'SUBPROCESS'
+_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", _default_call_method)
 _log.debug('Using call method: %s'%_call_method)
 
 def get_log_handler():
@@ -77,7 +77,7 @@ def write_file(filename, text):
     except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
-if _call_method == 'subprocess.Popen':
+if _call_method == 'SUBPROCESS':
     from subprocess import Popen, PIPE, STDOUT
 
     def get_status_output(cmd, input=None, cwd=None, env=None):
@@ -101,7 +101,7 @@ if _call_method == 'subprocess.Popen':
         status = pipe.returncode
         return (status, output)
 
-elif _call_method == 'os.system':
+elif _call_method == 'OS_SYSTEM':
     import tempfile
     from .paths import get_default_error_dir
 
@@ -128,7 +128,7 @@ elif _call_method == 'os.system':
         f.close()
         return (status, output)
 
-elif _call_method == 'commands.getstatusoutput':
+elif _call_method == 'COMMANDS':
     from commands import getstatusoutput as get_status_output
 
 else:

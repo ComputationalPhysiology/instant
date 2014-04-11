@@ -34,20 +34,20 @@ Instant's behaviour depened on following environment variables:
      These options can override placement of default cache and error
      directories in ~/.instant/cache and ~/.instant/error.
 
- - INSTANT_CALL_METHOD
+ - INSTANT_SYSTEM_CALL_METHOD
 
      Choose method for calling external programs (pkgconfig,
      swig, cmake, make). Available values:
 
-       - 'subprocess.Popen'
+       - 'SUBPROCESS'
 
            Uses pipes. Probably not OFED-fork safe. Default.
 
-       - 'os.system'
+       - 'OS_SYSTEM'
 
            Uses temporary files. Probably OFED-fork safe.
 
-       - 'commands.getstatusoutput'
+       - 'COMMANDS'
 
            Uses pipes. Possibly OFED-fork safe on some machines.
            Does not work on Windows.

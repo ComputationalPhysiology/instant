@@ -1,4 +1,4 @@
- - Introduce env var INSTANT_CALL_METHOD for switching method for calling
+ - Introduce env var INSTANT_SYSTEM_CALL_METHOD for switching method for calling
    external programs and introduce possibly OFED-fork safe implementation
 1.3.0 [2014-01-07]
  - Add file_lock which can be used within a with statement
