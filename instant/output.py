@@ -11,7 +11,7 @@ _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
 
 # Choose method for calling external programs
-_default_call_method = 'SUBPROCESS'
+_default_call_method = 'OS_SYSTEM'
 _call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", _default_call_method)
 _log.debug('Using call method: %s'%_call_method)
 
