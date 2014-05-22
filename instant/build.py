@@ -1,5 +1,27 @@
 """This module contains the main part of Instant, the build_module function."""
 
+# Copyright (C) 2008-2013 Kent-Andre Mardal
+# Copyright (C) 2008-2013 Martin Sandve Alnes
+# Copyright (C) 2009-2014 Johan Hake
+# Copyright (C) 2009 Ilmar Wilbers
+#
+# This file is part of Instant.
+#
+# Instant is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Instant is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Instant. If not, see <http://www.gnu.org/licenses/>.
+#
+# Alternatively, Instant may be distributed under the terms of the BSD license.
+
 import os, sys, shutil, glob, errno
 from itertools import chain
 

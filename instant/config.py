@@ -1,5 +1,27 @@
 """This module contains helper functions for configuration using pkg-config."""
 
+# Copyright (C) 2008-2009 Kent-Andre Mardal
+# Copyright (C) 2008 Martin Sandve Alnes
+# Copyright (C) 2011-2013 Johan Hake
+# Copyright (C) 2011 Joachim Berdal Haga
+#
+# This file is part of Instant.
+#
+# Instant is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Instant is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Instant. If not, see <http://www.gnu.org/licenses/>.
+#
+# Alternatively, Instant may be distributed under the terms of the BSD license.
+
 import os
 from .output import get_status_output
 import re

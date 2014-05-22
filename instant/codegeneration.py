@@ -1,5 +1,27 @@
 """This module contains helper functions for code generation."""
 
+# Copyright (C) 2010, 2013 Kent-Andre Mardal
+# Copyright (C) 2008 Martin Sandve Alnes
+# Copyright (C) 2009 Ilmar Wilbers
+# Copyright (C) 2013 Garth N. Wells
+#
+# This file is part of Instant.
+#
+# Instant is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Instant is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Instant. If not, see <http://www.gnu.org/licenses/>.
+#
+# Alternatively, Instant may be distributed under the terms of the BSD license.
+
 import re, os
 from output import instant_assert, instant_warning, instant_debug, write_file
 from config import get_swig_binary
