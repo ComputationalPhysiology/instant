@@ -20,7 +20,7 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
-import logging, os
+import logging, os, platform
 
 # Logging wrappers
 _log = logging.getLogger("instant")
@@ -30,9 +30,13 @@ _log.addHandler(_loghandler)
 _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
 
-# Choose method for calling external programs
-_default_call_method = 'OS_SYSTEM'
-_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", _default_call_method)
+# Choose method for calling external programs. use subprocess by
+# deafult, and os.system on Windows
+_default_call_method = 'SUBPROCESS'
+if 'Windows' in platform.system() or 'CYGWIN' in platform.system():
+    _default_call_method = 'OS_SYSTEM'
+_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", \
+                              _default_call_method)
 _log.debug('Using call method: %s'%_call_method)
 
 def get_log_handler():
@@ -54,7 +58,7 @@ def set_logging_level(level):
                     "from %s, at line %d. Use set_log_level instead." % \
                     (inspect.getfile(frame), frame.f_lineno))
     set_log_level(level)
-    
+
 def set_log_level(level):
     if isinstance(level, str):
         level = level.upper()
@@ -105,7 +109,7 @@ if _call_method == 'SUBPROCESS':
         if isinstance(cmd, str):
             cmd = cmd.strip().split()
         instant_debug("Running: " + str(cmd))
- 
+
         # NOTE: This is not OFED-fork-safe! Check subprocess.py,
         #       http://bugs.python.org/issue1336#msg146685
         #       OFED-fork-safety means that parent should not
