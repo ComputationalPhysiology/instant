@@ -26,7 +26,7 @@ void func(int n1, double* array1, int n2, double* array2){
 test7_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"], cppargs='-g',
           include_dirs=[N.get_include()],
           init_code='import_array();', modulename='test7_ext', 
-          arrays = [['n1', 'array1'],['n2', 'array2']])
+          arrays = [['n1', 'array1'], ['n2', 'array2']])
 
 
 
@@ -44,7 +44,7 @@ from test7_ext import func
 
 c = N.arange(seed)
 t1 = time.time()
-func(a,c)
+func(a, c)
 t2 = time.time()
 print("With instant: ", t2-t1, "seconds") 
 
@@ -59,7 +59,7 @@ print("With NumPy inplace aritmetic: ", t2-t1, "seconds")
 
 
 difference = abs(b - c) 
-sum = reduce( lambda a,b: a+b, difference)  
+sum = reduce( lambda a, b: a+b, difference)  
 print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 
 

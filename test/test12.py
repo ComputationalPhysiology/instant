@@ -28,18 +28,18 @@ grid_func = inline_with_numpy(c_code, arrays=arrays )
 
 
 t1 = time.time()
-grid_func(a,x,y)
+grid_func(a, x, y)
 t2 = time.time()
-print('With instant:',t2-t1,'seconds')
+print('With instant:', t2-t1, 'seconds')
 
 
 xv = x[:, N.newaxis]
-yv = y[N.newaxis, :]
+yv = y[N.newaxis,:]
 a2 = N.zeros([n, n]) 
 t1 = time.time()
 a2[:,:] = N.sin(xv + yv)
 t2 = time.time()
-print('With numpy:',t2-t1,'seconds')
+print('With numpy:', t2-t1, 'seconds')
 
 d = a-a2 
 d.shape = (n*n,) 

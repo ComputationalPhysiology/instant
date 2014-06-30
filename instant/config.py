@@ -89,7 +89,7 @@ def check_swig_version(version, same=False):
     else:
         print "Swig version is lower than 1.3.36"
     """
-    assert isinstance(version,str), "Provide the first version number as a 'str'"
+    assert isinstance(version, str), "Provide the first version number as a 'str'"
     assert len(version.split("."))==3, "Provide the version number as three numbers seperated by '.'"
 
     installed_version = list(map(int, get_swig_version().split('.')))
@@ -97,7 +97,7 @@ def check_swig_version(version, same=False):
     
     # If same is True then just check that all numbers are equal
     if same:
-        return all(i == h for i, h in zip(installed_version,handed_version))
+        return all(i == h for i, h in zip(installed_version, handed_version))
     
     swig_enough = True
     for i, v in enumerate([v for v in installed_version]):

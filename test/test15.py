@@ -9,9 +9,9 @@ def test2():
 
     a = []
     t0 = time.time()
-    for i in range(0,1000):
+    for i in range(0, 1000):
         xx = i/1000.0
-        y = f.subs(x,xx)
+        y = f.subs(x, xx)
         a.append(y)
 
     t1 = time.time()
@@ -29,7 +29,7 @@ def test3():
 
     a = []
     t0 = time.time()
-    for i in range(0,1000):
+    for i in range(0, 1000):
         xx = i/1000.0
         y = f(xx)
         a.append(y)

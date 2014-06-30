@@ -108,9 +108,9 @@ def inline_with_numpy(c_code, **kwargs):
     import numpy
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code 
-    kwargs["init_code"]      = kwargs.get("init_code","")      + "\nimport_array();\n"
-    kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["numpy/arrayobject.h"]
-    kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s" %numpy.get_include()]
+    kwargs["init_code"]      = kwargs.get("init_code", "")      + "\nimport_array();\n"
+    kwargs["system_headers"] = kwargs.get("system_headers", []) + ["numpy/arrayobject.h"]
+    kwargs["include_dirs"]   = kwargs.get("include_dirs", [])   + ["%s" %numpy.get_include()]
     func_name = get_func_name(c_code)
     module = build_module(**kwargs)
     if hasattr(module, func_name):
@@ -149,9 +149,9 @@ def inline_module_with_numpy(c_code, **kwargs):
     import numpy
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
     kwargs["code"] = c_code 
-    kwargs["init_code"]      = kwargs.get("init_code","")      + "\nimport_array();\n"
-    kwargs["system_headers"] = kwargs.get("system_headers",[]) + ["numpy/arrayobject.h"]
-    kwargs["include_dirs"]   = kwargs.get("include_dirs",[])   + ["%s" % numpy.get_include()]
+    kwargs["init_code"]      = kwargs.get("init_code", "")      + "\nimport_array();\n"
+    kwargs["system_headers"] = kwargs.get("system_headers", []) + ["numpy/arrayobject.h"]
+    kwargs["include_dirs"]   = kwargs.get("include_dirs", [])   + ["%s" % numpy.get_include()]
     module = build_module(**kwargs)
     return module
 

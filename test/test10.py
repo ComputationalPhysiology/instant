@@ -129,7 +129,7 @@ sum_func = inline_with_numpy(c_code, arrays = [['m', 'mp', 'array1', 'multi'],
                              cache_dir="test_ex5_cache")
 
 a = numpy.arange(16, dtype='float64')
-a.shape = (2,2,2,2)
+a.shape = (2, 2, 2, 2)
 b = a.copy()*0
 
 sum_func(a, b)

@@ -153,7 +153,7 @@ elif _call_method == 'OS_SYSTEM':
         return (status, output)
 
 elif _call_method == 'COMMANDS':
-    from commands import getstatusoutput as get_status_output
+    from subprocess import getstatusoutput as get_status_output
 
 else:
     instant_error('Incomprehensible environment variable'

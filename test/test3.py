@@ -15,6 +15,6 @@ build_module(code=c_code, modulename='test3_ext',
 from test3_ext import sum 
 a = 3.7
 b = 4.8
-c = sum(a,b)
-print("The sum of %g and %g is %g" % (a,b,c)) 
+c = sum(a, b)
+print("The sum of %g and %g is %g" % (a, b, c)) 
 

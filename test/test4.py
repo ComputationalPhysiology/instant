@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from instant import build_module 
-import numpy,sys
+import numpy, sys
 from functools import reduce
 
 a = numpy.arange(10000000)
@@ -47,19 +47,19 @@ test4_ext = build_module(code=s, system_headers=["numpy/arrayobject.h"],
 import time
 
 t1 = time.time() 
-d = test4_ext.add(a,b)
+d = test4_ext.add(a, b)
 t2 = time.time()
 
-print('With instant:',t2-t1,'seconds')
+print('With instant:', t2-t1, 'seconds')
 
 t1 = time.time() 
 c = a+b
 t2 = time.time()
 
-print('With numpy:   ',t2-t1,'seconds')
+print('With numpy:   ', t2-t1, 'seconds')
 
 difference = abs(c - d) 
 
-sum = reduce( lambda a,b: a+b, difference)  
+sum = reduce( lambda a, b: a+b, difference)  
 print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 

@@ -62,7 +62,7 @@ def makedirs(path):
     """
     try:
         os.makedirs(path)
-    except os.error, e:
+    except os.error as e:
         if e.errno != errno.EEXIST:
             raise
 
@@ -167,7 +167,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
     finally:
         compile_log_file.close()
         if ret != 0:
-            if "INSTANT_DISPLAY_COMPILE_LOG" in os.environ.keys():
+            if "INSTANT_DISPLAY_COMPILE_LOG" in list(os.environ.keys()):
                 instant_warning("")
                 instant_warning("Content of instant compile.log")
                 instant_warning("==============================")
@@ -218,7 +218,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         try:
             shutil.copytree(module_path, cache_module_path)
             open(os.path.join(cache_module_path, "finished_copying"), "w")
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         finally:

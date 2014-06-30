@@ -63,7 +63,7 @@ I0 = 0
 time_loop(S, I, Z, R, PI, alpha, beta, delta, rho, zeta, dt, N, S0, I0, Z0, R0)
 
 
-tt = arange(0,1,1.0/N) 
+tt = arange(0, 1, 1.0/N) 
 
 try: 
     import pylab

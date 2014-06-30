@@ -28,7 +28,7 @@ def compute_checksum(text="", filenames=[]):
     modified based on Python24\Tools\Scripts\md5.py
     """
     instant_assert(isinstance(text, str), "Expecting string.")
-    instant_assert(isinstance(filenames, (list,tuple)), "Expecting sequence.")
+    instant_assert(isinstance(filenames, (list, tuple)), "Expecting sequence.")
     
     m = hashlib.new('sha1')
     if text:
@@ -42,7 +42,7 @@ def compute_checksum(text="", filenames=[]):
             instant_error("Can't open file '%s': %s" % (filename, e))
         
         try:
-            while 1:
+            while True:
                 data = fp.read()
                 if not data:
                     break

@@ -34,17 +34,17 @@ test6_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"], cp
                     ['x3', 'y3', 'array3']])
 
 from test6_ext import add 
-a = N.arange(4000000); a = N.sin(a); a.shape=(2000,2000)
-b = N.arange(4000000); b = N.cos(b); b.shape=(2000,2000)
-c = N.arange(4000000); c = N.cos(c); c.shape=(2000,2000)
-d = N.arange(4000000); d = N.cos(d); d.shape=(2000,2000)
+a = N.arange(4000000); a = N.sin(a); a.shape=(2000, 2000)
+b = N.arange(4000000); b = N.cos(b); b.shape=(2000, 2000)
+c = N.arange(4000000); c = N.cos(c); c.shape=(2000, 2000)
+d = N.arange(4000000); d = N.cos(d); d.shape=(2000, 2000)
 
 t1 = time.time() 
-add(a,b,c)
+add(a, b, c)
 t2 = time.time()
 
 t3 = time.time() 
-N.add(a,b,d)
+N.add(a, b, d)
 t4 = time.time()
 
 e = abs(d-c)
@@ -53,6 +53,6 @@ e.shape=(4000000,)
 max_difference = max(e) 
 print("The difference between the arrays computed by numpy and instant is ", max_difference) 
 
-print('With instant:',t2-t1,'seconds')
-print('With numpy:   ',t4-t3,'seconds')
+print('With instant:', t2-t1, 'seconds')
+print('With numpy:   ', t4-t3, 'seconds')
 

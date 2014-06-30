@@ -27,7 +27,7 @@ test5_ext = build_module(code=c_code, system_headers=["numpy/arrayobject.h"],
           cppargs=['-pg'], lddargs=['-pg'],
           include_dirs=[numpy.get_include()],
           init_code='import_array();', modulename='test5_ext', 
-          arrays = [['n1', 'array1'],['n2', 'array2'],['n3', 'array3']])
+          arrays = [['n1', 'array1'], ['n2', 'array2'], ['n3', 'array3']])
 
 from test5_ext import add 
 add = test5_ext.add
@@ -39,17 +39,17 @@ d = numpy.arange(10000000); d = numpy.cos(d)
 
 
 t1 = time.time() 
-add(a,b,c)
+add(a, b, c)
 t2 = time.time()
-print('With instant:',t2-t1,'seconds')
+print('With instant:', t2-t1, 'seconds')
 
 t1 = time.time() 
-numpy.add(a,b,d)
+numpy.add(a, b, d)
 t2 = time.time()
-print('With numpy:   ',t2-t1,'seconds')
+print('With numpy:   ', t2-t1, 'seconds')
 
 difference = abs(d - c) 
-sum = reduce( lambda a,b: a+b, difference)  
+sum = reduce( lambda a, b: a+b, difference)  
 print("The difference between the arrays computed by numpy and instant is " + str(sum)) 
 
 
