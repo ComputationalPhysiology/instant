@@ -22,6 +22,7 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
+import sys
 import re, os
 from .output import instant_assert, instant_warning, instant_debug, write_file
 from .config import get_swig_binary
@@ -58,7 +59,6 @@ def reindent(code):
     n = len(space)
     instant_assert(space == " "*n, "Logic breach in reindent.")
     return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
-
 
 def write_interfacefile(filename, modulename, code, init_code,
                         additional_definitions, additional_declarations,
@@ -231,6 +231,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
 
     compile_args = ""
     if cppargs:
+        #cppargs.append("-DPY_MAJOR_VERSION=3")
         compile_args = ", extra_compile_args=%r" % cppargs
 
     link_args = ""
@@ -241,12 +242,14 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
     if len(local_headers) > 0:
         swig_include_dirs += " -I.."
 
+    py3 = "" if sys.version_info[0] < 3 else "-py3"
+
     # Generate code
     code = reindent("""
         import os
         from distutils.core import setup, Extension
         name = '%s'
-        swig_cmd =r'%s -python %s %s %s'
+        swig_cmd =r'%s -python %s %s %s %s'
         os.system(swig_cmd)
         sources = %s
         setup(name = '%s',
@@ -255,7 +258,7 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
                              include_dirs=%s,
                              library_dirs=%s,
                              libraries=%s %s %s)])
-        """ % (modulename, get_swig_binary(), swig_include_dirs, swig_args, \
+        """ % (modulename, get_swig_binary(), py3, swig_include_dirs, swig_args, \
                swigfilename, cppsrcs, modulename, modulename, include_dirs, \
                library_dirs, libraries, compile_args, link_args))
 
