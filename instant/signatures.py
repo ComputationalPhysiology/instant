@@ -32,7 +32,7 @@ def compute_checksum(text="", filenames=[]):
     
     m = hashlib.new('sha1')
     if text:
-        m.update(text)
+        m.update(text.encode('utf-8'))
     
     for filename in sorted(filenames): 
         instant_debug("Adding file '%s' to checksum." % filename)

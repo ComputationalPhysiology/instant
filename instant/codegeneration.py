@@ -89,7 +89,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                    'unsigned short', 'unsigned int', 'unsigned long',
                    'unsigned long long']
     for a in arrays:
-        if isinstance(a, tuple):
+        if type(a) == tuple:
             a = list(a)
         DATA_TYPE = 'double'
         for vt in valid_types:
@@ -277,7 +277,7 @@ def _test_write_interfacefile():
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
                         additional_definitions, additional_declarations, \
                         system_headers, local_headers, wrap_headers, arrays)
-    print "".join(open("%s.i" % modulename).readlines())
+    print("".join(open("%s.i" % modulename).readlines()))
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -295,7 +295,7 @@ def _test_write_setup():
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
                 include_dirs, library_dirs, libraries, swig_include_dirs, \
                 swigargs, cppargs, lddargs)
-    print "".join(open("setup.py").readlines())
+    print("".join(open("setup.py").readlines()))
 
 def unique(list):
     set = {}
@@ -657,5 +657,5 @@ def write_vtk_interface_file(signature, code):
 
 if __name__ == "__main__":
     _test_write_interfacefile()
-    print "\n"*3
+    print("\n"*3)
     _test_write_setup()

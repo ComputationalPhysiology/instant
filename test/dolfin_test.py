@@ -2,7 +2,7 @@
 try:
     from dolfin import *
 except:
-    print "dolfin not installed..."
+    print("dolfin not installed...")
     exit()
 
 import instant
