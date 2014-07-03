@@ -26,12 +26,12 @@ import os, sys, shutil, glob, errno
 from itertools import chain
 
 # TODO: Import only the official interface
-from output import *
-from paths import *
-from signatures import *
-from cache import *
-from codegeneration import *
-from locking import file_lock
+from .output import *
+from .paths import *
+from .signatures import *
+from .cache import *
+from .codegeneration import *
+from .locking import file_lock
 
 def assert_is_str(x):
     instant_assert(isinstance(x, str),

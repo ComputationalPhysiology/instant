@@ -23,8 +23,8 @@
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
 import re, os
-from output import instant_assert, instant_warning, instant_debug, write_file
-from config import get_swig_binary
+from .output import instant_assert, instant_warning, instant_debug, write_file
+from .config import get_swig_binary
 
 def mapstrings(format, sequence):
     return "\n".join(format % i for i in sequence)
