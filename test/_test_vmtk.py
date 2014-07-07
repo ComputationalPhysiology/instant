@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 from instant import inline_vmtk 
 import vmtk

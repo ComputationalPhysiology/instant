@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 from instant import build_module  
 import numpy as N
 import sys

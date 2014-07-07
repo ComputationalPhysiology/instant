@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Zombie model as described by 
 # WHEN ZOMBIES ATTACK !: MATHEMATICAL MODELLING OF AN OUTBREAK OF ZOMBIE INFECTION
 # by   Philip Munz, Ioan Hudea, Joe Imad, Robert J. Smith.

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import time
 from instant import build_module, import_module
 
