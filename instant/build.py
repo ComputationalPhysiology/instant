@@ -500,7 +500,8 @@ def build_module(modulename=None, source_directory=".",
         os.chdir(module_path)
 
         # Generate __init__.py which imports compiled module contents
-        write_file("__init__.py", "from %s import *" % modulename)
+        write_file("__init__.py", "from __future__ import absolute_import\nfrom .%s import *" \
+                    % modulename)
 
         # Generate SWIG interface if wanted
         ifile_name = "%s.i" % modulename

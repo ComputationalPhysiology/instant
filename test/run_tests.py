@@ -7,7 +7,7 @@ os.system("python clean.py")
 
 failed_tests = []
 for f in glob.glob("test*.py"):
-    print("Running test", f)
+    print("Running test %s" % f)
     failure = os.system("python " + f)
     if failure:
         failed_tests.append(f)
