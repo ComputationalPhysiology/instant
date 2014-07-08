@@ -145,7 +145,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             #cmd = "cmake .";
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
+            compile_log_file.write(output.decode('utf-8'))
             compile_log_file.flush()
             if ret != 0:
                 compile_log_contents = output
@@ -348,6 +348,9 @@ def build_module(modulename=None, source_directory=".",
     original_path = os.getcwd()
 
     # --- Validate arguments
+
+    if sys.version_info[0] > 2: 
+        swigargs.append('-py3')
 
     instant_assert(modulename is None or isinstance(modulename, str),
         "In instant.build_module: Expecting modulename to be string or None.")
