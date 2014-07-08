@@ -493,6 +493,13 @@ endif()
 
 %(package_python_definitions)s
 
+# Work-around for bug in CMake 3.0.0 (see
+# http://www.cmake.org/Bug/view.php?id=14990)
+set(SWIG_MODULE_NAME_ORIG "${SWIG_MODULE_NAME}")
+if (${CMAKE_VERSION} MATCHES "3.0.0")
+  set(SWIG_MODULE_NAME "_${SWIG_MODULE_NAME}")
+endif()
+
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
 set(EXTRA_LIBRARIES %(extra_libraries)s)
@@ -566,6 +573,13 @@ include_directories(${PYTHON_INCLUDE_PATH} ${%(name)s_SOURCE_DIR})
 
 set(VTK_LIBS ITKCommon vtkCommon vtkImaging vtkIO vtkFiltering vtkRendering vtkGraphics vtkCommonPythonD vtkFilteringPythonD)
 
+# Work-around for bug in CMake 3.0.0 (see
+# http://www.cmake.org/Bug/view.php?id=14990)
+set(SWIG_MODULE_NAME_ORIG "${SWIG_MODULE_NAME}")
+if (${CMAKE_VERSION} MATCHES "3.0.0")
+  set(SWIG_MODULE_NAME "_${SWIG_MODULE_NAME}")
+endif()
+
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
 swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS})
@@ -603,11 +617,8 @@ ENDIF(VTK_FOUND)
 #  INCLUDE(${VMTK_USE_FILE})
 #ENDIF(ITK_FOUND)
 
-
-
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-
 
 set(SWIG_MODULE_NAME %(name)s)
 set(CMAKE_SWIG_FLAGS
@@ -638,6 +649,13 @@ link_directories(/usr/local/lib/vmtk .)
 
 set(VTK_LIBS ITKCommon vtkCommon vtkImaging vtkIO vtkFiltering vtkRendering vtkGraphics vtkCommonPythonD vtkFilteringPythonD)
 set(VMTK_LIBS vtkvmtkCommonPythonD vtkvmtkITKPythonD vtkvmtkCommon vtkvmtkITK vtkvmtkComputationalGeometryPythonD vtkvmtkMiscPythonD vtkvmtkComputationalGeometry vtkvmtkMisc vtkvmtkDifferentialGeometryPythonD vtkvmtkSegmentationPythonD vtkvmtkDifferentialGeometry vtkvmtkSegmentation vtkvmtkIOPythonD)
+
+# Work-around for bug in CMake 3.0.0 (see
+# http://www.cmake.org/Bug/view.php?id=14990)
+set(SWIG_MODULE_NAME_ORIG "${SWIG_MODULE_NAME}")
+if (${CMAKE_VERSION} MATCHES "3.0.0")
+  set(SWIG_MODULE_NAME "_${SWIG_MODULE_NAME}")
+endif()
 
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
