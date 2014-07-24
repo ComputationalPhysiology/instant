@@ -127,10 +127,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = "python setup.py build_ext install --install-platlib=."
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            if sys.version_info[0] < 3: # Check python version
-                compile_log_file.write(output)
-            else:
-                compile_log_file.write(output.decode('utf-8'))
+            compile_log_file.write(output)
             compile_log_file.flush()
             if ret != 0:
                 compile_log_contents = output
@@ -145,7 +142,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             #cmd = "cmake .";
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output.decode('utf-8'))
+            compile_log_file.write(output)
             compile_log_file.flush()
             if ret != 0:
                 compile_log_contents = output

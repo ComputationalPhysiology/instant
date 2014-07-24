@@ -452,6 +452,10 @@ PROJECT(${NAME})
 %(cppargs)s
 %(lddargs)s
 
+if (${${NAME}_SWIG_EXECUTABLE})
+  set(SWIG_EXECUTABLE ${${NAME}_SWIG_EXECUTABLE})
+endif()
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 

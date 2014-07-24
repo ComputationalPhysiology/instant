@@ -50,15 +50,16 @@ def checksum_from_modulename(modulename):
 def import_module_directly(path, modulename):
     "Import a module with the given module name that resides in the given path."
     sys.path.insert(0, path)
-    e = None
+    er = None
     try:
-        module = __import__(modulename)
-    except Exception as e:
+            module = __import__(modulename)
+    except BaseException as e:
         instant_warning("In instant.import_module_directly: Failed to import module '%s' from '%s';\n%s:%s;" % (modulename, path, type(e).__name__, e))
         module = None
+        er = e
     finally:
         sys.path.pop(0)
-    return module, e
+    return module, er
 
 
 _memory_cache = {}

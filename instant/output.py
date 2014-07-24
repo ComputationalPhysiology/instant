@@ -20,7 +20,7 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
-import logging, os, platform
+import logging, os, platform, sys
 
 # Logging wrappers
 _log = logging.getLogger("instant")
@@ -123,6 +123,8 @@ if _call_method == 'SUBPROCESS':
         assert not errout
 
         status = pipe.returncode
+        output = output.decode('utf-8') if sys.version_info[0] > 2 else output
+        
         return (status, output)
 
 elif _call_method == 'OS_SYSTEM':
