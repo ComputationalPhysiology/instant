@@ -387,6 +387,12 @@ ENDIF(%(package)s_FOUND)
 
     cmake_form["extra_swigargs"] = " ".join(swigargs)
 
+    cmake_form["swig_executable"] =  "\n".join(\
+        """if (DEFINED %(package)s_SWIG_EXECUTABLE)
+  set(SWIG_EXECUTABLE ${%(package)s_SWIG_EXECUTABLE})
+endif()
+""" % dict(package=package.upper()) for package in cmake_packages)
+
 
     cmake_form["find_packages"] = "\n\n".join(find_package_template % \
                                               dict(package=package,
@@ -452,9 +458,7 @@ PROJECT(${NAME})
 %(cppargs)s
 %(lddargs)s
 
-if (${${NAME}_SWIG_EXECUTABLE})
-  set(SWIG_EXECUTABLE ${${NAME}_SWIG_EXECUTABLE})
-endif()
+%(swig_executable)s
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
