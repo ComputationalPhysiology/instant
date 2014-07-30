@@ -89,7 +89,7 @@ def write_interfacefile(filename, modulename, code, init_code,
                    'unsigned short', 'unsigned int', 'unsigned long',
                    'unsigned long long']
     for a in arrays:
-        if type(a) == tuple:
+        if isinstance(a, tuple):
             a = list(a)
         DATA_TYPE = 'double'
         for vt in valid_types:
@@ -299,10 +299,8 @@ def _test_write_setup():
                 swigargs, cppargs, lddargs)
     print("".join(open("setup.py").readlines()))
 
-def unique(list):
-    set = {}
-    list(map(set.__setitem__, list, []))
-    return list(set.keys())
+def unique(sequence):
+    return list(set(sequence))
 
 
 def find_vtk_classes(str):
