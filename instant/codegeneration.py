@@ -231,7 +231,6 @@ def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dir
 
     compile_args = ""
     if cppargs:
-        #cppargs.append("-DPY_MAJOR_VERSION=3")
         compile_args = ", extra_compile_args=%r" % cppargs
 
     link_args = ""
