@@ -198,12 +198,12 @@ def copy_to_cache(module_path, cache_dir, modulename, \
             instant_warning("In instant.build_module: Path '%s' already exists,"\
                 " but module wasn't found in cache previously. Not overwriting,"\
                 " assuming this module is valid." % cache_module_path)
-        
+
             return cache_module_path
-        
+
             # Not deleting anymore, relying on locking system
             #shutil.rmtree(cache_module_path, ignore_errors=True)
-        
+
         # Error checks
         instant_assert(os.path.isdir(module_path), "In instant.build_module:"\
                        " Cannot copy non-existing directory %r!" % module_path)
@@ -212,7 +212,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
                           " exist at this point!" % cache_module_path)
         instant_debug("In instant.build_module: Copying built module from %r"\
             " to cache at %r" % (module_path, cache_module_path))
-        
+
         # Do the copying and mark that we are finished by creating an empty file
         # finished_copying
         try:
@@ -346,8 +346,8 @@ def build_module(modulename=None, source_directory=".",
 
     # --- Validate arguments
 
-    if sys.version_info[0] > 2: 
-        swigargs.append('-py3')
+    if sys.version_info[0] > 2:
+        swigargs = swigargs + ['-py3']
 
     instant_assert(modulename is None or isinstance(modulename, str),
         "In instant.build_module: Expecting modulename to be string or None.")
@@ -570,7 +570,7 @@ def build_module(modulename=None, source_directory=".",
 
         # Import module and place in memory cache
         module = import_and_cache_module(module_path, modulename, moduleids)
-            
+
         if not module:
             instant_error("Failed to import newly compiled module!")
 
