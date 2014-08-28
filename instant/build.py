@@ -217,7 +217,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         # finished_copying
         try:
             shutil.copytree(module_path, cache_module_path)
-            open(os.path.join(cache_module_path, "finished_copying"), "w")
+            open(os.path.join(cache_module_path, "finished_copying"), "w").close()
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
