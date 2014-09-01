@@ -124,7 +124,7 @@ if _call_method == 'SUBPROCESS':
 
         status = pipe.returncode
         output = output.decode('utf-8') if sys.version_info[0] > 2 else output
-        
+
         return (status, output)
 
 elif _call_method == 'OS_SYSTEM':
@@ -152,11 +152,17 @@ elif _call_method == 'OS_SYSTEM':
 
         output = f.read()
         f.close()
+
+        output = output.decode('utf-8') if sys.version_info[0] > 2 else output
         return (status, output)
 
 elif _call_method == 'COMMANDS':
     from subprocess import getstatusoutput as get_status_output
+    def get_status_output(*args, **kwargs):
+        status, output = getstatusoutput(*args, **kwargs)
 
+        output = output.decode('utf-8') if sys.version_info[0] > 2 else output
+        return status, output
 else:
     instant_error('Incomprehensible environment variable'
                   ' INSTANT_SYSTEM_CALL_METHOD=%s'%_call_method)
