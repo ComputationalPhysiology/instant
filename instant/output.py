@@ -157,10 +157,9 @@ elif _call_method == 'OS_SYSTEM':
         return (status, output)
 
 elif _call_method == 'COMMANDS':
-    from subprocess import getstatusoutput as get_status_output
+    import subprocess
     def get_status_output(*args, **kwargs):
-        status, output = getstatusoutput(*args, **kwargs)
-
+        status, output = subprocess.getstatusoutput(*args, **kwargs)
         output = output.decode('utf-8') if sys.version_info[0] > 2 else output
         return status, output
 else:
