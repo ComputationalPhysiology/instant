@@ -4,6 +4,10 @@ import sys, platform
 from os.path import join, split, pardir
 from distutils.core import setup
 
+if sys.version_info < (2, 7):
+    print("Python 2.7 or higher required, please upgrade.")
+    sys.exit(1)
+
 scripts = [join("scripts", "instant-clean"), join("scripts", "instant-showcache")]
 
 if platform.system() == "Windows" or "bdist_wininst" in sys.argv:

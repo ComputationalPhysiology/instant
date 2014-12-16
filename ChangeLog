@@ -1,3 +1,5 @@
+ - Require Python 2.7
+ - Python 3 support
 1.4.0 [2014-06-02]
  - Introduce env var INSTANT_SYSTEM_CALL_METHOD for switching method for calling
    external programs and introduce possibly OFED-fork safe implementation
