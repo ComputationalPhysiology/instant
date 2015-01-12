@@ -12,7 +12,7 @@ https://bitbucket.org/fenics-project/instant
 Dependencies
 ============
 
-Instant depends on Python 2.5 or later, SWIG, and NumPy
+Instant depends on Python 2.7 or later, SWIG, and NumPy
 
 
 Optional dependencies
