@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, platform
+import sys, platform, re
 from os.path import join, split, pardir
 from distutils.core import setup
 
@@ -23,7 +23,8 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
         batch_files.append(batch_file)
     scripts.extend(batch_files)
 
-from instant import __version__ as version
+version = re.findall('__version__ = "(.*)"',
+                     open('instant/__init__.py', 'r').read())[0]
 
 setup(name = "instant",
       version = version,
