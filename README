@@ -20,7 +20,7 @@ Optional dependencies
 
 To enable NFS safe file locking flufl.lock can be installed:
 
-https://launchpad.net/flufl.lock
+https://gitlab.com/warsaw/flufl.lock
 
 
 Environment
@@ -29,7 +29,7 @@ Environment
 Instant's behaviour depened on following environment variables:
 
  - INSTANT_CACHE_DIR
- - INSTANT_ERROR_DIR 
+ - INSTANT_ERROR_DIR
 
      These options can override placement of default cache and error
      directories in ~/.instant/cache and ~/.instant/error.
