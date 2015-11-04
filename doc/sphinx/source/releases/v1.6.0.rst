@@ -1,0 +1,6 @@
+Changes in Instant 1.6.0
+========================
+
+Instant 1.6.0 was released on 2015-07-28
+
+- Minor bug fixes
