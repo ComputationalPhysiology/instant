@@ -13,7 +13,7 @@ C{inline*} see their documentation for more details.
 
 For more examples, see the tests/ directory in the Instant distribution.
 
-Questions, bugs and patches should be sent to fenics@fenicsproject.org.
+Questions, bugs and patches should be sent to fenics-dev@googlegroups.com.
 """
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
