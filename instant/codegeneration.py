@@ -404,7 +404,7 @@ endif()
         for package in cmake_packages)
 
     cmake_form["package_include_dirs"] = "\n".join(\
-        "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
+        "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${%s_3RD_PARTY_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
         package.upper() for package in cmake_packages)
 
     cmake_form["package_flags"] = "\n".join(\
