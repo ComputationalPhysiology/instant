@@ -404,8 +404,8 @@ endif()
         for package in cmake_packages)
 
     cmake_form["package_include_dirs"] = "\n".join(\
-        "include_directories(${%s_PYTHON_INCLUDE_DIRS} ${%s_3RD_PARTY_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
-        package.upper() for package in cmake_packages)
+        "include_directories(${%(package)s_PYTHON_INCLUDE_DIRS} ${%(package)s_3RD_PARTY_INCLUDE_DIRS} ${${NAME}_SOURCE_DIR})" %
+        dict(package=package.upper()) for package in cmake_packages)
 
     cmake_form["package_flags"] = "\n".join(\
         """set(CMAKE_EXE_LINKER_FLAGS \"${CMAKE_EXE_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
