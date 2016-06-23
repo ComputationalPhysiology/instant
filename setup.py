@@ -31,12 +31,18 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
 version = re.findall('__version__ = "(.*)"',
                      open('instant/__init__.py', 'r').read())[0]
 
+url = "https://bitbucket.org/fenics-project/instant/"
+tarball = None
+if not 'dev' in version:
+    tarball = url + "downloads/instant-%s.tar.gz" % version
+
 setup(name = "instant",
       version = version,
       description = "Instant Inlining of C/C++ in Python",
       author = "Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers",
       author_email = "fenics-dev@googlegroups.com",
-      url = "http://www.fenicsproject.org",
+      url = url,
+      download_url = tarball,
       packages = ['instant'],
       package_dir = {'instant': 'instant'},
       package_data = {'': [join('swig', 'numpy.i')]},
