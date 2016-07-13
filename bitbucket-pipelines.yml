@@ -4,6 +4,7 @@ pipelines:
   default:
     - step:
         script:
+          - apt-get install swig
           - pip install .
           - pip install pytest
           - cd test/
