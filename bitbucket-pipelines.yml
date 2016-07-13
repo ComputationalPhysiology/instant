@@ -1,0 +1,11 @@
+image: python:2.7
+
+pipelines:
+  default:
+    - step:
+        script:
+          - pip install .
+          - pip install pytest
+          - cd test/
+          - python run_tests.py
+          - python rerun_tests.py
