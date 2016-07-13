@@ -1,13 +1,13 @@
-image: python:2.7
+image: phusion/baseimage
 
 pipelines:
   default:
     - step:
         script:
           - apt-get update
-          - apt-get install -y swig3.0 --no-install-recommends
-          - pip install .
+          - apt-get install -y g++ git python-dev python-pip python-setuptools swig --no-install-recommends
           - pip install pytest
+          - pip install .
           - cd test/
           - python run_tests.py
           - python rerun_tests.py
