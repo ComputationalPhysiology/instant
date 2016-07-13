@@ -1,11 +1,20 @@
-#!/usr/bin/python
+#!/usr/bin/env py.test
 
 from __future__ import print_function
-def test2():
+import pytest
+import time
+#from math import exp, sin, cos
+
+def test_2():
+
+    try:
+        from sympy import Symbol, exp, sin, cos
+    except:
+        print("You need sympy for this test")
+        return
 
     x = Symbol('x')
     pi = 3.14
-
     f =  -3*x**7 - 2*x**3 + 2*exp(x**2) + x**12*(2*exp(2*x) - pi*sin(x)**((-1) + pi)*cos(x)) + 4*(pi**5 + x**5 + 5*pi*x**4 + 5*x*pi**4 + 10*pi**2*x**3 + 10*pi**3*x**2)*exp(123 + x - x**5 + 2*x**4)
 
     a = []
@@ -20,7 +29,12 @@ def test2():
     print("Elapsed time with sympy", t1-t0)
 
 
-def test3():
+def test_3():
+    try:
+        from sympy import Symbol, exp, sin, cos
+    except:
+        print("You need sympy for this test")
+        return
 
     x = Symbol('x')
     pi = 3.14
@@ -38,22 +52,3 @@ def test3():
     t1 = time.time()
 
     print("Elapsed time with lambda and math", t1-t0)
-
-
-if __name__ == '__main__':
-    import time
-    try:
-        from sympy import *
-        test2()
-    except:
-        print("You need sympy for this test")
-    try:
-        from math import *
-        test3()
-    except:
-        print("You need math for this test")
-    try:
-        from sympycore import *
-        test2()
-    except:
-        print("You need sympycore for this test")
