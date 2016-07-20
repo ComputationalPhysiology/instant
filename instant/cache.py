@@ -35,7 +35,8 @@ from .output import instant_warning, instant_assert, instant_debug
 from .paths import get_default_cache_dir, validate_cache_dir
 from .signatures import compute_checksum
 
-# TODO: We could make this an argument, but it's used indirectly several places so take care.
+# TODO: We could make this an argument, but it's used indirectly
+# several places so take care.
 _modulename_prefix = "instant_module_"
 def modulename_from_checksum(checksum):
     "Construct a module name from a checksum for use in cache."
@@ -67,24 +68,28 @@ def memory_cached_module(moduleid):
     "Returns the cached module if found."
     import sys
     module = _memory_cache.get(moduleid, None)
-    instant_debug("Found '%s' in memory cache with key '%r'." % (module, moduleid))
+    instant_debug("Found '%s' in memory cache with key '%r'." % (module,
+                                                                 moduleid))
     return module
 
 
 def place_module_in_memory_cache(moduleid, module):
     "Place a compiled module in cache with given id."
     _memory_cache[moduleid] = module
-    instant_debug("Added module '%s' to cache with key '%r'." % (module, moduleid))
+    instant_debug("Added module '%s' to cache with key '%r'." % (module,
+                                                                 moduleid))
 
 
 def is_valid_module_name(name):
     NAMELENGTHLIMIT = 200
-    return len(name) < NAMELENGTHLIMIT and bool(re.search(r"^[a-zA-Z_][\w]*$", name))
+    return len(name) < NAMELENGTHLIMIT and bool(re.search(r"^[a-zA-Z_][\w]*$",
+                                                          name))
 
 
 def import_and_cache_module(path, modulename, moduleids):
     module, e = import_module_directly(path, modulename)
-    instant_assert(module is not None, "Failed to import module found in cache. Modulename: '%s';\nPath: '%s';\n%s:%s;" % (modulename, path, type(e).__name__, e))
+    instant_assert(module is not None, "Failed to import module found in cache. Modulename: '%s';\nPath: '%s';\n%s:%s;" % (modulename, path, type(e).__name__,
+                                                                                                                           e))
     for moduleid in moduleids:
         place_module_in_memory_cache(moduleid, module)
     return module
@@ -95,7 +100,7 @@ def check_memory_cache(moduleid):
     moduleids = [moduleid]
     module = memory_cached_module(moduleid)
     if module: return module, moduleids
-    
+
     # Get signature from moduleid if it isn't a string,
     # and check memory cache again
     if hasattr(moduleid, "signature"):
@@ -104,15 +109,15 @@ def check_memory_cache(moduleid):
                       "'%s' from moduleid.signature()." % moduleid)
         module = memory_cached_module(moduleid)
         if module:
-            # FIXME (GNW): I haved commented this out since it can continually 
+            # FIXME (GNW): I haved commented this out since it can continually
             #              insert indentical objects into the cache. This
-            #              function checks the cache, so why should it also 
+            #              function checks the cache, so why should it also
             #              insert?
             #for moduleid in moduleids:
             #    place_module_in_memory_cache(moduleid, module)
             return module, moduleids
         moduleids.append(moduleid)
-    
+
     # Construct a filename from the checksum of moduleid if it
     # isn't already a valid name, and check memory cache again
     if not is_valid_module_name(moduleid):
@@ -122,7 +127,7 @@ def check_memory_cache(moduleid):
         module = memory_cached_module(moduleid)
         if module: return module, moduleids
         moduleids.append(moduleid)
-    
+
     instant_debug("In instant.check_memory_cache: Failed to find module: %s." % moduleid)
     return None, moduleids
 
@@ -130,7 +135,7 @@ def check_memory_cache(moduleid):
 def check_disk_cache(modulename, cache_dir, moduleids):
     # Ensure a valid cache_dir
     cache_dir = validate_cache_dir(cache_dir)
-    
+
     # Check on disk, in current directory and cache directory
     for path in (os.getcwd(), cache_dir):
         if os.path.exists(os.path.join(path, modulename, "finished_copying")):
@@ -144,7 +149,7 @@ def check_disk_cache(modulename, cache_dir, moduleids):
             else:
                 instant_debug("In instant.check_disk_cache: Failed to import "\
                               "module '%s' from '%s'." % (modulename, path))
-    
+
     # All attempts failed
     instant_debug("In instant.check_disk_cache: Can't import module with modulename "\
                   "%r using cache directory %r." % (modulename, cache_dir))
@@ -153,7 +158,7 @@ def check_disk_cache(modulename, cache_dir, moduleids):
 
 def import_module(moduleid, cache_dir=None):
     """Import module from cache given its moduleid and an optional cache directory.
-    
+
     The moduleid can be either
       - the module name
       - a signature string, of which a checksum is taken to look up in the cache
@@ -165,7 +170,7 @@ def import_module(moduleid, cache_dir=None):
     # Look for module in memory cache
     module, moduleids = check_memory_cache(moduleid)
     if module: return module
-    
+
     # Look for module in disk cache
     modulename = moduleids[-1]
     return check_disk_cache(modulename, cache_dir, moduleids)
@@ -175,4 +180,3 @@ def cached_modules(cache_dir=None):
     "Return a list with the names of all cached modules."
     cache_dir = validate_cache_dir(cache_dir)
     return os.listdir(cache_dir)
-

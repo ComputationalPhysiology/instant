@@ -99,7 +99,8 @@ def write_interfacefile(filename, modulename, code, init_code,
         if 'in' in a:
             # input arrays
             a.remove('in')
-            instant_assert(len(a) > 1 and len(a) < 5, "Wrong number of elements in input array")
+            instant_assert(len(a) > 1 and len(a) < 5,
+                           "Wrong number of elements in input array")
             if len(a) == 2:
                 # 1-dimensional arrays, i.e. vectors
                 typemaps += reindent("""
@@ -125,7 +126,8 @@ def write_interfacefile(filename, modulename, code, init_code,
             """ % { 'n1' : a[0], 'array' : a[1], 'dtype' : DATA_TYPE })
         else:
             # in-place arrays
-            instant_assert(len(a) > 1 and len(a) < 5, "Wrong number of elements in output array")
+            instant_assert(len(a) > 1 and len(a) < 5,
+                           "Wrong number of elements in output array")
             if 'multi' in a:
                 # n-dimensional arrays, i.e. tensors > 3-dimensional
                 a.remove('multi')

@@ -33,28 +33,34 @@ from .cache import *
 from .codegeneration import *
 from .locking import file_lock
 
+
 def assert_is_str(x):
     instant_assert(isinstance(x, str),
-        "In instant.build_module: Expecting string.")
+                   "In instant.build_module: Expecting string.")
+
 
 def assert_is_bool(x):
     instant_assert(isinstance(x, bool),
-        "In instant.build_module: Expecting bool.")
+                   "In instant.build_module: Expecting bool.")
+
 
 def assert_is_str_list(x):
     instant_assert(isinstance(x, (list, tuple)),
-        "In instant.build_module: Expecting sequence.")
+                   "In instant.build_module: Expecting sequence.")
     instant_assert(all(isinstance(i, str) for i in x),
-        "In instant.build_module: Expecting sequence of strings.")
+                   "In instant.build_module: Expecting sequence of strings.")
+
 
 def strip_strings(x):
     assert_is_str_list(x)
     return [s.strip() for s in x]
 
+
 def arg_strings(x):
     if isinstance(x, str):
         x = x.split()
     return strip_strings(x)
+
 
 def makedirs(path):
     """
@@ -66,9 +72,13 @@ def makedirs(path):
         if e.errno != errno.EEXIST:
             raise
 
+
 def copy_files(source, dest, files):
-    """Copy a list of files from a source directory to a destination directory.
-    This may seem a bit complicated, but a lot of this code is error checking."""
+    """Copy a list of files from a source directory to a destination
+    directory.  This may seem a bit complicated, but a lot of this
+    code is error checking.
+
+    """
     if os.path.exists(dest):
         overwriting = set(files) & set(glob.glob(os.path.join(dest, "*")))
         if overwriting:
@@ -120,11 +130,12 @@ def recompile(modulename, module_path, new_compilation_checksum,
         compile_log_contents = None
         instant_info("--- Instant: compiling ---")
 
-        # TODO: The three blocks below can be made a function and three calls
-
+        # TODO: The three blocks below can be made a function and
+        # three calls
         if build_system == "distutils":
             # Build extension module with distutils
-            cmd = "python setup.py build_ext install --install-platlib=."
+            python_interp = sys.executable
+            cmd = python_interp + " setup.py build_ext install --install-platlib=."
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
             compile_log_file.write(output)
@@ -135,7 +146,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
                     os.remove(compilation_checksum_filename)
                 msg = "In instant.recompile: The module did not compile with command '%s', see '%s'"
                 instant_error(msg % (cmd, compile_log_filename_dest))
-
         else:
             # Build makefile for extension module with cmake
             cmd = "cmake -DDEBUG=TRUE .";
@@ -176,13 +186,15 @@ def recompile(modulename, module_path, new_compilation_checksum,
 
             # Copy module to error dir
             module_path = copy_to_cache(module_path, get_default_error_dir(),
-                                        modulename, check_for_existing_path=False)
+                                        modulename,
+                                        check_for_existing_path=False)
 
-    # Compilation succeeded, write new_compilation_checksum to checksum_file
+    # Compilation succeeded, write new_compilation_checksum to
+    # checksum_file
     write_file(compilation_checksum_filename, new_compilation_checksum)
 
 
-def copy_to_cache(module_path, cache_dir, modulename, \
+def copy_to_cache(module_path, cache_dir, modulename,
                   check_for_existing_path=True):
     "Copy module directory to cache."
     # Get lock, check if the module exists, _otherwise_ copy the
@@ -194,7 +206,8 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         cache_module_path = os.path.join(cache_dir, modulename)
         if check_for_existing_path and os.path.exists(os.path.join(\
             cache_module_path, "finished_copying")):
-            # This indicates a race condition has happened (and is being avoided!).
+            # This indicates a race condition has happened (and is
+            # being avoided!).
             instant_warning("In instant.build_module: Path '%s' already exists,"\
                 " but module wasn't found in cache previously. Not overwriting,"\
                 " assuming this module is valid." % cache_module_path)
@@ -213,11 +226,12 @@ def copy_to_cache(module_path, cache_dir, modulename, \
         instant_debug("In instant.build_module: Copying built module from %r"\
             " to cache at %r" % (module_path, cache_module_path))
 
-        # Do the copying and mark that we are finished by creating an empty file
-        # finished_copying
+        # Do the copying and mark that we are finished by creating an
+        # empty file finished_copying
         try:
             shutil.copytree(module_path, cache_module_path)
-            open(os.path.join(cache_module_path, "finished_copying"), "w").close()
+            open(os.path.join(cache_module_path,
+                              "finished_copying"), "w").close()
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
@@ -225,6 +239,7 @@ def copy_to_cache(module_path, cache_dir, modulename, \
             delete_temp_dir()
 
     return cache_module_path
+
 
 def build_module(modulename=None, source_directory=".",
                  code="", init_code="",
@@ -373,10 +388,12 @@ def build_module(modulename=None, source_directory=".",
     assert_is_bool(generate_interface)
     assert_is_bool(generate_setup)
     cmake_packages   = strip_strings(cmake_packages)
-    instant_assert(   signature is None \
+
+    instant_assert(signature is None \
                    or isinstance(signature, str) \
                    or hasattr(signature, "signature"),
         "In instant.build_module: Expecting modulename to be string or None.")
+
     instant_assert(not (signature is not None and modulename is not None),
         "In instant.build_module: Can't have both modulename and signature.")
 
@@ -432,7 +449,8 @@ def build_module(modulename=None, source_directory=".",
             # including everything that affects the interface
             # file generation and module compilation.
             checksum_args = ( \
-                # We don't care about the modulename, that's what we're trying to construct!
+                # We don't care about the modulename, that's what
+                # we're trying to construct!
                 #modulename,
                 # We don't care where the user code resides:
                 #source_directory,
@@ -447,7 +465,8 @@ def build_module(modulename=None, source_directory=".",
                 swig_include_dirs, swigargs, cppargs, lddargs,
                 object_files, arrays,
                 generate_interface, generate_setup, cmake_packages,
-                # The signature isn't defined, and the cache_dir doesn't affect the module:
+                # The signature isn't defined, and the cache_dir
+                # doesn't affect the module:
                 #signature, cache_dir)
                 )
             allfiles = sources + wrap_headers + local_headers
@@ -494,7 +513,7 @@ def build_module(modulename=None, source_directory=".",
         module_path = os.path.abspath(module_path)
         files_to_copy = sources + wrap_headers + local_headers + object_files
         copy_files(source_directory, module_path, files_to_copy)
-        # At this point, all user input files should reside in module_path.
+        # At this point, all user input files should reside in module_path
 
         # --- Generate additional files in module directory
         os.chdir(module_path)
@@ -507,28 +526,30 @@ def build_module(modulename=None, source_directory=".",
         ifile_name = "%s.i" % modulename
         if generate_interface:
             write_interfacefile(ifile_name, modulename, code, init_code,
-                additional_definitions, additional_declarations, system_headers,
-                local_headers, wrap_headers, arrays)
+                                additional_definitions,
+                                additional_declarations, system_headers,
+                                local_headers, wrap_headers, arrays)
 
         # Generate setup.py if wanted
         if generate_setup and not cmake_packages:
             setup_name = "setup.py"
-            write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers, \
-                        include_dirs, library_dirs, libraries, swig_include_dirs, \
-                        swigargs, cppargs, lddargs)
+            write_setup(setup_name, modulename, csrcs, cppsrcs, local_headers,
+                        include_dirs, library_dirs, libraries,
+                        swig_include_dirs, swigargs, cppargs, lddargs)
             build_system = "distutils"
 
         else:
-            write_cmakefile(modulename, cmake_packages, csrcs, cppsrcs, local_headers, \
-                        include_dirs, library_dirs, libraries, swig_include_dirs, \
-                        swigargs, cppargs, lddargs)
+            write_cmakefile(modulename, cmake_packages, csrcs, cppsrcs,
+                            local_headers, include_dirs, library_dirs,
+                            libraries, swig_include_dirs, swigargs, cppargs,
+                            lddargs)
             build_system = "cmake"
 
         # --- Build module
 
-        # At this point we have all the files, and can make the
-        # total checksum from all file contents. This is used to
-        # decide whether the module needs recompilation or not.
+        # At this point we have all the files, and can make the total
+        # checksum from all file contents. This is used to decide
+        # whether the module needs recompilation or not.
 
         # Compute new_compilation_checksum
         # Collect arguments used for checksum creation,
@@ -560,7 +581,8 @@ def build_module(modulename=None, source_directory=".",
         new_compilation_checksum = compute_checksum(text, allfiles)
 
         # Recompile if necessary
-        recompile(modulename, module_path, new_compilation_checksum, build_system)
+        recompile(modulename, module_path, new_compilation_checksum,
+                  build_system)
 
         # --- Load, cache, and return module
 
@@ -596,7 +618,6 @@ def build_module_vtk(c_code, cache_dir=None):
     moduleids = [signature]
     module_path = os.path.join(get_temp_dir(), modulename)
 
-
     makedirs(module_path)
     os.chdir(module_path)
 
@@ -614,6 +635,7 @@ def build_module_vtk(c_code, cache_dir=None):
     module = import_and_cache_module(module_path, modulename, moduleids)
 
     return module
+
 
 def build_module_vmtk(c_code, cache_dir=None):
     original_path = os.getcwd()

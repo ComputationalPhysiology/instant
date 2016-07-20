@@ -34,15 +34,14 @@ def get_func_name(c_code):
     return func_name
 
 
-
 def inline(c_code, **kwargs):
-    """This is a short wrapper around the build_module function in instant. 
-    
+    """This is a short wrapper around the build_module function in instant.
+
     It creates a module given that
     the input is a valid C function. It is only possible
-    to inline one C function each time. 
+    to inline one C function each time.
 
-    Usage: 
+    Usage:
 
     >>> from instant import inline
     >>> add_func = inline("double add(double a, double b){ return a+b; }")
@@ -58,14 +57,15 @@ def inline(c_code, **kwargs):
         instant_warning("Didn't find function '%s', returning module." % func_name)
     return module
 
+
 def inline_module(c_code, **kwargs):
-    """This is a short wrapper around the build_module function in instant. 
-    
+    """This is a short wrapper around the build_module function in instant.
+
     It creates a module given that
     the input is a valid C function. It is only possible
-    to inline one C function each time. 
+    to inline one C function each time.
 
-    Usage: 
+    Usage:
 
     >>> from instant import inline
     >>> add_func = inline("double add(double a, double b){ return a+b; }")
@@ -79,35 +79,36 @@ def inline_module(c_code, **kwargs):
 
 
 def inline_with_numpy(c_code, **kwargs):
-    '''This is a short wrapper around the build_module function in instant. 
-       
+    '''This is a short wrapper around the build_module function in instant.
+
     It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. The difference between
-    this function and the inline function is that C-arrays can be used. 
-    The following example illustrates that. 
+    this function and the inline function is that C-arrays can be used.
+    The following example illustrates that.
 
-    Usage: 
+    Usage:
 
     >>> import numpy
     >>> import time
     >>> from instant import inline_with_numpy
     >>> c_code = """
         double sum (int n1, double* array1){
-            double tmp = 0.0; 
-            for (int i=0; i<n1; i++) {  
-                tmp += array1[i]; 
+            double tmp = 0.0;
+            for (int i=0; i<n1; i++) {
+                tmp += array1[i];
             }
-            return tmp; 
+            return tmp;
         }
         """
     >>> sum_func = inline_with_numpy(c_code,  arrays = [['n1', 'array1']])
     >>> a = numpy.arange(10000000); a = numpy.sin(a)
     >>> sum_func(a)
     '''
+
     import numpy
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
-    kwargs["code"] = c_code 
+    kwargs["code"] = c_code
     kwargs["init_code"]      = kwargs.get("init_code", "")      + "\nimport_array();\n"
     kwargs["system_headers"] = kwargs.get("system_headers", []) + ["numpy/arrayobject.h"]
     kwargs["include_dirs"]   = kwargs.get("include_dirs", [])   + ["%s" %numpy.get_include()]
@@ -120,26 +121,26 @@ def inline_with_numpy(c_code, **kwargs):
     return module
 
 def inline_module_with_numpy(c_code, **kwargs):
-    '''This is a short wrapper around the build_module function in instant. 
-       
+    '''This is a short wrapper around the build_module function in instant.
+
     It creates a module given that
     the input is a valid C function. It is only possible
     to inline one C function each time. The difference between
-    this function and the inline function is that C-arrays can be used. 
-    The following example illustrates that. 
+    this function and the inline function is that C-arrays can be used.
+    The following example illustrates that.
 
-    Usage: 
+    Usage:
 
     >>> import numpy
     >>> import time
     >>> from instant import inline_with_numpy
     >>> c_code = """
         double sum (int n1, double* array1){
-            double tmp = 0.0; 
-            for (int i=0; i<n1; i++) {  
-                tmp += array1[i]; 
+            double tmp = 0.0;
+            for (int i=0; i<n1; i++) {
+                tmp += array1[i];
             }
-            return tmp; 
+            return tmp;
         }
         """
     >>> sum_func = inline_with_numpy(c_code,  arrays = [['n1', 'array1']])
@@ -148,7 +149,7 @@ def inline_module_with_numpy(c_code, **kwargs):
     '''
     import numpy
     instant_assert("code" not in kwargs, "Cannot specify code twice.")
-    kwargs["code"] = c_code 
+    kwargs["code"] = c_code
     kwargs["init_code"]      = kwargs.get("init_code", "")      + "\nimport_array();\n"
     kwargs["system_headers"] = kwargs.get("system_headers", []) + ["numpy/arrayobject.h"]
     kwargs["include_dirs"]   = kwargs.get("include_dirs", [])   + ["%s" % numpy.get_include()]
@@ -156,7 +157,7 @@ def inline_module_with_numpy(c_code, **kwargs):
     return module
 
 
-def inline_vtk(c_code, cache_dir=None): 
+def inline_vtk(c_code, cache_dir=None):
 
     module = build_module_vtk(c_code)
     func_name = get_func_name(c_code)
@@ -166,7 +167,7 @@ def inline_vtk(c_code, cache_dir=None):
         instant_warning("Didn't find function '%s', returning module." % func_name)
     return module
 
-def inline_vmtk(c_code, cache_dir=None): 
+def inline_vmtk(c_code, cache_dir=None):
 
     module = build_module_vmtk(c_code)
     func_name = get_func_name(c_code)
@@ -175,4 +176,3 @@ def inline_vmtk(c_code, cache_dir=None):
     else:
         instant_warning("Didn't find function '%s', returning module." % func_name)
     return module
-

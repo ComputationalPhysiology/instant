@@ -35,21 +35,25 @@ _log.setLevel(logging.INFO)
 _default_call_method = 'SUBPROCESS'
 if 'Windows' in platform.system() or 'CYGWIN' in platform.system():
     _default_call_method = 'OS_SYSTEM'
-_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD", \
+_call_method = os.environ.get("INSTANT_SYSTEM_CALL_METHOD",
                               _default_call_method)
 _log.debug('Using call method: %s'%_call_method)
+
 
 def get_log_handler():
     return _loghandler
 
+
 def get_logger():
     return _log
+
 
 def set_log_handler(handler):
     global _loghandler
     _log.removeHandler(_loghandler)
     _loghandler = handler
     _log.addHandler(_loghandler)
+
 
 def set_logging_level(level):
     import inspect
@@ -58,6 +62,7 @@ def set_logging_level(level):
                     "from %s, at line %d. Use set_log_level instead." % \
                     (inspect.getfile(frame), frame.f_lineno))
     set_log_level(level)
+
 
 def set_log_level(level):
     if isinstance(level, str):
@@ -68,21 +73,27 @@ def set_log_level(level):
         assert isinstance(level, int)
     _log.setLevel(level)
 
+
 # Aliases for calling log consistently:
+
 
 def instant_debug(*message):
     _log.debug(*message)
 
+
 def instant_info(*message):
     _log.info(*message)
 
+
 def instant_warning(*message):
     _log.warning(*message)
+
 
 def instant_error(*message):
     _log.error(*message)
     text = message[0] % message[1:]
     raise RuntimeError(text)
+
 
 def instant_assert(condition, *message):
     if not condition:
@@ -90,7 +101,9 @@ def instant_assert(condition, *message):
         text = message[0] % message[1:]
         raise AssertionError(text)
 
+
 # Utility functions for file handling:
+
 
 def write_file(filename, text):
     "Write text to a file and close it."
@@ -100,6 +113,7 @@ def write_file(filename, text):
         f.close()
     except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
+
 
 if _call_method == 'SUBPROCESS':
     from subprocess import Popen, PIPE, STDOUT
@@ -117,7 +131,8 @@ if _call_method == 'SUBPROCESS':
         #       which is not met in subprocess module. See
         #       https://www.open-mpi.org/faq/?category=openfabrics#ofa-fork
         #       http://www.openfabrics.org/downloads/OFED/release_notes/OFED_3.12_rc1_release_notes#3.03
-        pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
+        pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE,
+                     stderr=STDOUT)
 
         (output, errout) = pipe.communicate(input=input)
         assert not errout
