@@ -1,13 +1,14 @@
-image: phusion/baseimage
+image: ubuntu:16.04
 
 pipelines:
   default:
     - step:
         script:
           - apt-get update
-          - apt-get install -y g++ git python-dev python-pip python-setuptools swig --no-install-recommends
-          - pip install pytest
+          - apt-get install -y g++ git python-dev python-pip python-pytest python-setuptools swig --no-install-recommends
+          - apt-get install -y g++ python3-dev python3-pip python3-pytest python3-setuptools ---no-install-recommends
           - pip install .
+          - pip3 install .
           - cd test/
-          - python run_tests.py
-          - python rerun_tests.py
+          - py.test .
+          - py.test-3 .

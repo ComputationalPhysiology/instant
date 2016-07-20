@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from __future__ import print_function
 import sys, os, threading
 from instant import inline
@@ -35,4 +33,3 @@ if __name__ == "__main__":
             t.start()
         for t in threads:
             t.join()
-
