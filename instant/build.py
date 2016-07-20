@@ -35,20 +35,16 @@ from .locking import file_lock
 
 
 def assert_is_str(x):
-    instant_assert(isinstance(x, str),
-                   "In instant.build_module: Expecting string.")
+    instant_assert(isinstance(x, str), "In instant.build_module: Expecting string.")
 
 
 def assert_is_bool(x):
-    instant_assert(isinstance(x, bool),
-                   "In instant.build_module: Expecting bool.")
+    instant_assert(isinstance(x, bool), "In instant.build_module: Expecting bool.")
 
 
 def assert_is_str_list(x):
-    instant_assert(isinstance(x, (list, tuple)),
-                   "In instant.build_module: Expecting sequence.")
-    instant_assert(all(isinstance(i, str) for i in x),
-                   "In instant.build_module: Expecting sequence of strings.")
+    instant_assert(isinstance(x, (list, tuple)), "In instant.build_module: Expecting sequence.")
+    instant_assert(all(isinstance(i, str) for i in x), "In instant.build_module: Expecting sequence of strings.")
 
 
 def strip_strings(x):
@@ -391,11 +387,9 @@ def build_module(modulename=None, source_directory=".",
 
     instant_assert(signature is None \
                    or isinstance(signature, str) \
-                   or hasattr(signature, "signature"),
-        "In instant.build_module: Expecting modulename to be string or None.")
+                   or hasattr(signature, "signature"), "In instant.build_module: Expecting modulename to be string or None.")
 
-    instant_assert(not (signature is not None and modulename is not None),
-        "In instant.build_module: Can't have both modulename and signature.")
+    instant_assert(not (signature is not None and modulename is not None), "In instant.build_module: Can't have both modulename and signature.")
 
     # --- Replace arguments with defaults if necessary
 
@@ -404,8 +398,7 @@ def build_module(modulename=None, source_directory=".",
     # Split sources by file-suffix (.c or .cpp)
     csrcs = [f for f in sources if f.endswith('.c') or f.endswith('.C')]
     cppsrcs = [f for f in sources if f.endswith('.cpp') or f.endswith('.cxx')]
-    instant_assert(len(csrcs) + len(cppsrcs) == len(sources),
-        "In instant.build_module: Source files must have '.c' or '.cpp' suffix")
+    instant_assert(len(csrcs) + len(cppsrcs) == len(sources), "In instant.build_module: Source files must have '.c' or '.cpp' suffix")
 
     # --- Debugging code
     instant_debug('In instant.build_module:')
@@ -486,8 +479,7 @@ def build_module(modulename=None, source_directory=".",
 
         # Make a temporary module path for compilation
         module_path = os.path.join(get_temp_dir(), modulename)
-        instant_assert(not os.path.exists(module_path),
-            "In instant.build_module: Not expecting module_path to exist: '%s'"\
+        instant_assert(not os.path.exists(module_path), "In instant.build_module: Not expecting module_path to exist: '%s'"\
             % module_path)
         makedirs(module_path)
         use_cache = True
