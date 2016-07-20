@@ -11,4 +11,5 @@ pipelines:
           - pip3 install .
           - cd test/
           - py.test .
+          - git clean -fdx .
           - py.test-3 .
