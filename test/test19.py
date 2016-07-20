@@ -2,7 +2,7 @@ from __future__ import print_function
 import pytest
 import shutil
 import time
-import os
+import os, sys
 from instant import build_module, import_module
 
 def test_build():
@@ -48,18 +48,21 @@ double sum(double a, double b)
 
     # Build and rebuild with explicit modulename
     tic()
-    module = build_module(code=c_code, modulename=modulename, cache_dir=cache_dir)
+    module = build_module(code=c_code, modulename=modulename,
+                          cache_dir=cache_dir)
     assert module is not None
     t1 = toc("(1) With modulename")
 
     tic()
-    module = build_module(code=c_code, modulename=modulename, cache_dir=cache_dir)
+    module = build_module(code=c_code, modulename=modulename,
+                          cache_dir=cache_dir)
     assert module is not None
     t2 = toc("(2) With modulename")
     assert t1 > t2
 
     # Try importing module in a separate python process
-    cmd = 'python -c "import %s"' % modulename
+    python_interp = sys.executable
+    cmd = python_interp + ' -c "import %s"' % modulename
     print(cmd)
     stat = os.system(cmd)
     assert stat == 0 # a
@@ -84,7 +87,8 @@ double sum(double a, double b)
     assert t1 > t3
 
     # Try importing module in a separate python process
-    cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
+    python_interp = sys.executable
+    cmd = python_interp + ' -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
     print(cmd)
     stat = os.system(cmd)
     assert stat == 0 # b
@@ -109,7 +113,8 @@ double sum(double a, double b)
     assert t1 > t3
 
     # Try importing module in a separate python process
-    cmd = 'python -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
+    python_interp = sys.executable
+    cmd = python_interp + ' -c "import instant; assert instant.import_module(\'%s\', \'%s\') is not None"' % (sig, cache_dir)
     print(cmd)
     stat = os.system(cmd)
     assert stat == 0 # c
