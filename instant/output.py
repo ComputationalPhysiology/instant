@@ -119,7 +119,6 @@ if _call_method == 'SUBPROCESS':
     from subprocess import Popen, PIPE, STDOUT
 
     def get_status_output(cmd, input=None, cwd=None, env=None):
-        "Replacement for commands.getstatusoutput which does not work on Windows."
         if isinstance(cmd, str):
             cmd = cmd.strip().split()
         instant_debug("Running: " + str(cmd))
@@ -170,13 +169,6 @@ elif _call_method == 'OS_SYSTEM':
 
         output = output.decode('utf-8') if sys.version_info[0] > 2 else output
         return (status, output)
-
-elif _call_method == 'COMMANDS':
-    import commands
-    def get_status_output(*args, **kwargs):
-        status, output = commands.getstatusoutput(*args, **kwargs)
-        output = output.decode('utf-8') if sys.version_info[0] > 2 else output
-        return status, output
 else:
     instant_error('Incomprehensible environment variable'
                   ' INSTANT_SYSTEM_CALL_METHOD=%s'%_call_method)
