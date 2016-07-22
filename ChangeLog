@@ -1,3 +1,5 @@
+ - Add pipelines testing, with py2 and py3 coverage
+ - Remove commands module (removed from Py3)
  - Switch unit tests to pytest
 2016.1.0 [2016-06-23]
  - Minor fixes
