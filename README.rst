@@ -9,6 +9,17 @@ and Distutils. For more information, visit:
 https://bitbucket.org/fenics-project/instant
 
 
+Documentation
+=============
+
+Instant documentation can be viewed at
+http://fenics-instant.readthedocs.org/
+
+.. image:: https://readthedocs.org/projects/fenics-instant/badge/?version=latest
+   :target: http://fenics.readthedocs.io/projects/instant/en/latest/?badge=latest
+   :alt: Documentation Status
+
+
 Dependencies
 ============
 
@@ -46,8 +57,3 @@ Instant's behaviour depened on following environment variables:
        - 'OS_SYSTEM'
 
            Uses temporary files. Probably OFED-fork safe.
-
-       - 'COMMANDS'
-
-           Uses pipes. Possibly OFED-fork safe on some machines.
-           Does not work on Windows.
