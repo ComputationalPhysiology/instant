@@ -2,10 +2,11 @@
 Sphinx documentation
 ====================
 
-Instant is documented using Sphinx and reStructured text. The
-documnentation is hosted at
-http://fenics-instant.readthedocs.org/. The online documentation is
-automatically updated upon pushes to the Instant master branch.
+Instant is documented using Sphinx and reStructured text.
+The documentation is hosted at http://fenics-instant.readthedocs.org/.
+
+The online documentation is automatically updated upon pushes to the
+Instant master branch.
 
 
 Updating the API documentation
