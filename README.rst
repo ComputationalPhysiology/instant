@@ -8,7 +8,7 @@ and Distutils.
 
 Instant is part of the FEniCS Project.
 
-For more information, visit http://www.fenicsproject.org
+For more information, visit http://www.fenicsproject.org.
 
 
 Documentation
