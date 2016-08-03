@@ -4,56 +4,37 @@ Instant
 
 Instant is a Python module that allows for instant inlining of C and
 C++ code in Python. It is a small Python module built on top of SWIG
-and Distutils. For more information, visit:
+and Distutils.
 
-https://bitbucket.org/fenics-project/instant
+Instant is part of the FEniCS Project.
+
+For more information, visit http://www.fenicsproject.org
 
 
 Documentation
 =============
 
-Instant documentation can be viewed at
-http://fenics-instant.readthedocs.org/
+The Instant documentation can be viewed at Read the Docs:
 
-.. image:: https://readthedocs.org/projects/fenics-instant/badge/?version=latest
-   :target: http://fenics.readthedocs.io/projects/instant/en/latest/?badge=latest
-   :alt: Documentation Status
-
-
-Dependencies
-============
-
-Instant depends on Python 2.7 or later, SWIG, and NumPy
++--------+-------------------------------------------------------------------------------------+
+|Instant |  .. image:: https://readthedocs.org/projects/fenics-instant/badge/?version=latest   |
+|        |     :target: http://fenics.readthedocs.io/projects/instant/en/latest/?badge=latest  |
+|        |     :alt: Documentation Status                                                      |
++--------+-------------------------------------------------------------------------------------+
 
 
-Optional dependencies
-=====================
+License
+=======
 
-To enable NFS safe file locking flufl.lock can be installed:
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-https://gitlab.com/warsaw/flufl.lock
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-
-Environment
-===========
-
-Instant's behaviour depened on following environment variables:
-
- - INSTANT_CACHE_DIR
- - INSTANT_ERROR_DIR
-
-     These options can override placement of default cache and error
-     directories in ~/.instant/cache and ~/.instant/error.
-
- - INSTANT_SYSTEM_CALL_METHOD
-
-     Choose method for calling external programs (pkgconfig,
-     swig, cmake, make). Available values:
-
-       - 'SUBPROCESS'
-
-           Uses pipes. Probably not OFED-fork safe. Default.
-
-       - 'OS_SYSTEM'
-
-           Uses temporary files. Probably OFED-fork safe.
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
