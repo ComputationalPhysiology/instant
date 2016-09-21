@@ -382,6 +382,7 @@ ENDIF(%(package)s_FOUND)
 
     cmake_form["extra_libraries"] = ";".join(libraries)
     cmake_form["extra_include_dirs"] = ";".join(include_dirs)
+    cmake_form["extra_library_dirs"] = ";".join(library_dirs)
     cmake_form["extra_swig_include_dirs"] = " -I".join([" "] + swig_include_dirs)
 
     cmake_form["extra_swigargs"] = " ".join(swigargs)
@@ -495,6 +496,11 @@ endif()
 %(package_include_dirs)s
 
 %(package_flags)s
+
+set(EXTRA_LIBRARY_DIRS \"%(extra_library_dirs)s\")
+if(EXTRA_LIBRARY_DIRS)
+  link_directories(${EXTRA_LIBRARY_DIRS})
+endif()
 
 %(extra_sources_files)s
 
