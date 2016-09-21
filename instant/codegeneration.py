@@ -515,7 +515,7 @@ if(SOURCE_FILES)
   add_library(source_file_lib
     STATIC
     ${SOURCE_FILES})
-  set(EXTRA_LIBRARIES \"source_file_lib ${EXTRA_LIBRARIES}\")
+  set(EXTRA_LIBRARIES \"source_file_lib;${EXTRA_LIBRARIES}\")
 endif()
 
 if(EXTRA_LIBRARIES)
