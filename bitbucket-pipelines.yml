@@ -5,11 +5,16 @@ pipelines:
     - step:
         script:
           - apt-get update
-          - apt-get install -y g++ git python-dev python-pip python-pytest python-setuptools swig --no-install-recommends
-          - apt-get install -y g++ python3-dev python3-pip python3-pytest python3-setuptools --no-install-recommends
-          - pip install .
+          - apt-get install -y
+              g++
+              git
+              swig
+              python-dev python-pip python-pytest python-setuptools
+              python3-dev python3-pip python3-pytest python3-setuptools
+              --no-install-recommends
+          - pip2 install .
           - pip3 install .
           - cd test/
-          - py.test -v .
+          - python2 -m pytest -v .
           - git clean -fdx .
-          - py.test-3 -v .
+          - python3 -m pytest -v .
