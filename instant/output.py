@@ -20,6 +20,7 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
+from six import string_types
 import logging, os, platform, sys
 
 # Logging wrappers
@@ -65,7 +66,7 @@ def set_logging_level(level):
 
 
 def set_log_level(level):
-    if isinstance(level, str):
+    if isinstance(level, string_types):
         level = level.upper()
         assert level in ("INFO", "WARNING", "ERROR", "DEBUG")
         level = getattr(logging, level)
@@ -119,7 +120,7 @@ if _call_method == 'SUBPROCESS':
     from subprocess import Popen, PIPE, STDOUT
 
     def get_status_output(cmd, input=None, cwd=None, env=None):
-        if isinstance(cmd, str):
+        if isinstance(cmd, string_types):
             cmd = cmd.strip().split()
         instant_debug("Running: " + str(cmd))
 
@@ -148,7 +149,7 @@ elif _call_method == 'OS_SYSTEM':
     def get_status_output(cmd, input=None, cwd=None, env=None):
         # We don't need function with such a generality.
         # We only need output and return code.
-        if not isinstance(cmd, str) or input is not None or \
+        if not isinstance(cmd, string_types) or input is not None or \
             cwd is not None or env is not None:
             raise NotImplementedError(
                 'This implementation (%s) of get_status_output does'

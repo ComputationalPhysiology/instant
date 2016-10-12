@@ -22,6 +22,7 @@
 
 # Utilities for directory handling:
 
+from six import string_types
 import os
 import errno
 import shutil
@@ -87,7 +88,7 @@ def get_default_error_dir():
 def validate_cache_dir(cache_dir):
     if cache_dir is None:
         return get_default_cache_dir()
-    instant_assert(isinstance(cache_dir, str), "Expecting cache_dir to be a string.")
+    instant_assert(isinstance(cache_dir, string_types), "Expecting cache_dir to be a string.")
     cache_dir = os.path.abspath(cache_dir)
     makedirs(cache_dir)
     return cache_dir

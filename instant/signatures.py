@@ -19,6 +19,7 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
+from six import string_types
 import hashlib
 from .output import instant_assert, instant_debug, instant_error
 
@@ -27,7 +28,7 @@ def compute_checksum(text="", filenames=[]):
     Get the checksum value of filename
     modified based on Python24\Tools\Scripts\md5.py
     """
-    instant_assert(isinstance(text, str), "Expecting string.")
+    instant_assert(isinstance(text, string_types), "Expecting string.")
     instant_assert(isinstance(filenames, (list, tuple)), "Expecting sequence.")
     
     m = hashlib.new('sha1')

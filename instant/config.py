@@ -23,6 +23,7 @@
 # Alternatively, Instant may be distributed under the terms of the BSD
 # license.
 
+from six import string_types
 import os
 from .output import get_status_output
 import re
@@ -37,9 +38,9 @@ _header_and_library_cache = {}
 def check_and_set_swig_binary(binary="swig", path=""):
     """ Check if a particular swig binary is available"""
     global _swig_binary_cache
-    if not isinstance(binary, str):
+    if not isinstance(binary, string_types):
         raise TypeError("expected a 'str' as first argument")
-    if not isinstance(path, str):
+    if not isinstance(path, string_types):
         raise TypeError("expected a 'str' as second argument")
     swig_binary = os.path.join(path, binary)
     if swig_binary == _swig_binary_cache:
@@ -94,7 +95,7 @@ def check_swig_version(version, same=False):
         print "Swig version is lower than 1.3.36"
 
     """
-    assert isinstance(version, str), "Provide the first version number as a 'str'"
+    assert isinstance(version, string_types), "Provide the first version number as a 'str'"
     assert len(version.split(".")) == 3, "Provide the version number as three numbers seperated by '.'"
 
     installed_version = list(map(int, get_swig_version().split('.')))
