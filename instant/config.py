@@ -60,6 +60,7 @@ def check_and_set_swig_binary(binary="swig", path=""):
 
     return True
 
+
 def get_swig_binary():
     "Return any cached swig binary"
     return _swig_binary_cache if _swig_binary_cache else "swig"

@@ -461,7 +461,8 @@ def build_module(modulename=None, source_directory=".",
                 # The signature isn't defined, and the cache_dir
                 # doesn't affect the module:
                 #signature, cache_dir)
-                )
+                sys.version
+            )
             allfiles = sources + wrap_headers + local_headers
             allfiles = [os.path.join(source_directory, f) for f in allfiles]
             text = "\n".join((str(a) for a in checksum_args))
