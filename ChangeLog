@@ -1,3 +1,4 @@
+ - Add Python version string to hash signature input
  - Add pipelines testing, with py2 and py3 coverage
  - Remove commands module (removed from Py3)
  - Switch unit tests to pytest
