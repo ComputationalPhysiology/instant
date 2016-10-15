@@ -56,6 +56,10 @@ Topic :: Scientific/Engineering :: Mathematics
 Topic :: Software Development :: Libraries :: Python Modules
 """
 
+requires = ["numpy", "six"]
+if sys.version_info[0] == 2:
+    requires.append("subprocess32")
+
 setup(name="instant",
       version=version,
       description="Instant Inlining of C/C++ in Python",
@@ -68,7 +72,7 @@ setup(name="instant",
       package_dir={'instant': 'instant'},
       package_data={'': [join('swig', 'numpy.i')]},
       scripts=scripts,
-      install_requires=["numpy"],
+      install_requires=requires,
       data_files=[(join("share", "man", "man1"),
                    [join("doc", "man", "man1", "instant-clean.1.gz"),
                     join("doc", "man", "man1", "instant-showcache.1.gz")])]
