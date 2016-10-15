@@ -32,7 +32,7 @@ _log.setLevel(logging.INFO)
 #_log.setLevel(logging.DEBUG)
 
 # Choose method for calling external programs. use subprocess by
-# deafult, and os.system on Windows
+# default, and os.system on Windows
 _default_call_method = 'SUBPROCESS'
 if 'Windows' in platform.system() or 'CYGWIN' in platform.system():
     _default_call_method = 'OS_SYSTEM'
@@ -117,7 +117,22 @@ def write_file(filename, text):
 
 
 if _call_method == 'SUBPROCESS':
-    from subprocess import Popen, PIPE, STDOUT
+
+    # NOTE: subprocess in Python 2 is not OFED-fork-safe! Check subprocess.py,
+    #       http://bugs.python.org/issue1336#msg146685
+    #       OFED-fork-safety means that parent should not
+    #       touch anything between fork() and exec(),
+    #       which is not met in subprocess module. See
+    #       https://www.open-mpi.org/faq/?category=openfabrics#ofa-fork
+    #       http://www.openfabrics.org/downloads/OFED/release_notes/OFED_3.12_rc1_release_notes#3.03
+    # However, subprocess32 backports the fix from Python 3 to 2.7.
+    if os.name == "posix" and sys.version_info[0] < 3:
+        try:
+            import subprocess32 as subprocess
+        except:
+            import subprocess
+    else:
+        import subprocess
 
     def get_status_output(cmd, input=None, cwd=None, env=None):
         if isinstance(cmd, string_types):
@@ -131,8 +146,8 @@ if _call_method == 'SUBPROCESS':
         #       which is not met in subprocess module. See
         #       https://www.open-mpi.org/faq/?category=openfabrics#ofa-fork
         #       http://www.openfabrics.org/downloads/OFED/release_notes/OFED_3.12_rc1_release_notes#3.03
-        pipe = Popen(cmd, shell=False, cwd=cwd, env=env, stdout=PIPE,
-                     stderr=STDOUT)
+        pipe = subprocess.Popen(cmd, shell=False, cwd=cwd, env=env, stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT)
 
         (output, errout) = pipe.communicate(input=input)
         assert not errout
