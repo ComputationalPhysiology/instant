@@ -36,17 +36,6 @@ testing.
    :alt: Bamboo Build Status
 
 
-Code Coverage
-=============
-
-Code coverage reports can be viewed at
-https://coveralls.io/repos/bitbucket/fenics-project/instant.
-
-.. image:: https://coveralls.io/repos/bitbucket/fenics-project/instant/badge.svg?branch=master
-   :target: https://coveralls.io/bitbucket/fenics-project/instant?branch=master
-   :alt: Coverage Status
-
-
 License
 =======
 
