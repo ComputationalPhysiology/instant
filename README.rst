@@ -14,13 +14,37 @@ For more information, visit http://www.fenicsproject.org.
 Documentation
 =============
 
-The Instant documentation can be viewed at Read the Docs:
+Documentation can be viewed at http://fenics-instant.readthedocs.org/.
 
-+--------+-------------------------------------------------------------------------------------+
-|Instant |  .. image:: https://readthedocs.org/projects/fenics-instant/badge/?version=latest   |
-|        |     :target: http://fenics.readthedocs.io/projects/instant/en/latest/?badge=latest  |
-|        |     :alt: Documentation Status                                                      |
-+--------+-------------------------------------------------------------------------------------+
+.. image:: https://readthedocs.org/projects/fenics-instant/badge/?version=latest
+   :target: http://fenics.readthedocs.io/projects/instant/en/latest/?badge=latest
+   :alt: Documentation Status
+
+
+Automated Testing
+=================
+
+We use Bitbucket Pipelines and Atlassian Bamboo to perform automated
+testing.
+
+.. image:: https://bitbucket-badges.useast.atlassian.io/badge/fenics-project/instant.svg
+   :target: https://bitbucket.org/fenics-project/instant/addon/pipelines/home
+   :alt: Pipelines Build Status
+
+.. image:: http://fenics-bamboo.simula.no:8085/plugins/servlet/wittified/build-status/IN-ID
+   :target: http://fenics-bamboo.simula.no:8085/browse/IN-ID/latest
+   :alt: Bamboo Build Status
+
+
+Code Coverage
+=============
+
+Code coverage reports can be viewed at
+https://coveralls.io/repos/bitbucket/fenics-project/instant.
+
+.. image:: https://coveralls.io/repos/bitbucket/fenics-project/instant/badge.svg?branch=master
+   :target: https://coveralls.io/bitbucket/fenics-project/instant?branch=master
+   :alt: Coverage Status
 
 
 License
