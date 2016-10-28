@@ -60,7 +60,12 @@ def get_instant_dir():
     "Return the default instant directory, creating it if necessary."
     # os.path.expanduser works for Windows, Linux, and Mac
     # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
-    instant_dir = os.path.join(os.path.expanduser("~"), ".instant")
+    env = os.environ.get("VIRTUAL_ENV")
+    if not env:
+        env = os.environ.get("CONDA_PREFIX", env)
+    if not env:
+        env = os.path.expanduser("~")
+    instant_dir = os.path.join(env, ".cache", "instant")
     makedirs(instant_dir)
     return instant_dir
 
@@ -68,11 +73,6 @@ def get_instant_dir():
 def get_default_cache_dir():
     "Return the default cache directory."
     cache_dir = os.environ.get("INSTANT_CACHE_DIR")
-    if not cache_dir:
-        # default cache dir is in the env if we are using one
-        env = os.environ.get("VIRTUAL_ENV", os.environ.get("CONDA_PREFIX"), None)
-        if env:
-            cache_dir = os.path.join(env, ".instant")
     # Catches the cases where INSTANT_CACHE_DIR is not set or ''
     if not cache_dir:
         cache_dir = os.path.join(get_instant_dir(), "cache")
