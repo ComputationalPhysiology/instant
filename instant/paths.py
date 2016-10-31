@@ -70,7 +70,17 @@ def get_instant_dir():
         env = cenv
     else:
         env = home
+
     instant_dir = os.path.join(env, ".cache", "instant")
+
+    # If placed in home directory, add python version for safety,
+    # since C extensions are not compatible across versions.
+    # (for python 3, it's possible to use the stable C API,
+    # however we don't know if the instant user has done that)
+    if env == home:
+        ver = "python%d.%d" % sys.version_info[:2]
+        instant_dir = os.path.join(instant_dir, ver)
+
     makedirs(instant_dir)
     return instant_dir
 
