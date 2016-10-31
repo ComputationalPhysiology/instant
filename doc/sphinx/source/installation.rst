@@ -27,6 +27,12 @@ following Python packages:
 These packages will be automatically installed as part of the
 installation of Instant, if not already present on your system.
 
+If running on a cluster with Infiniband with python 2,
+you also need to install a backport of the subprocess
+module from python 3 to get safe fork behaviour:
+
+* subprocess32
+
 In addition, Instant optionally depends on flufl.lock for NFS safe
 file locking flufl.lock can be installed
 
@@ -61,8 +67,12 @@ Instant's behaviour depened on following environment variables:
  - ``INSTANT_CACHE_DIR``
  - ``INSTANT_ERROR_DIR``
 
-     These options can override placement of default cache and error
-     directories in ``~/.instant/cache`` and ``~/.instant/error``.
+   These options can override placement of default cache and error
+   directories. The default directories are placed below the prefix
+   of the currently active virtualenv or conda environment, in
+   ``.cache/instant/cache`` and ``.cache/instant/error``.
+   If no such environment is active, the default directories are
+   ``~/.cache/instant/pythonM.N/cache`` and ``.cache/instant/pythonM.N/error``. 
 
  - ``INSTANT_SYSTEM_CALL_METHOD``
 
@@ -71,16 +81,13 @@ Instant's behaviour depened on following environment variables:
 
        - ``SUBPROCESS``
 
-           Uses pipes. Not OFED-fork safe on Python 2. Default.
+           Uses pipes. Not OFED-fork safe on Python 2 unless
+           subprocess32 has been installed. Default.
 
        - ``OS_SYSTEM``
 
            Uses temporary files. Probably OFED-fork safe.
 
-       - ``COMMANDS``
-
-           Uses pipes. Possibly OFED-fork safe on some machines.
-           Does not work on Windows.
-
 .. warning:: OFED-fork safe system call method might be required to
              avoid crashes on OFED-based (InfiniBand) clusters!
+             If using python 2, installing subprocess32 is recommended.
