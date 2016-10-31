@@ -24,6 +24,7 @@
 
 from six import string_types
 import os
+import sys
 import errno
 import shutil
 import tempfile
@@ -58,9 +59,18 @@ def delete_temp_dir():
 
 def get_instant_dir():
     "Return the default instant directory, creating it if necessary."
-    # os.path.expanduser works for Windows, Linux, and Mac
-    # In Windows, $HOME is os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
-    instant_dir = os.path.join(os.path.expanduser("~"), ".instant")
+    # Place default cache dir in virtualenv or conda prefix
+    # if one of them are active, or under user's home directory
+    home = os.path.expanduser("~")
+    venv = os.environ.get("VIRTUAL_ENV")
+    cenv = os.environ.get("CONDA_PREFIX")
+    if venv == sys.prefix:
+        env = venv
+    elif cenv == sys.prefix:
+        env = cenv
+    else:
+        env = home
+    instant_dir = os.path.join(env, ".cache", "instant")
     makedirs(instant_dir)
     return instant_dir
 
