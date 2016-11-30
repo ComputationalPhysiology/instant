@@ -17,8 +17,8 @@ Questions, bugs and patches should be sent to fenics-dev@googlegroups.com.
 """
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
-__date__ = "2016-06-23"
-__version__ = "2016.2.0.dev0"
+__date__ = "2016-11-30"
+__version__ = "2016.2.0"
 
 # TODO: Import only the official interface
 from .output import *
