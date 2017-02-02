@@ -21,7 +21,7 @@
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
 from six import string_types
-import logging, os, platform, sys
+import io, logging, os, platform, sys
 
 # Logging wrappers
 _log = logging.getLogger("instant")
@@ -109,7 +109,7 @@ def instant_assert(condition, *message):
 def write_file(filename, text):
     "Write text to a file and close it."
     try:
-        f = open(filename, "w")
+        f = io.open(filename, "w", encoding="utf8")
         f.write(text)
         f.close()
     except IOError as e:
