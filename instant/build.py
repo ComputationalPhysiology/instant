@@ -22,7 +22,10 @@
 #
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
-import os, sys, shutil, glob, errno
+import six
+from six import string_types
+
+import io, os, sys, shutil, glob, errno
 from itertools import chain
 
 # TODO: Import only the official interface
@@ -35,7 +38,7 @@ from .locking import file_lock
 
 
 def assert_is_str(x):
-    instant_assert(isinstance(x, str), "In instant.build_module: Expecting string.")
+    instant_assert(isinstance(x, string_types), "In instant.build_module: Expecting string.")
 
 
 def assert_is_bool(x):
@@ -44,7 +47,7 @@ def assert_is_bool(x):
 
 def assert_is_str_list(x):
     instant_assert(isinstance(x, (list, tuple)), "In instant.build_module: Expecting sequence.")
-    instant_assert(all(isinstance(i, str) for i in x), "In instant.build_module: Expecting sequence of strings.")
+    instant_assert(all(isinstance(i, string_types) for i in x), "In instant.build_module: Expecting sequence of strings.")
 
 
 def strip_strings(x):
@@ -53,7 +56,7 @@ def strip_strings(x):
 
 
 def arg_strings(x):
-    if isinstance(x, str):
+    if isinstance(x, string_types):
         x = x.split()
     return strip_strings(x)
 
@@ -109,7 +112,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
     # Check if the old checksum matches the new one
     compilation_checksum_filename = "%s.checksum" % modulename
     if os.path.exists(compilation_checksum_filename):
-        checksum_file = open(compilation_checksum_filename)
+        checksum_file = io.open(compilation_checksum_filename, encoding="utf8")
         old_compilation_checksum = checksum_file.readline()
         checksum_file.close()
         if old_compilation_checksum == new_compilation_checksum:
@@ -119,7 +122,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
     compile_log_filename = os.path.join(module_path, "compile.log")
     compile_log_filename_dest = os.path.join(get_default_error_dir(), \
                                              modulename, "compile.log")
-    compile_log_file = open(compile_log_filename, "w")
 
     ret = 1
     try:
@@ -134,8 +136,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = python_interp + " setup.py build_ext install --install-platlib=."
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -148,8 +149,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             #cmd = "cmake .";
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -161,8 +161,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = "make VERBOSE=1"
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -171,7 +170,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
                 instant_error(msg % (cmd, compile_log_filename_dest))
 
     finally:
-        compile_log_file.close()
         if ret != 0:
             if "INSTANT_DISPLAY_COMPILE_LOG" in list(os.environ.keys()):
                 instant_warning("")
@@ -226,8 +224,9 @@ def copy_to_cache(module_path, cache_dir, modulename,
         # empty file finished_copying
         try:
             shutil.copytree(module_path, cache_module_path)
-            open(os.path.join(cache_module_path,
-                              "finished_copying"), "w").close()
+            with io.open(os.path.join(cache_module_path, "finished_copying"),
+                             "w", encoding="utf8") as dummy:
+                pass            
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
@@ -360,7 +359,7 @@ def build_module(modulename=None, source_directory=".",
     if sys.version_info[0] > 2:
         swigargs = swigargs + ['-py3']
 
-    instant_assert(modulename is None or isinstance(modulename, str),
+    instant_assert(modulename is None or isinstance(modulename, string_types),
         "In instant.build_module: Expecting modulename to be string or None.")
     assert_is_str(source_directory)
     source_directory = os.path.abspath(source_directory)
@@ -386,7 +385,7 @@ def build_module(modulename=None, source_directory=".",
     cmake_packages   = strip_strings(cmake_packages)
 
     instant_assert(signature is None \
-                   or isinstance(signature, str) \
+                   or isinstance(signature, string_types) \
                    or hasattr(signature, "signature"), "In instant.build_module: Expecting modulename to be string or None.")
 
     instant_assert(not (signature is not None and modulename is not None), "In instant.build_module: Can't have both modulename and signature.")

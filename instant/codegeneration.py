@@ -23,7 +23,7 @@
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
 import sys
-import re, os
+import re, os, io
 from .output import instant_assert, instant_warning, instant_debug, write_file
 from .config import get_swig_binary
 
@@ -281,7 +281,7 @@ def _test_write_interfacefile():
     write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
                         additional_definitions, additional_declarations, \
                         system_headers, local_headers, wrap_headers, arrays)
-    print("".join(open("%s.i" % modulename).readlines()))
+    print("".join(io.open("%s.i" % modulename, encoding="utf8").readlines()))
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -299,7 +299,7 @@ def _test_write_setup():
     write_setup("setup.py", modulename, csrcs, cppsrcs, local_headers, \
                 include_dirs, library_dirs, libraries, swig_include_dirs, \
                 swigargs, cppargs, lddargs)
-    print("".join(open("setup.py").readlines()))
+    print("".join(io.open("setup.py", encoding="utf8").readlines()))
 
 def unique(sequence):
     return list(set(sequence))
@@ -600,9 +600,8 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS})
 
     """ % { "name" : name }
 
-    f = open("CMakeLists.txt", 'w')
-
-    f.write(file_template)
+    with io.open("CMakeLists.txt", 'w', encoding="utf8") as f:
+        f.write(file_template)
 
 
 def write_vmtk_cmakefile(name):
@@ -677,16 +676,16 @@ swig_link_libraries(${SWIG_MODULE_NAME} ${PYTHON_LIBRARIES} ${VTK_LIBS} ${VMTK_L
 
     """ % { "name" : name }
 
-    f = open("CMakeLists.txt", 'w')
+    with io.open("CMakeLists.txt", 'w', encoding="utf8") as f:
+        f.write(file_template)
 
-    f.write(file_template)
 
 def write_vtk_interface_file(signature, code):
     filename = signature
     ifile = filename + ".i"
-    iff = open(ifile, 'w')
     ifile_code = generate_interface_file_vtk(signature, code)
-    iff.write(ifile_code)
+    with io.open(ifile, 'w', encoding="utf8") as iff:
+        iff.write(ifile_code)
 
 
 if __name__ == "__main__":

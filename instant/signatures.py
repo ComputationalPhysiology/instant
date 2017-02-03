@@ -20,6 +20,7 @@
 # Alternatively, Instant may be distributed under the terms of the BSD license.
 
 from six import string_types
+import io
 import hashlib
 from .output import instant_assert, instant_debug, instant_error
 
@@ -38,7 +39,7 @@ def compute_checksum(text="", filenames=[]):
     for filename in sorted(filenames): 
         instant_debug("Adding file '%s' to checksum." % filename)
         try:
-            fp = open(filename, 'rb')
+            fp = io.open(filename, 'rb')
         except IOError as e:
             instant_error("Can't open file '%s': %s" % (filename, e))
         
