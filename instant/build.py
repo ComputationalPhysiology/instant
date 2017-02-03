@@ -122,7 +122,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
     compile_log_filename = os.path.join(module_path, "compile.log")
     compile_log_filename_dest = os.path.join(get_default_error_dir(), \
                                              modulename, "compile.log")
-    compile_log_file = io.open(compile_log_filename, "w", encoding="utf8")
 
     ret = 1
     try:
@@ -137,8 +136,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = python_interp + " setup.py build_ext install --install-platlib=."
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -151,8 +149,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             #cmd = "cmake .";
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -164,8 +161,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = "make VERBOSE=1"
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            compile_log_file.write(output)
-            compile_log_file.flush()
+            write_file(compile_log_filename, output)
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
@@ -174,7 +170,6 @@ def recompile(modulename, module_path, new_compilation_checksum,
                 instant_error(msg % (cmd, compile_log_filename_dest))
 
     finally:
-        compile_log_file.close()
         if ret != 0:
             if "INSTANT_DISPLAY_COMPILE_LOG" in list(os.environ.keys()):
                 instant_warning("")

@@ -109,9 +109,11 @@ def instant_assert(condition, *message):
 def write_file(filename, text):
     "Write text to a file and close it."
     try:
-        f = io.open(filename, "w", encoding="utf8")
-        f.write(text)
-        f.close()
+        if isinstance(text, bytes):
+            text = text.decode("utf8")
+        with io.open(filename, "w", encoding="utf8") as f:
+            f.write(text)
+            f.flush()
     except IOError as e:
         instant_error("Can't open '%s': %s" % (filename, e))
 
