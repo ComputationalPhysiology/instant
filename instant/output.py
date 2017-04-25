@@ -106,12 +106,12 @@ def instant_assert(condition, *message):
 # Utility functions for file handling:
 
 
-def write_file(filename, text):
+def write_file(filename, text, mode="w"):
     "Write text to a file and close it."
     try:
         if isinstance(text, bytes):
             text = text.decode("utf8")
-        with io.open(filename, "w", encoding="utf8") as f:
+        with io.open(filename, mode, encoding="utf8") as f:
             f.write(text)
             f.flush()
     except IOError as e:

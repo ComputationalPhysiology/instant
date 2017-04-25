@@ -161,7 +161,7 @@ def recompile(modulename, module_path, new_compilation_checksum,
             cmd = "make VERBOSE=1"
             instant_debug("cmd = %s" % cmd)
             ret, output = get_status_output(cmd)
-            write_file(compile_log_filename, output)
+            write_file(compile_log_filename, output, mode="a")
             if ret != 0:
                 compile_log_contents = output
                 if os.path.exists(compilation_checksum_filename):
