@@ -380,6 +380,8 @@ ENDIF(%(package)s_FOUND)
 
     cmake_form = dict(module_name=module_name)
 
+    cmake_form["python_executable"] = sys.executable
+
     cmake_form["extra_libraries"] = ";".join(libraries)
     cmake_form["extra_include_dirs"] = ";".join(include_dirs)
     cmake_form["extra_library_dirs"] = ";".join(library_dirs)
@@ -452,6 +454,8 @@ cmake_minimum_required(VERSION 2.6.0)
 set (NAME %(module_name)s)
 
 PROJECT(${NAME})
+
+set(PYTHON_EXECUTABLE %(python_executable)s)
 
 %(find_packages)s
 
