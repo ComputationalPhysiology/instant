@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, platform, re
+import sys, platform
 from os.path import join, split, pardir
 
 try:
@@ -28,8 +28,7 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
         batch_files.append(batch_file)
     scripts.extend(batch_files)
 
-version = re.findall('__version__ = "(.*)"',
-                     open('instant/__init__.py', 'r').read())[0]
+version = "2017.1.0.dev0"
 
 url = "https://bitbucket.org/fenics-project/instant/"
 tarball = None
