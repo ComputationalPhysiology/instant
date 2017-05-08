@@ -1,3 +1,6 @@
 build/
 tests/**/
 doc/sphinx/source/api-doc
+dist/
+*.egg-info
+release/
