@@ -27,8 +27,10 @@ import re, os, io
 from .output import instant_assert, instant_warning, instant_debug, write_file
 from .config import get_swig_binary
 
+
 def mapstrings(format, sequence):
     return "\n".join(format % i for i in sequence)
+
 
 def reindent(code):
     '''Reindent a multiline string to allow easier to read syntax.
@@ -59,6 +61,7 @@ def reindent(code):
     n = len(space)
     instant_assert(space == " "*n, "Logic breach in reindent.")
     return "\n".join(re.sub(r"^%s" % space, "", l) for l in lines)
+
 
 def write_interfacefile(filename, modulename, code, init_code,
                         additional_definitions, additional_declarations,
@@ -214,7 +217,10 @@ def write_interfacefile(filename, modulename, code, init_code,
     write_file(filename, interface_string)
     instant_debug("Done generating interface file.")
 
-def write_setup(filename, modulename, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
+
+def write_setup(filename, modulename, csrcs, cppsrcs, local_headers,
+                include_dirs, library_dirs, libraries, swig_include_dirs,
+                swigargs, cppargs, lddargs):
     """Generate a setup.py file. Intended for internal library use."""
     instant_debug("Generating %s." % filename)
 
@@ -278,10 +284,11 @@ def _test_write_interfacefile():
     wrap_headers = ["wrap_header1.h", "wrap_header2.h"]
     arrays = [["length1", "array1"], ["dims", "lengths", "array2"]]
 
-    write_interfacefile("%s.i" % modulename, modulename, code, init_code, \
-                        additional_definitions, additional_declarations, \
+    write_interfacefile("%s.i" % modulename, modulename, code, init_code,
+                        additional_definitions, additional_declarations,
                         system_headers, local_headers, wrap_headers, arrays)
     print("".join(io.open("%s.i" % modulename, encoding="utf8").readlines()))
+
 
 def _test_write_setup():
     modulename = "testmodule"
@@ -301,6 +308,7 @@ def _test_write_setup():
                 swigargs, cppargs, lddargs)
     print("".join(io.open("setup.py", encoding="utf8").readlines()))
 
+
 def unique(sequence):
     return list(set(sequence))
 
@@ -309,6 +317,7 @@ def find_vtk_classes(str):
     pattern = "vtk\w*"
     l = unique(re.findall(pattern, str))
     return l
+
 
 def create_typemaps(classes):
     s = ""
@@ -368,7 +377,10 @@ def generate_interface_file_vtk(signature, code):
     s = interface_template % { "typemaps" : typemaps, "code" : code, "includes" : includes }
     return s
 
-def write_cmakefile(module_name, cmake_packages, csrcs, cppsrcs, local_headers, include_dirs, library_dirs, libraries, swig_include_dirs, swigargs, cppargs, lddargs):
+
+def write_cmakefile(module_name, cmake_packages, csrcs, cppsrcs, local_headers,
+                    include_dirs, library_dirs, libraries, swig_include_dirs,
+                    swigargs, cppargs, lddargs):
 
     find_package_template = """
 # Configuration for package %(package)s
@@ -532,6 +544,7 @@ endif()
 
     filename = "CMakeLists.txt"
     write_file(filename, cmake_template)
+
 
 def write_itk_cmakefile(name):
     file_template = """
