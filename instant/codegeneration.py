@@ -392,6 +392,13 @@ ENDIF(%(package)s_FOUND)
 
     cmake_form = dict(module_name=module_name)
 
+    # Major hack to adress
+    # https://bitbucket.org/fenics-project/dolfin/pull-requests/358/add-petsc-and-slepc-include-directories-in/
+    p = ""
+    for package in cmake_packages:
+        p += package.lower() + " "
+    cmake_form["cmake_dep_targets"] = p
+
     cmake_form["python_executable"] = sys.executable
 
     cmake_form["extra_libraries"] = ";".join(libraries)
@@ -427,20 +434,17 @@ endif()
     cmake_form["package_flags"] = "\n".join(\
         """set(CMAKE_EXE_LINKER_FLAGS \"${CMAKE_EXE_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
 set(CMAKE_SHARED_LINKER_FLAGS \"${CMAKE_SHARED_LINKER_FLAGS} ${%(package)s_LINK_FLAGS}\")
-""" %
-        dict(package=package.upper()) for package in cmake_packages)
+""" % dict(package=package.upper()) for package in cmake_packages)
 
     cmake_form["package_swig_link_libraries"] = "\n".join(\
         """if (DEFINED %(package)s_LIBRARIES OR DEFINED %(package)s_3RD_PARTY_LIBRARIES OR DEFINED %(package)s_PYTHON_LIBRARIES)
   swig_link_libraries(${SWIG_MODULE_NAME} ${%(package)s_LIBRARIES} ${%(package)s_3RD_PARTY_LIBRARIES} ${%(package)s_PYTHON_LIBRARIES} ${EXTRA_SOURCE_LIB})
-endif()""" %
-        dict(package=package.upper()) for package in cmake_packages)
+endif()""" % dict(package=package.upper()) for package in cmake_packages)
 
     cmake_form["package_python_definitions"] = "\n".join(\
         """if (DEFINED %(package)s_PYTHON_DEFINITIONS)
   add_definitions(${%(package)s_PYTHON_DEFINITIONS})
-endif()""" %
-        dict(package=package.upper()) for package in cmake_packages)
+endif()""" % dict(package=package.upper()) for package in cmake_packages)
 
     cppsrcs.extend(csrcs)
     if len(cppsrcs) > 0:
@@ -461,7 +465,7 @@ endif()""" %
         cmake_form["lddargs"] = ""
 
     cmake_template = """
-cmake_minimum_required(VERSION 2.6.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 set (NAME %(module_name)s)
 
@@ -531,6 +535,7 @@ if(SOURCE_FILES)
     STATIC
     ${SOURCE_FILES})
   set(EXTRA_LIBRARIES \"source_file_lib;${EXTRA_LIBRARIES}\")
+  target_link_libraries(source_file_lib %(cmake_dep_targets)s)
 endif()
 
 if(EXTRA_LIBRARIES)
