@@ -510,13 +510,6 @@ endif()
 
 %(package_python_definitions)s
 
-# Work-around for bug in CMake 3.0.0 (see
-# http://www.cmake.org/Bug/view.php?id=14990)
-set(SWIG_MODULE_NAME_ORIG "${SWIG_MODULE_NAME}")
-if (${CMAKE_VERSION} MATCHES "3.0.0")
-  set(SWIG_MODULE_NAME "_${SWIG_MODULE_NAME}")
-endif()
-
 swig_add_module(${SWIG_MODULE_NAME} python ${SWIG_SOURCES})
 
 set(EXTRA_LIBRARIES %(extra_libraries)s)
