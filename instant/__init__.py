@@ -20,7 +20,7 @@ import pkg_resources
 
 __authors__ = "Magne Westlie, Kent-Andre Mardal <kent-and@simula.no>, Martin Alnes <martinal@simula.no>, Ilmar M. Wilbers <ilmarw@simula.no>"
 __date__ = "2016-11-30"
-__version__ = pkg_resources.get_distribution("instant").version
+__version__ = pkg_resources.get_distribution("fenics-instant").version
 
 # TODO: Import only the official interface
 from .output import *

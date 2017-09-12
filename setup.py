@@ -59,7 +59,7 @@ requires = ["numpy", "six"]
 if sys.version_info[0] == 2:
     requires.append("subprocess32")
 
-setup(name="instant",
+setup(name="fenics-instant",
       version=version,
       description="Instant Inlining of C/C++ in Python",
       author="Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers",
