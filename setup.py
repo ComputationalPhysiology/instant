@@ -33,7 +33,7 @@ version = "2017.2.0.dev0"
 url = "https://bitbucket.org/fenics-project/instant/"
 tarball = None
 if not 'dev' in version:
-    tarball = url + "downloads/instant-%s.tar.gz" % version
+    tarball = url + "downloads/fenics-instant-%s.tar.gz" % version
 
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable
@@ -59,7 +59,7 @@ requires = ["numpy", "six"]
 if sys.version_info[0] == 2:
     requires.append("subprocess32")
 
-setup(name="instant",
+setup(name="fenics-instant",
       version=version,
       description="Instant Inlining of C/C++ in Python",
       author="Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers",

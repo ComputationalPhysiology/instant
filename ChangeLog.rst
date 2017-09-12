@@ -6,6 +6,13 @@ Changelog
 
 - Nothing changed yet
 
+
+2017.1.0.post1 (2017-09-12)
+---------------------
+
+- Change PyPI package name to fenics-instant. 
+
+
 2017.1.0 (2017-05-09)
 ---------------------
 
