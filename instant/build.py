@@ -226,7 +226,7 @@ def copy_to_cache(module_path, cache_dir, modulename,
             shutil.copytree(module_path, cache_module_path)
             with io.open(os.path.join(cache_module_path, "finished_copying"),
                              "w", encoding="utf8") as dummy:
-                pass            
+                pass
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
