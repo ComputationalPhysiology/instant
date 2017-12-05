@@ -6,7 +6,7 @@ Changelog
 
 - No changes
 
-2017.2.0 (2017-10-05)
+2017.2.0 (2017-12-05)
 ---------------------
 
 - Maintenance release
