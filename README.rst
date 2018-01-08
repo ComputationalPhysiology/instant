@@ -2,6 +2,11 @@
 Instant
 =======
 
+.. attention::
+   Instant has been retired after 2017.2.0 release. It is no longer
+   needed in FEniCS and hence no longer maintained and tested. All
+   test systems status information may be misleading.
+
 Instant is a Python module that allows for instant inlining of C and
 C++ code in Python. It is a small Python module built on top of SWIG
 and Distutils.
