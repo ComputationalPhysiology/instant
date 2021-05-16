@@ -28,7 +28,7 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
         batch_files.append(batch_file)
     scripts.extend(batch_files)
 
-version = "2021.0.0"
+version = "2021.0.1"
 
 url = "https://github.com/ComputationalPhysiology/instant"
 tarball = None
