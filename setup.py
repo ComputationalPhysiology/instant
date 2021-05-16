@@ -30,7 +30,7 @@ if platform.system() == "Windows" or "bdist_wininst" in sys.argv:
 
 version = "2018.1.0.dev0"
 
-url = "https://bitbucket.org/fenics-project/instant/"
+url = "https://github.com/ComputationalPhysiology/instant"
 tarball = None
 if not 'dev' in version:
     tarball = url + "downloads/fenics-instant-%s.tar.gz" % version
@@ -59,7 +59,7 @@ requires = ["numpy", "six"]
 if sys.version_info[0] == 2:
     requires.append("subprocess32")
 
-setup(name="fenics-instant",
+setup(name="instant2",
       version=version,
       description="Instant Inlining of C/C++ in Python",
       author="Magne Westlie, Kent-Andre Mardal, Martin Sandve Alnes and Ilmar M. Wilbers",
