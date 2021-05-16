@@ -487,11 +487,8 @@ set(SWIG_MODULE_NAME ${NAME})
 set(CMAKE_SWIG_FLAGS
   -module ${SWIG_MODULE_NAME}
   -shadow
-  -modern
-  -modernargs
   -fastdispatch
   -fvirtual
-  -nosafecstrings
   -noproxydel
   -fastproxy
   -fastinit
@@ -577,11 +574,8 @@ set(SWIG_MODULE_NAME %(name)s)
 set(CMAKE_SWIG_FLAGS
   -module ${SWIG_MODULE_NAME}
   -shadow
-  -modern
-  -modernargs
   -fastdispatch
   -fvirtual
-  -nosafecstrings
   -noproxydel
   -fastproxy
   -fastinit
@@ -651,11 +645,8 @@ set(SWIG_MODULE_NAME %(name)s)
 set(CMAKE_SWIG_FLAGS
   -module ${SWIG_MODULE_NAME}
   -shadow
-  -modern
-  -modernargs
   -fastdispatch
   -fvirtual
-  -nosafecstrings
   -noproxydel
   -fastproxy
   -fastinit
