@@ -489,12 +489,7 @@ set(CMAKE_SWIG_FLAGS
   -shadow
   -fastdispatch
   -fvirtual
-  -noproxydel
   -fastproxy
-  -fastinit
-  -fastunpack
-  -fastquery
-  -nobuildnone
 %(packages_definitions)s
 %(extra_swigargs)s
 %(extra_swig_include_dirs)s
@@ -576,12 +571,7 @@ set(CMAKE_SWIG_FLAGS
   -shadow
   -fastdispatch
   -fvirtual
-  -noproxydel
   -fastproxy
-  -fastinit
-  -fastunpack
-  -fastquery
-  -nobuildnone
   -Iinclude/swig
   )
 
@@ -647,12 +637,7 @@ set(CMAKE_SWIG_FLAGS
   -shadow
   -fastdispatch
   -fvirtual
-  -noproxydel
   -fastproxy
-  -fastinit
-  -fastunpack
-  -fastquery
-  -nobuildnone
   -Iinclude/swig
   )
 
